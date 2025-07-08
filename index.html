@@ -41,60 +41,76 @@
       a {
           color: #000;
       }
+      ul {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
     </style>
   </head>
   <body>
     <div>
       <h1>Bookmarks</h1>
       Basics
-      <li><a href="https://bustimes.org/">Buses</a></li>
-      <li><a href="https://traintimes.org.uk/">Trains</a></li>
-      <li><a href="https://weather.metoffice.gov.uk/forecast/gfjfnr9kf">Met Office</a></li>
-      <li><a href="https://www.lightningmaps.org/">Lightning</a></li>
+      <ul>
+        <li><a href="https://bustimes.org/">Buses</a></li>
+        <li><a href="https://traintimes.org.uk/">Trains</a></li>
+        <li><a href="https://weather.metoffice.gov.uk/forecast/gfjfnr9kf">Met Office</a></li>
+        <li><a href="https://www.lightningmaps.org/">Lightning</a></li>
+      </ul>
       <details>
         <summary>Travel</summary>
+        <ul>
         	<li><a href="https://www.google.com/maps">Google Maps</a></li>
         	<li><a href="https://www.nextbuses.mobi/">Nextbuses</a></li>
           <li><a href="https://openbusmap.org/#-3.0494;56.6126;12">OpenBusMap</a></li>
         	<li><a href="https://www.stagecoachbus.com/">Stagecoach buses</a></li>
           <li><a href="https://trntxt.uk/">Trntxt (direct only)</a></li>
         	<li><a href="https://gdir.telae.net/">Google directions (text)</a></li>
+         </ul>
       </details>
       <details>
         <summary>Weather</summary>
-        	<li><a href="https://weather.com/en-GB/weather/today/l/537aad4a003b8ca0678a5a16a4ba25fb4e875194efde1bf61a163687f197fb8a">Weather.com</a></li>
-        	<li><a href="https://www.meteoblue.com/en/weather/week/">Meteoblue</a></li>
+          <ul>
+        	  <li><a href="https://weather.com/en-GB/weather/today/l/537aad4a003b8ca0678a5a16a4ba25fb4e875194efde1bf61a163687f197fb8a">Weather.com</a></li>
+          	<li><a href="https://www.meteoblue.com/en/weather/week/">Meteoblue</a></li>
+           </ul>
       </details>
       <details>
         <summary>MWIS</summary>
-        	<li><a href="https://www.mwis.org.uk/forecasts/scottish/west-highlands/text">MWIS WH</a></li>
-        	<li><a href="https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text">MWIS NW</a></li>
-     	  	<li><a href="https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text">MWIS CNP</a></li>
-     	   	<li><a href="https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text">MWIS SEH</a></li>
-        	<li><a href="https://www.mwis.org.uk/forecasts/scottish/southern-uplands/text">MWIS SUP</a></li>
-        	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/lake-district/text">MWIS LD</a></li>
-        	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/yorkshire-dales-and-north-pennines/text">MWIS YDNP</a></li>
-        	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/peak-district/text">MWIS PD</a></li>
-        	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/snowdonia-national-park/text">MWIS SNP</a></li>
-        	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/brecon-beacons/text">MWIS BB</a></li>
-        	<li><a href="https://www.mwis.org.uk">MWIS home</a></li>
+          <ul>
+          	<li><a href="https://www.mwis.org.uk/forecasts/scottish/west-highlands/text">MWIS WH</a></li>
+          	<li><a href="https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text">MWIS NW</a></li>
+       	  	<li><a href="https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text">MWIS CNP</a></li>
+       	   	<li><a href="https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text">MWIS SEH</a></li>
+          	<li><a href="https://www.mwis.org.uk/forecasts/scottish/southern-uplands/text">MWIS SUP</a></li>
+          	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/lake-district/text">MWIS LD</a></li>
+          	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/yorkshire-dales-and-north-pennines/text">MWIS YDNP</a></li>
+          	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/peak-district/text">MWIS PD</a></li>
+          	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/snowdonia-national-park/text">MWIS SNP</a></li>
+          	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/brecon-beacons/text">MWIS BB</a></li>
+          	<li><a href="https://www.mwis.org.uk">MWIS home</a></li>
+           </ul>
       </details>
       <details>
         <summary>SAIS</summary>
-        	<li><a href="https://www.sais.gov.uk/northern-cairngorms/">SAIS NC</a></li>
-        	<li><a href="https://www.sais.gov.uk/southern-cairngorms/">SAIS SC</a></li>
-        	<li><a href="https://www.sais.gov.uk/lochaber/">SAIS LCHBR</a></li>
-        	<li><a href="https://www.sais.gov.uk/glencoe/">SAIS GLNC</a></li>
-        	<li><a href="https://www.sais.gov.uk/creag-meagaidh/">SAIS CM</a></li>
-        	<li><a href="https://www.sais.gov.uk/torridon/">SAIS TRDN</a></li>
-        	<li><a href="https://www.sais.gov.uk/">SAIS home</a></li>
+          <ul>
+          	<li><a href="https://www.sais.gov.uk/northern-cairngorms/">SAIS NC</a></li>
+          	<li><a href="https://www.sais.gov.uk/southern-cairngorms/">SAIS SC</a></li>
+          	<li><a href="https://www.sais.gov.uk/lochaber/">SAIS LCHBR</a></li>
+          	<li><a href="https://www.sais.gov.uk/glencoe/">SAIS GLNC</a></li>
+          	<li><a href="https://www.sais.gov.uk/creag-meagaidh/">SAIS CM</a></li>
+          	<li><a href="https://www.sais.gov.uk/torridon/">SAIS TRDN</a></li>
+          	<li><a href="https://www.sais.gov.uk/">SAIS home</a></li>
+           </ul>
       </details>
       <details>
         <summary>Utilities</summary>
-        	<li><a href="https://www.opentouchmap.org/">OpenTouchMap</a></li>
-        	<li><a href="https://m.onlinetexteditor.com">Text editor</a></li>
-          <li><a href="https://www.textise.net/">Textise websites</a></li>
-        	<li><a href="https://www.gutenberg.org/">Project Gutenberg</a></li>
+          <ul>
+          	<li><a href="https://www.opentouchmap.org/">OpenTouchMap</a></li>
+          	<li><a href="https://m.onlinetexteditor.com">Text editor</a></li>
+            <li><a href="https://www.textise.net/">Textise websites</a></li>
+          	<li><a href="https://www.gutenberg.org/">Project Gutenberg</a></li>
+          </ul>
       </details>
       <hr />
       <h3><a href="https://alexroddie.github.io/">alexroddie.github.io</a> is hosted on Github. <a href="https://github.com/alexroddie/alexroddie.github.io">Edit it here.</a> Maintained by Alex Roddie.</h3>
