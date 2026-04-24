@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kindle Weather Dashboard (Flipped)</title>
+<title>Auto-Rotating Weather Dashboard</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
-  /* Locks the body to the exact screen size, forces pure white, and prevents scrolling */
   html, body { 
-    width: 100%; 
-    height: 100%; 
+    width: 100vw; 
+    height: 100vh; 
     background: #ffffff; 
     font-family: sans-serif; 
     overflow: hidden; 
@@ -19,16 +18,23 @@
     align-items: center; 
   }
   
-  /* The Kindle magic: Rotates the board -90 degrees for the opposite landscape view */
+  /* Default state for wide displays (Mac/PC) */
   .kindle-wrapper {
-    transform: rotate(-90deg) scale(0.92);
-    transform-origin: center center;
     display: flex;
     justify-content: center;
     align-items: center;
+    transform: none;
+    transition: transform 0.3s ease; /* Adds a smooth snap if resizing a desktop window */
   }
 
-  /* Your exact baseline container and formatting */
+  /* Trigger for narrow displays (Kindle Portrait). Rotates -90deg and scales to fit 800px height */
+  @media screen and (max-width: 860px) {
+    .kindle-wrapper {
+      transform: rotate(-90deg) scale(0.92);
+      transform-origin: center center;
+    }
+  }
+
   .container {
     width: 840px; height: 480px; background: #fff; color: #000;
     font: 400 16px Georgia, serif;
@@ -37,7 +43,6 @@
     text-rendering: optimizeLegibility;
     position: relative;
     overflow: hidden;
-    /* Forces Kindle to render high-contrast monochrome text */
     -webkit-font-smoothing: antialiased;
   }
   .top-row { display: flex; justify-content: space-between; align-items: flex-start; }
