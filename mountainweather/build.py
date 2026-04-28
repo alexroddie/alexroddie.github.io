@@ -35,6 +35,7 @@ def get_natural_timestamp():
     time_str = now.strftime('%I.%M%p').lower().lstrip('0')
     return now.strftime(f'%A, %B {day}{suffix} at {time_str}')
 
+
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=15)
@@ -79,23 +80,22 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         for i, day in enumerate(days[:3]): 
             date_label = day.get('date', 'Day')
             headline = format_sentences(day.get('headline', []))
-            
             content = ""
             if headline:
-                content += f"<p style='margin-top:0; margin-bottom:5px;'><em>{headline.rstrip('.')}</em>.</p>"
-            content += "<ul style='margin-top: 5px; margin-bottom: 10px; padding-left: 20px;'>"
+                content += f"<p style='margin-top:0; margin-bottom:8px;'><em>{headline.rstrip('.')}</em>.</p>"
+            content += "<ul>"
             for label, field in [("Wind", "wind"), ("Wet", "wet"), ("Cloud", "cloud"), ("Chance of cloud-free Munros", "chance_cloud_free"), ("Temp", "temp"), ("Freezing level", "freezing_level")]:
                 val = format_sentences(day.get(field, []))
                 if val: content += f"<li><strong>{label}:</strong> {val}</li>"
             content += "</ul>"
             
             if i > 0: 
-                # Replaced details/summary with div classes for a non-folding but styled look
                 out_html += f"<div class='inner-day'><div class='inner-day-header'><strong>{date_label}</strong></div><div class='inner-content'>{content}</div></div>"
             else: 
-                out_html += f"<div class='day-one'><strong>{date_label}:</strong> {content}</div>"
+                out_html += f"<div class='day-one'><strong>{date_label}</strong>{content}</div>"
         data[key] = out_html
     except Exception as e: data[key] = f"Error: {str(e)}"
+
 
 for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe']:
     try:
@@ -109,34 +109,47 @@ for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_gle
 
 html_content = f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><style>
-  body {{ font-family: Georgia, serif; padding: 10px; line-height: 1.4; }}
-  h1 {{ text-align: center; border-bottom: 3px solid #000; }}
-  .region, details.region {{ border: 2px solid #000; margin-bottom: 15px; }}
-  h2 {{ background: #000; color: #fff; padding: 5px 10px; margin: 0; font-size: 1.2em; }}
+  body {{ font-family: Georgia, serif; padding: 10px; line-height: 1.5; background: #fff; color: #000; }}
+  h1 {{ text-align: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; }}
   
-  /* Main Accordion Arrows */
+  .region, details.region {{ border: 2px solid #000; margin-bottom: 20px; padding: 0; }}
+  h2 {{ background: #000; color: #fff; padding: 8px 12px; margin: 0; font-size: 1.25em; }}
+  
+  /* Main Accordion Header */
   summary {{ cursor: pointer; background: #000; display: block; outline: none; }}
-  summary h2::after {{ content: '\\25C0\\FE0E'; float: right; }}
+  summary h2::after {{ content: '\\25C0\\FE0E'; float: right; font-size: 0.8em; margin-top: 2px; }}
   details[open] summary h2::after {{ content: '\\25BC\\FE0E'; }}
   
-  /* Inner Day Flat Styling (No Arrows) */
-  .inner-day {{ border-top: 1px dashed #000; margin-top: 10px; }}
-  .inner-day-header {{ background: #eee; color: #000; padding: 5px 10px; font-size: 1.1em; }}
-  .inner-content {{ padding: 10px; }}
-  .day-one {{ margin-bottom: 10px; }}
+  /* Content Gutters */
+  .region-content {{ padding: 15px; }}
+  .inner-content {{ padding: 12px 15px; }}
+  .day-one {{ margin-bottom: 15px; }}
+  
+  /* Inner Day Formatting */
+  .inner-day {{ border-top: 1px dashed #000; margin-top: 15px; margin-left: -15px; margin-right: -15px; }}
+  .inner-day-header {{ background: #eee; color: #000; padding: 6px 15px; font-size: 1.1em; border-bottom: 1px solid #ddd; }}
 
-  .status {{ text-align: center; font-style: italic; font-size: 0.9em; }}
-  a {{ color: inherit; }}
-  ul {{ margin-top: 5px; padding-left: 20px; }}
-  li {{ margin-bottom: 4px; }}
+  /* Typography and Lists */
+  p {{ margin: 0 0 10px 0; }}
+  ul {{ margin: 8px 0; padding-left: 22px; }}
+  li {{ margin-bottom: 6px; }}
+  
+  .status {{ text-align: center; font-style: italic; font-size: 0.9em; margin-bottom: 20px; color: #444; }}
+  a {{ color: inherit; text-decoration: underline; }}
 </style></head><body>
   <h1>Mountain Dashboard</h1>
   <div class="status">Updated {get_natural_timestamp()}</div>
-  <div class="region"><h2>Planning Outlook</h2><div class="region-content">{planning_outlook}</div></div>
+  
+  <div class="region">
+    <h2>Planning Outlook</h2>
+    <div class="region-content"><p>{planning_outlook}</p></div>
+  </div>
+  
   <details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
   <details class="region"><summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms</a></h2></summary><div class="region-content">{data['mwis_cairngorms']}</div></details>
   <details class="region"><summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary><div class="region-content">{data['mwis_west']}</div></details>
   <details class="region"><summary><h2><a href="{urls['mwis_nw_highlands']}">NW Highlands</a></h2></summary><div class="region-content">{data['mwis_nw_highlands']}</div></details>
+  
   <details class="region"><summary><h2>SAIS Avalanche</h2></summary><div class="region-content"><ul>
     <li><strong>N Cairngorms:</strong> {data['sais_n_cairngorms']}</li>
     <li><strong>S Cairngorms:</strong> {data['sais_s_cairngorms']}</li>
