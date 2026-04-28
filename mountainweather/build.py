@@ -166,7 +166,17 @@ html_content = f"""<!DOCTYPE html>
 <style>
   body {{ font-family: Georgia, serif; background: #fff; color: #000; margin: 0; padding: 10px; line-height: 1.4; }}
   h1 {{ font-size: 1.8em; border-bottom: 3px solid #000; padding-bottom: 5px; margin-top: 0; text-align: center; }}
-  h2 {{ font-size: 1.3em; margin: 0 0 10px 0; background: #000; color: #fff; padding: 5px 10px; }}
+  
+  /* Folding Section Styles */
+  details.region {{ border: 2px solid #000; margin-bottom: 15px; padding: 0; }}
+  summary {{ list-style: none; cursor: pointer; outline: none; background: #000; display: block; }}
+  summary::-webkit-details-marker {{ display: none; }} /* Hides the default browser arrow */
+  
+  h2 {{ font-size: 1.3em; margin: 0; color: #fff; padding: 5px 10px; }}
+  
+  /* The custom arrow */
+  summary h2::after {{ content: '▼'; float: right; font-size: 0.8em; margin-top: 2px; }}
+  details[open] summary h2::after {{ content: '▲'; }}
   
   /* Link styling optimized for e-ink contrast */
   a {{ color: #000; text-decoration: underline; }}
@@ -174,7 +184,6 @@ html_content = f"""<!DOCTYPE html>
   
   p {{ margin: 5px 0; font-size: 1.1em; }}
   .status {{ text-align: center; font-size: 0.8em; font-style: italic; margin-bottom: 15px; font-weight: bold; }}
-  .region {{ border: 2px solid #000; margin-bottom: 15px; padding: 0; }}
   .region-content {{ padding: 10px; }}
 </style>
 </head>
@@ -182,28 +191,28 @@ html_content = f"""<!DOCTYPE html>
   <h1>Mountain Weather Dashboard</h1>
   <div class="status">Last automatically updated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</div>
 
-  <div class="region">
-    <h2><a href="{urls['mwis_se_highlands']}">Southeastern Highlands (MWIS)</a></h2>
+  <details class="region">
+    <summary><h2><a href="{urls['mwis_se_highlands']}">Southeastern Highlands (MWIS)</a></h2></summary>
     <div class="region-content">{data['mwis_se_highlands']}</div>
-  </div>
+  </details>
   
-  <div class="region">
-    <h2><a href="{urls['mwis_cairngorms']}">Cairngorms & Monadhliath (MWIS)</a></h2>
+  <details class="region">
+    <summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms & Monadhliath (MWIS)</a></h2></summary>
     <div class="region-content">{data['mwis_cairngorms']}</div>
-  </div>
+  </details>
   
-  <div class="region">
-    <h2><a href="{urls['mwis_west']}">West Highlands (MWIS)</a></h2>
+  <details class="region">
+    <summary><h2><a href="{urls['mwis_west']}">West Highlands (MWIS)</a></h2></summary>
     <div class="region-content">{data['mwis_west']}</div>
-  </div>
+  </details>
 
-  <div class="region">
-    <h2><a href="{urls['mwis_nw_highlands']}">Northwest Highlands (MWIS)</a></h2>
+  <details class="region">
+    <summary><h2><a href="{urls['mwis_nw_highlands']}">Northwest Highlands (MWIS)</a></h2></summary>
     <div class="region-content">{data['mwis_nw_highlands']}</div>
-  </div>
+  </details>
 
-  <div class="region">
-    <h2>SAIS Avalanche Conditions</h2>
+  <details class="region">
+    <summary><h2>SAIS Avalanche Conditions</h2></summary>
     <div class="region-content">
       <ul style='margin-top: 5px; margin-bottom: 15px; padding-left: 20px; font-size: 1.05em;'>
           <li style='margin-bottom: 4px;'><strong><a href="{urls['sais_n_cairngorms']}">Northern Cairngorms</a>:</strong> {data['sais_n_cairngorms']}</li>
@@ -212,7 +221,7 @@ html_content = f"""<!DOCTYPE html>
           <li style='margin-bottom: 4px;'><strong><a href="{urls['sais_glencoe']}">Glencoe</a>:</strong> {data['sais_glencoe']}</li>
       </ul>
     </div>
-  </div>
+  </details>
 </body>
 </html>"""
 
