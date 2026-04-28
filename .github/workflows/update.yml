@@ -36,6 +36,9 @@ jobs:
           git config --global user.email "action@github.com"
           git add -A
           
-          # The --allow-empty flag forces Git to succeed even if the weather hasn't changed!
           git commit --allow-empty -m "Auto-update forecast dashboard"
+          
+          # Download any manual changes you made while the bot was running
+          git pull --rebase
+          
           git push
