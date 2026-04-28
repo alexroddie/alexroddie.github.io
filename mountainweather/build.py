@@ -20,6 +20,7 @@ headers = {
 data = {}
 planning_outlook = "Planning outlook unavailable."
 
+# Helper to fix MWIS grammar
 def format_sentences(lines):
     if not lines: return ""
     cleaned = []
@@ -29,6 +30,14 @@ def format_sentences(lines):
         if line[-1] not in ".!?": line += "."
         cleaned.append(line)
     return " ".join(cleaned)
+
+# Helper for natural language date/time
+def get_natural_timestamp():
+    now = datetime.datetime.now()
+    day = now.day
+    suffix = 'th' if 11 <= day <= 13 else {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
+    time_str = now.strftime('%I.%M%p').lower().lstrip('0')
+    return now.strftime(f'%A, %B {day}{suffix} at {time_str}')
 
 # Scrape MWIS
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
@@ -102,11 +111,9 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
             if freezing_level: day_content += f"<li><strong>Freezing:</strong> {freezing_level}</li>"
             day_content += "</ul>"
 
-            # If it's Day 2 or 3, wrap it in a nested folding section
             if index > 0:
                 out_html += f"<details class='inner-day'><summary><strong>{date_label}</strong></summary><div class='inner-content'>{day_content}</div></details>"
             else:
-                # Day 1 remains visible immediately when the main region is unfolded
                 out_html += f"<div class='day-one'><strong>{date_label}:</strong> {day_content}</div>"
             
         data[key] = out_html
@@ -143,7 +150,6 @@ html_content = f"""<!DOCTYPE html>
   summary h2::after {{ content: '◀'; float: right; font-size: 0.8em; margin-top: 2px; }}
   details[open] summary h2::after {{ content: '▼'; }}
   
-  /* Inner day folding styles */
   details.inner-day {{ border-top: 1px dashed #000; margin-top: 10px; }}
   details.inner-day summary {{ background: #eee; color: #000; padding: 5px 10px; font-size: 1.1em; }}
   details.inner-day summary::after {{ content: '◀'; float: right; }}
@@ -153,7 +159,7 @@ html_content = f"""<!DOCTYPE html>
 
   a {{ color: #000; text-decoration: underline; }}
   h2 a {{ color: #fff; text-decoration: underline; text-decoration-style: dotted; }}
-  .status {{ text-align: center; font-size: 0.8em; font-style: italic; margin-bottom: 15px; font-weight: bold; }}
+  .status {{ text-align: center; font-size: 0.9em; font-style: italic; margin-bottom: 15px; }}
   .region-content {{ padding: 10px; }}
   ul {{ margin-top: 5px; padding-left: 20px; }}
   li {{ margin-bottom: 4px; font-size: 1.05em; }}
@@ -161,7 +167,7 @@ html_content = f"""<!DOCTYPE html>
 </head>
 <body>
   <h1>Mountain Weather Dashboard</h1>
-  <div class="status">Last updated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</div>
+  <div class="status">Updated {get_natural_timestamp()}</div>
 
   <div class="region">
     <h2>Planning Outlook (All Areas)</h2>
@@ -169,19 +175,19 @@ html_content = f"""<!DOCTYPE html>
   </div>
 
   <details class="region">
-    <summary><h2><a href="{urls['mwis_se_highlands']}">Southeastern Highlands (MWIS)</a></h2></summary>
+    <summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary>
     <div class="region-content">{data['mwis_se_highlands']}</div>
   </details>
   <details class="region">
-    <summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms & Monadhliath (MWIS)</a></h2></summary>
+    <summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms</a></h2></summary>
     <div class="region-content">{data['mwis_cairngorms']}</div>
   </details>
   <details class="region">
-    <summary><h2><a href="{urls['mwis_west']}">West Highlands (MWIS)</a></h2></summary>
+    <summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary>
     <div class="region-content">{data['mwis_west']}</div>
   </details>
   <details class="region">
-    <summary><h2><a href="{urls['mwis_nw_highlands']}">Northwest Highlands (MWIS)</a></h2></summary>
+    <summary><h2><a href="{urls['mwis_nw_highlands']}">NW Highlands</a></h2></summary>
     <div class="region-content">{data['mwis_nw_highlands']}</div>
   </details>
 
