@@ -13,7 +13,7 @@ urls = {
 }
 
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36'
 }
 
 data = {}
@@ -24,23 +24,84 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
         res = requests.get(urls[key], headers=headers, timeout=15)
         soup = BeautifulSoup(res.text, 'html.parser')
         
-        # Grab all text on the page and split into lines
+        # Grab all text and split into a clean list of lines
         text = soup.get_text(separator='\n')
         lines = [line.strip() for line in text.split('\n') if line.strip()]
         
-        headline = "Headline unavailable"
-        summary = "Summary unavailable"
+        days = []
+        current_day = None
+        current_section = None
         
-        # Scan lines to find the relevant text block
-        for i, line in enumerate(lines):
-            if "Headline for" in line:
-                if i + 1 < len(lines):
-                    headline = lines[i+1]
-            if "Summary for" in line:
-                if i + 1 < len(lines):
-                    summary = lines[i+1]
+        for line in lines:
+            # Trigger a new day block
+            if "Viewing Forecast For" in line:
+                if current_day:
+                    days.append(current_day)
+                current_day = {"date": "Today", "headline": [], "wind": [], "wet": [], "cloud": [], "temp": []}
+                current_section = "date_search"
+                continue
+                
+            if current_day is not None:
+                # Check for specific data headings
+                if "Headline for" in line:
+                    current_section = "headline"
+                    continue
+                elif "How windy?" in line:
+                    current_section = "wind"
+                    continue
+                elif "How Wet?" in line:
+                    current_section = "wet"
+                    continue
+                elif "Cloud on the hills?" in line:
+                    current_section = "cloud"
+                    continue
+                elif "How Cold?" in line:
+                    current_section = "temp"
+                    continue
+                # Ignore sections we don't want cluttering the paragraph
+                elif any(ignore_str in line for ignore_str in ["Summary for all mountain areas", "Effect of the wind", "Chance of cloud free", "Sunshine and air", "Freezing Level", "Planning Outlook"]):
+                    current_section = "ignore"
+                    continue
+                
+                # Append the text to the correct category
+                if current_section == "date_search":
+                    # Hunt for the day of the week to label the paragraph
+                    day_words = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Today"]
+                    for dw in day_words:
+                        if dw in line:
+                            current_day["date"] = dw
+                            current_section = "ignore"
+                            break
+                elif current_section and current_section != "ignore":
+                    current_day[current_section].append(line)
                     
-        data[key] = f"<div class='headline'>\"{headline}\"</div><div>{summary}</div>"
+        if current_day:
+            days.append(current_day)
+            
+        # Format the extracted data into natural language paragraphs
+        out_html = ""
+        for day in days[:2]: # Only process Day 1 and Day 2 (Today/Tomorrow)
+            date_label = day.get('date', 'Day')
+            headline = " ".join(day.get('headline', []))
+            wind = " ".join(day.get('wind', []))
+            wet = " ".join(day.get('wet', []))
+            cloud = " ".join(day.get('cloud', []))
+            temp = " ".join(day.get('temp', []))
+            
+            para = f"<strong>{date_label}:</strong> "
+            if headline:
+                para += f"<em>{headline}.</em> "
+            
+            parts = []
+            if wind: parts.append(f"<strong>Wind:</strong> {wind}")
+            if wet: parts.append(f"<strong>Wet:</strong> {wet}")
+            if cloud: parts.append(f"<strong>Cloud:</strong> {cloud}")
+            if temp: parts.append(f"<strong>Temp:</strong> {temp}")
+            
+            para += " ".join(parts)
+            out_html += f"<p style='margin-top:0; margin-bottom:12px; font-size:1.05em;'>{para}</p>"
+            
+        data[key] = out_html if out_html else "<div>Forecast data could not be parsed.</div>"
             
     except Exception as e:
         data[key] = f"Error fetching forecast: {str(e)}"
@@ -75,7 +136,6 @@ html_content = f"""<!DOCTYPE html>
   .status {{ text-align: center; font-size: 0.8em; font-style: italic; margin-bottom: 15px; font-weight: bold; }}
   .region {{ border: 2px solid #000; margin-bottom: 15px; padding: 0; }}
   .region-content {{ padding: 10px; }}
-  .headline {{ font-weight: bold; font-style: italic; margin-bottom: 10px; border-bottom: 1px dashed #000; padding-bottom: 5px; }}
 </style>
 </head>
 <body>
