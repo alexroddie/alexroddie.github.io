@@ -20,7 +20,6 @@ headers = {
 data = {}
 planning_outlook = "Planning outlook unavailable."
 
-# Helper to fix MWIS grammar
 def format_sentences(lines):
     if not lines: return ""
     cleaned = []
@@ -31,7 +30,6 @@ def format_sentences(lines):
         cleaned.append(line)
     return " ".join(cleaned)
 
-# Helper for natural language date/time
 def get_natural_timestamp():
     now = datetime.datetime.now()
     day = now.day
@@ -147,13 +145,16 @@ html_content = f"""<!DOCTYPE html>
   summary {{ list-style: none; cursor: pointer; outline: none; background: #000; display: block; }}
   summary::-webkit-details-marker {{ display: none; }}
   h2 {{ font-size: 1.3em; margin: 0; color: #fff; padding: 5px 10px; }}
-  summary h2::after {{ content: '◀'; float: right; font-size: 0.8em; margin-top: 2px; }}
-  details[open] summary h2::after {{ content: '▼'; }}
+  
+  /* Use Variation Selector \FE0E to force monochrome text rendering on mobile */
+  summary h2::after {{ content: '\\25C0\\FE0E'; float: right; font-size: 0.8em; margin-top: 2px; }}
+  details[open] summary h2::after {{ content: '\\25BC\\FE0E'; }}
   
   details.inner-day {{ border-top: 1px dashed #000; margin-top: 10px; }}
   details.inner-day summary {{ background: #eee; color: #000; padding: 5px 10px; font-size: 1.1em; }}
-  details.inner-day summary::after {{ content: '◀'; float: right; }}
-  details.inner-day[open] summary::after {{ content: '▼'; }}
+  details.inner-day summary::after {{ content: '\\25C0\\FE0E'; float: right; }}
+  details.inner-day[open] summary::after {{ content: '\\25BC\\FE0E'; }}
+  
   .inner-content {{ padding: 10px 0 0 0; }}
   .day-one {{ margin-bottom: 10px; }}
 
