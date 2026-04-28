@@ -5,10 +5,6 @@ on:
     - cron: '0 6,18 * * *' # Runs at 06:00 and 18:00 UTC daily
   workflow_dispatch: # Allows you to trigger it manually
 
-env:
-  # This silences the annoying Node 20 deprecation warning you saw in Image 3
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,31 +21,22 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: |
-          pip install requests beautifulsoup4
+        run: pip install requests beautifulsoup4
 
-      - name: Run scraper and build HTML
+      - name: Run Scraper
         run: |
-          # Automatically find build.py no matter what folder it is in
-          SCRIPT_PATH=$(find . -name "build.py" | head -n 1)
-          if [ -z "$SCRIPT_PATH" ]; then
-            echo "Could not find build.py! Please ensure it is in your repository."
-            exit 1
-          fi
-          # Navigate to wherever the script was found and run it
-          cd $(dirname "$SCRIPT_PATH")
-          python build.py
+          # Automatically find any Python file, navigate to its folder, and run it
+          SCRIPT_PATH=$(find . -iname "*.py" | head -n 1)
+          cd "$(dirname "$SCRIPT_PATH")"
+          python "$(basename "$SCRIPT_PATH")"
 
-      - name: Commit and push changes
+      - name: Commit and Push
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action Bot"
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
           git add -A
           
-          # Safely check if there are actually changes before trying to commit
-          if ! git diff-index --quiet HEAD; then
-            git commit -m "Auto-update forecast dashboard"
-            git push
-          else
-            echo "No changes detected. Skipping commit."
-          fi
+          # If the weather hasn't changed, this command safely exits with success instead of crashing
+          git commit -m "Auto-update forecast dashboard" || exit 0
+          
+          git push
