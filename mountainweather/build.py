@@ -6,6 +6,7 @@ urls = {
     'mwis_west': 'https://www.mwis.org.uk/forecasts/scottish/west-highlands/text',
     'mwis_cairngorms': 'https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text',
     'mwis_se_highlands': 'https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text',
+    'mwis_nw_highlands': 'https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text',
     'sais_n_cairngorms': 'https://www.sais.gov.uk/northern-cairngorms/',
     'sais_s_cairngorms': 'https://www.sais.gov.uk/southern-cairngorms/',
     'sais_lochaber': 'https://www.sais.gov.uk/lochaber/',
@@ -34,7 +35,7 @@ def format_sentences(lines):
     return " ".join(cleaned)
 
 # Scrape MWIS
-for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
+for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=15)
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -194,6 +195,11 @@ html_content = f"""<!DOCTYPE html>
   <div class="region">
     <h2><a href="{urls['mwis_west']}">West Highlands (MWIS)</a></h2>
     <div class="region-content">{data['mwis_west']}</div>
+  </div>
+
+  <div class="region">
+    <h2><a href="{urls['mwis_nw_highlands']}">Northwest Highlands (MWIS)</a></h2>
+    <div class="region-content">{data['mwis_nw_highlands']}</div>
   </div>
 
   <div class="region">
