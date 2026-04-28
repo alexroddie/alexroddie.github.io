@@ -90,7 +90,7 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
                 if val: content += f"<li><strong>{label}:</strong> {val}</li>"
             content += "</ul>"
             
-            if i > 0: out_html += f"<details class='inner-day'><summary><strong>{date_label}</strong></summary><div class='inner-content'>{content}</div></details>"
+            if i > 0: out_html += f"<details open class='inner-day'><summary><strong>{date_label}</strong></summary><div class='inner-content'>{content}</div></details>"
             else: out_html += f"<div class='day-one'><strong>{date_label}:</strong> {content}</div>"
         data[key] = out_html
     except Exception as e: data[key] = f"Error: {str(e)}"
