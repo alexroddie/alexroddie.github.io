@@ -9,30 +9,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Allows the bot to push the new HTML file
+      contents: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Updated to fix Node 20 warning
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 # Updated to fix Node 20 warning
         with:
           python-version: '3.10'
 
       - name: Install dependencies
         run: |
-          pip install cloudscraper beautifulsoup4
+          pip install requests beautifulsoup4
 
       - name: Run scraper and build HTML
-        run: |
-          cd mountainweather
-          python build.py
+        # IMPORTANT: Change "mountainweather" below if your folder has capital letters!
+        working-directory: ./mountainweather 
+        run: python build.py
 
       - name: Commit and push changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
-          git add mountainweather/index.html
+          git add .
           git commit -m "Auto-update forecast dashboard" || echo "No changes to commit"
           git push
