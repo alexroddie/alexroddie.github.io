@@ -5,6 +5,10 @@ on:
     - cron: '0 6,18 * * *' # Runs at 06:00 and 18:00 UTC daily
   workflow_dispatch: # Allows you to trigger it manually
 
+env:
+  # This silences the annoying Node 20 deprecation warning you saw in Image 3
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,10 +17,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # Updated to fix Node 20 warning
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5 # Updated to fix Node 20 warning
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -25,14 +29,27 @@ jobs:
           pip install requests beautifulsoup4
 
       - name: Run scraper and build HTML
-        # IMPORTANT: Change "mountainweather" below if your folder has capital letters!
-        working-directory: ./mountainweather 
-        run: python build.py
+        run: |
+          # Automatically find build.py no matter what folder it is in
+          SCRIPT_PATH=$(find . -name "build.py" | head -n 1)
+          if [ -z "$SCRIPT_PATH" ]; then
+            echo "Could not find build.py! Please ensure it is in your repository."
+            exit 1
+          fi
+          # Navigate to wherever the script was found and run it
+          cd $(dirname "$SCRIPT_PATH")
+          python build.py
 
       - name: Commit and push changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
-          git add .
-          git commit -m "Auto-update forecast dashboard" || echo "No changes to commit"
-          git push
+          git add -A
+          
+          # Safely check if there are actually changes before trying to commit
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Auto-update forecast dashboard"
+            git push
+          else
+            echo "No changes detected. Skipping commit."
+          fi
