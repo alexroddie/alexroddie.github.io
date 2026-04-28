@@ -117,9 +117,9 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
             if wind: day_content += f"<li><strong>Wind:</strong> {wind}</li>"
             if wet: day_content += f"<li><strong>Wet:</strong> {wet}</li>"
             if cloud: day_content += f"<li><strong>Cloud:</strong> {cloud}</li>"
-            if chance_cloud_free: day_content += f"<li><strong>Cloud-free:</strong> {chance_cloud_free}</li>"
+            if chance_cloud_free: day_content += f"<li><strong>Chance of cloud-free Munros:</strong> {chance_cloud_free}</li>"
             if temp: day_content += f"<li><strong>Temp:</strong> {temp}</li>"
-            if freezing_level: day_content += f"<li><strong>Freezing:</strong> {freezing_level}</li>"
+            if freezing_level: day_content += f"<li><strong>Freezing level:</strong> {freezing_level}</li>"
             day_content += "</ul>"
 
             if index > 0:
