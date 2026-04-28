@@ -142,6 +142,10 @@ html_content = f"""<!DOCTYPE html>
   <h1>Mountain Dashboard</h1>
   <div class="status">Last automatically updated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</div>
 
+  <div class="region"><h2>Southeastern Highlands (MWIS)</h2><div class="region-content">{data['mwis_se_highlands']}</div></div>
+  <div class="region"><h2>Cairngorms & Monadhliath (MWIS)</h2><div class="region-content">{data['mwis_cairngorms']}</div></div>
+  <div class="region"><h2>West Highlands (MWIS)</h2><div class="region-content">{data['mwis_west']}</div></div>
+
   <div class="region">
     <h2>SAIS Avalanche Conditions</h2>
     <div class="region-content">
@@ -151,10 +155,6 @@ html_content = f"""<!DOCTYPE html>
       <p><strong>Glencoe:</strong> {data['sais_glencoe']}</p>
     </div>
   </div>
-
-  <div class="region"><h2>West Highlands (MWIS)</h2><div class="region-content">{data['mwis_west']}</div></div>
-  <div class="region"><h2>Cairngorms & Monadhliath (MWIS)</h2><div class="region-content">{data['mwis_cairngorms']}</div></div>
-  <div class="region"><h2>Southeastern Highlands (MWIS)</h2><div class="region-content">{data['mwis_se_highlands']}</div></div>
 </body>
 </html>"""
 
