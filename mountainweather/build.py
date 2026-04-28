@@ -110,26 +110,32 @@ for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_gle
 html_content = f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><style>
   body {{ font-family: Georgia, serif; padding: 10px; line-height: 1.5; background: #fff; color: #000; }}
-  h1 {{ text-align: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; }}
+  h1 {{ text-align: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; line-height: 1.2; }}
   
   .region, details.region {{ border: 2px solid #000; margin-bottom: 20px; padding: 0; }}
-  h2 {{ background: #000; color: #fff; padding: 8px 12px; margin: 0; font-size: 1.25em; }}
   
-  /* Main Accordion Header */
-  summary {{ cursor: pointer; background: #000; display: block; outline: none; }}
+  /* CRITICAL: Constrain header height for Kindle */
+  h2 {{ 
+    background: #000; 
+    color: #fff; 
+    padding: 6px 12px; 
+    margin: 0 !important; 
+    font-size: 1.25em; 
+    line-height: 1.1; 
+    display: block;
+  }}
+  
+  summary {{ cursor: pointer; background: #000; display: block; outline: none; margin: 0; padding: 0; }}
   summary h2::after {{ content: '\\25C0\\FE0E'; float: right; font-size: 0.8em; margin-top: 2px; }}
   details[open] summary h2::after {{ content: '\\25BC\\FE0E'; }}
   
-  /* Content Gutters */
   .region-content {{ padding: 15px; }}
   .inner-content {{ padding: 12px 15px; }}
   .day-one {{ margin-bottom: 15px; }}
   
-  /* Inner Day Formatting */
   .inner-day {{ border-top: 1px dashed #000; margin-top: 15px; margin-left: -15px; margin-right: -15px; }}
-  .inner-day-header {{ background: #eee; color: #000; padding: 6px 15px; font-size: 1.1em; border-bottom: 1px solid #ddd; }}
+  .inner-day-header {{ background: #eee; color: #000; padding: 6px 15px; font-size: 1.1em; border-bottom: 1px solid #ddd; line-height: 1.2; }}
 
-  /* Typography and Lists */
   p {{ margin: 0 0 10px 0; }}
   ul {{ margin: 8px 0; padding-left: 22px; }}
   li {{ margin-bottom: 6px; }}
