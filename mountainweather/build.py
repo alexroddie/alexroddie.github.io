@@ -34,6 +34,7 @@ def get_natural_timestamp():
     suffix = 'th' if 11 <= day <= 13 else {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
     time_str = now.strftime('%I.%M%p').lower().lstrip('0')
     return now.strftime(f'%A, %B {day}{suffix} at {time_str}')
+
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=15)
@@ -80,21 +81,22 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
             headline = format_sentences(day.get('headline', []))
             
             content = ""
-            # Only print the headline paragraph (and its period) if text actually exists
             if headline:
                 content += f"<p style='margin-top:0; margin-bottom:5px;'><em>{headline.rstrip('.')}</em>.</p>"
-                
             content += "<ul style='margin-top: 5px; margin-bottom: 10px; padding-left: 20px;'>"
             for label, field in [("Wind", "wind"), ("Wet", "wet"), ("Cloud", "cloud"), ("Chance of cloud-free Munros", "chance_cloud_free"), ("Temp", "temp"), ("Freezing level", "freezing_level")]:
                 val = format_sentences(day.get(field, []))
                 if val: content += f"<li><strong>{label}:</strong> {val}</li>"
             content += "</ul>"
             
-            if i > 0: out_html += f"<details class='inner-day' open><summary><strong>{date_label}</strong></summary><div class='inner-content'>{content}</div></details>"
-            else: out_html += f"<div class='day-one'><strong>{date_label}:</strong> {content}</div>"
+            if i > 0: 
+                # Replaced details/summary with div classes for a non-folding but styled look
+                out_html += f"<div class='inner-day'><div class='inner-day-header'><strong>{date_label}</strong></div><div class='inner-content'>{content}</div></div>"
+            else: 
+                out_html += f"<div class='day-one'><strong>{date_label}:</strong> {content}</div>"
         data[key] = out_html
     except Exception as e: data[key] = f"Error: {str(e)}"
-    
+
 for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=15)
@@ -111,17 +113,24 @@ html_content = f"""<!DOCTYPE html>
   h1 {{ text-align: center; border-bottom: 3px solid #000; }}
   .region, details.region {{ border: 2px solid #000; margin-bottom: 15px; }}
   h2 {{ background: #000; color: #fff; padding: 5px 10px; margin: 0; font-size: 1.2em; }}
+  
+  /* Main Accordion Arrows */
   summary {{ cursor: pointer; background: #000; display: block; outline: none; }}
   summary h2::after {{ content: '\\25C0\\FE0E'; float: right; }}
   details[open] summary h2::after {{ content: '\\25BC\\FE0E'; }}
-  details.inner-day summary {{ background: #eee; color: #000; padding: 5px; border-top: 1px dashed #000; }}
-  details.inner-day summary::after {{ content: '\\25C0\\FE0E'; float: right; }}
-  details.inner-day[open] summary::after {{ content: '\\25BC\\FE0E'; }}
-  .region-content {{ padding: 10px; }}
+  
+  /* Inner Day Flat Styling (No Arrows) */
+  .inner-day {{ border-top: 1px dashed #000; margin-top: 10px; }}
+  .inner-day-header {{ background: #eee; color: #000; padding: 5px 10px; font-size: 1.1em; }}
+  .inner-content {{ padding: 10px; }}
+  .day-one {{ margin-bottom: 10px; }}
+
   .status {{ text-align: center; font-style: italic; font-size: 0.9em; }}
   a {{ color: inherit; }}
+  ul {{ margin-top: 5px; padding-left: 20px; }}
+  li {{ margin-bottom: 4px; }}
 </style></head><body>
-  <h1>Mountain Weather Dashboard</h1>
+  <h1>Mountain Dashboard</h1>
   <div class="status">Updated {get_natural_timestamp()}</div>
   <div class="region"><h2>Planning Outlook</h2><div class="region-content">{planning_outlook}</div></div>
   <details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
