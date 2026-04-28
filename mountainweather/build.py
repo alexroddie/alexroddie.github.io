@@ -18,6 +18,21 @@ headers = {
 
 data = {}
 
+# Helper function to fix MWIS grammar/punctuation
+def format_sentences(lines):
+    if not lines:
+        return ""
+    cleaned = []
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        # If the line doesn't end with standard punctuation, add a full stop
+        if line[-1] not in ".!?":
+            line += "."
+        cleaned.append(line)
+    return " ".join(cleaned)
+
 # Scrape MWIS
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
     try:
@@ -91,16 +106,20 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
         out_html = ""
         for day in days[:2]: # Only process Day 1 and Day 2 (Today/Tomorrow)
             date_label = day.get('date', 'Day')
-            headline = " ".join(day.get('headline', []))
-            wind = " ".join(day.get('wind', []))
-            wet = " ".join(day.get('wet', []))
-            cloud = " ".join(day.get('cloud', []))
-            chance_cloud_free = " ".join(day.get('chance_cloud_free', []))
-            temp = " ".join(day.get('temp', []))
-            freezing_level = " ".join(day.get('freezing_level', []))
+            
+            # Pass everything through our new grammar fixer
+            headline = format_sentences(day.get('headline', []))
+            wind = format_sentences(day.get('wind', []))
+            wet = format_sentences(day.get('wet', []))
+            cloud = format_sentences(day.get('cloud', []))
+            chance_cloud_free = format_sentences(day.get('chance_cloud_free', []))
+            temp = format_sentences(day.get('temp', []))
+            freezing_level = format_sentences(day.get('freezing_level', []))
             
             para = f"<strong>{date_label}:</strong>"
             if headline:
+                # Ensure the headline doesn't get a double period if it already has one
+                headline = headline.rstrip('.')
                 para += f" <em>{headline}.</em>"
             
             out_html += f"<p style='margin-top:0; margin-bottom:5px; font-size:1.05em;'>{para}</p>"
