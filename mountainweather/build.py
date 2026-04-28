@@ -37,7 +37,10 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
             if "Viewing Forecast For" in line:
                 if current_day:
                     days.append(current_day)
-                current_day = {"date": "Today", "headline": [], "wind": [], "wet": [], "cloud": [], "temp": []}
+                current_day = {
+                    "date": "Today", "headline": [], "wind": [], "wet": [], 
+                    "cloud": [], "chance_cloud_free": [], "temp": [], "freezing_level": []
+                }
                 current_section = "date_search"
                 continue
                 
@@ -55,11 +58,17 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
                 elif "Cloud on the hills?" in line:
                     current_section = "cloud"
                     continue
+                elif "Chance of cloud free" in line:
+                    current_section = "chance_cloud_free"
+                    continue
                 elif "How Cold?" in line:
                     current_section = "temp"
                     continue
+                elif "Freezing Level" in line:
+                    current_section = "freezing_level"
+                    continue
                 # Ignore sections we don't want cluttering the screen
-                elif any(ignore_str in line for ignore_str in ["Summary for all mountain areas", "Effect of the wind", "Chance of cloud free", "Sunshine and air", "Freezing Level", "Planning Outlook"]):
+                elif any(ignore_str in line for ignore_str in ["Summary for all mountain areas", "Effect of the wind", "Sunshine and air", "Planning Outlook"]):
                     current_section = "ignore"
                     continue
                 
@@ -86,7 +95,9 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
             wind = " ".join(day.get('wind', []))
             wet = " ".join(day.get('wet', []))
             cloud = " ".join(day.get('cloud', []))
+            chance_cloud_free = " ".join(day.get('chance_cloud_free', []))
             temp = " ".join(day.get('temp', []))
+            freezing_level = " ".join(day.get('freezing_level', []))
             
             para = f"<strong>{date_label}:</strong>"
             if headline:
@@ -95,12 +106,14 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
             out_html += f"<p style='margin-top:0; margin-bottom:5px; font-size:1.05em;'>{para}</p>"
             
             # Build the bulleted list if there is data
-            if wind or wet or cloud or temp:
+            if wind or wet or cloud or temp or chance_cloud_free or freezing_level:
                 out_html += "<ul style='margin-top: 5px; margin-bottom: 15px; padding-left: 20px; font-size: 1.05em;'>"
                 if wind: out_html += f"<li style='margin-bottom: 4px;'><strong>Wind:</strong> {wind}</li>"
                 if wet: out_html += f"<li style='margin-bottom: 4px;'><strong>Wet:</strong> {wet}</li>"
                 if cloud: out_html += f"<li style='margin-bottom: 4px;'><strong>Cloud:</strong> {cloud}</li>"
+                if chance_cloud_free: out_html += f"<li style='margin-bottom: 4px;'><strong>Cloud-free Munros:</strong> {chance_cloud_free}</li>"
                 if temp: out_html += f"<li style='margin-bottom: 4px;'><strong>Temp:</strong> {temp}</li>"
+                if freezing_level: out_html += f"<li style='margin-bottom: 4px;'><strong>Freezing Level:</strong> {freezing_level}</li>"
                 out_html += "</ul>"
             
         data[key] = out_html if out_html else "<div>Forecast data could not be parsed.</div>"
@@ -134,6 +147,11 @@ html_content = f"""<!DOCTYPE html>
   body {{ font-family: Georgia, serif; background: #fff; color: #000; margin: 0; padding: 10px; line-height: 1.4; }}
   h1 {{ font-size: 1.8em; border-bottom: 3px solid #000; padding-bottom: 5px; margin-top: 0; text-align: center; }}
   h2 {{ font-size: 1.3em; margin: 0 0 10px 0; background: #000; color: #fff; padding: 5px 10px; }}
+  
+  /* Link styling optimized for e-ink contrast */
+  a {{ color: #000; text-decoration: underline; }}
+  h2 a {{ color: #fff; text-decoration: underline; text-decoration-style: dotted; }}
+  
   p {{ margin: 5px 0; font-size: 1.1em; }}
   .status {{ text-align: center; font-size: 0.8em; font-style: italic; margin-bottom: 15px; font-weight: bold; }}
   .region {{ border: 2px solid #000; margin-bottom: 15px; padding: 0; }}
@@ -144,18 +162,29 @@ html_content = f"""<!DOCTYPE html>
   <h1>Mountain Weather Dashboard</h1>
   <div class="status">Last automatically updated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</div>
 
-  <div class="region"><h2>Southeastern Highlands (MWIS)</h2><div class="region-content">{data['mwis_se_highlands']}</div></div>
-  <div class="region"><h2>Cairngorms & Monadhliath (MWIS)</h2><div class="region-content">{data['mwis_cairngorms']}</div></div>
-  <div class="region"><h2>West Highlands (MWIS)</h2><div class="region-content">{data['mwis_west']}</div></div>
+  <div class="region">
+    <h2><a href="{urls['mwis_se_highlands']}">Southeastern Highlands (MWIS)</a></h2>
+    <div class="region-content">{data['mwis_se_highlands']}</div>
+  </div>
+  
+  <div class="region">
+    <h2><a href="{urls['mwis_cairngorms']}">Cairngorms & Monadhliath (MWIS)</a></h2>
+    <div class="region-content">{data['mwis_cairngorms']}</div>
+  </div>
+  
+  <div class="region">
+    <h2><a href="{urls['mwis_west']}">West Highlands (MWIS)</a></h2>
+    <div class="region-content">{data['mwis_west']}</div>
+  </div>
 
   <div class="region">
     <h2>SAIS Avalanche Conditions</h2>
     <div class="region-content">
       <ul style='margin-top: 5px; margin-bottom: 15px; padding-left: 20px; font-size: 1.05em;'>
-          <li style='margin-bottom: 4px;'><strong>Northern Cairngorms:</strong> {data['sais_n_cairngorms']}</li>
-          <li style='margin-bottom: 4px;'><strong>Southern Cairngorms:</strong> {data['sais_s_cairngorms']}</li>
-          <li style='margin-bottom: 4px;'><strong>Lochaber:</strong> {data['sais_lochaber']}</li>
-          <li style='margin-bottom: 4px;'><strong>Glencoe:</strong> {data['sais_glencoe']}</li>
+          <li style='margin-bottom: 4px;'><strong><a href="{urls['sais_n_cairngorms']}">Northern Cairngorms</a>:</strong> {data['sais_n_cairngorms']}</li>
+          <li style='margin-bottom: 4px;'><strong><a href="{urls['sais_s_cairngorms']}">Southern Cairngorms</a>:</strong> {data['sais_s_cairngorms']}</li>
+          <li style='margin-bottom: 4px;'><strong><a href="{urls['sais_lochaber']}">Lochaber</a>:</strong> {data['sais_lochaber']}</li>
+          <li style='margin-bottom: 4px;'><strong><a href="{urls['sais_glencoe']}">Glencoe</a>:</strong> {data['sais_glencoe']}</li>
       </ul>
     </div>
   </div>
