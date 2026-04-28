@@ -175,8 +175,8 @@ html_content = f"""<!DOCTYPE html>
   h2 {{ font-size: 1.3em; margin: 0; color: #fff; padding: 5px 10px; }}
   
   /* The custom arrow */
-  summary h2::after {{ content: '▼'; float: right; font-size: 0.8em; margin-top: 2px; }}
-  details[open] summary h2::after {{ content: '▲'; }}
+  summary h2::after {{ content: '◀'; float: right; font-size: 0.8em; margin-top: 2px; }}
+  details[open] summary h2::after {{ content: '▼'; }}
   
   /* Link styling optimized for e-ink contrast */
   a {{ color: #000; text-decoration: underline; }}
