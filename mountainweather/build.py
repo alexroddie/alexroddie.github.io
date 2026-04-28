@@ -121,7 +121,7 @@ html_content = f"""<!DOCTYPE html>
   .status {{ text-align: center; font-style: italic; font-size: 0.9em; }}
   a {{ color: inherit; }}
 </style></head><body>
-  <h1>Mountain Dashboard</h1>
+  <h1>Mountain Weather Dashboard</h1>
   <div class="status">Updated {get_natural_timestamp()}</div>
   <div class="region"><h2>Planning Outlook</h2><div class="region-content">{planning_outlook}</div></div>
   <details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
