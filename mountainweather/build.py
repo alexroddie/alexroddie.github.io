@@ -24,12 +24,15 @@ def format_text(lines):
             cleaned.append(l if l[-1] in ".!?" else l + ".")
     return " ".join(cleaned)
 
-# 1. Scrape Synoptic Chart
+# 1. Scrape Synoptic Chart (Broadened search)
 try:
     res = requests.get(urls['mwis_synoptic'], headers=headers, timeout=10)
     soup = BeautifulSoup(res.text, 'html.parser')
-    img = soup.find('img', alt=lambda x: x and 'Today' in x) or soup.select_one('.chart-container img')
-    if img: synoptic_url = "https://www.mwis.org.uk" + img['src'] if img['src'].startswith('/') else img['src']
+    for img in soup.find_all('img'):
+        src = img.get('src', '')
+        if ('chart' in src.lower() or 'synoptic' in src.lower()) and 'logo' not in src.lower():
+            synoptic_url = "https://www.mwis.org.uk" + src if src.startswith('/') else src
+            break
 except: pass
 
 # 2. Scrape MWIS Regions
@@ -98,8 +101,10 @@ for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_gle
 # 4. Generate HTML
 now = datetime.datetime.now()
 suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
-ts = now.strftime(f'%A, %B {now.day}{suff} at %I.%M%p').lower().replace('at 0', 'at ')
+time_str = now.strftime('%I.%M%p').lower().lstrip('0')
+ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 
+# Synoptic block generated dynamically if URL is found
 chart = f'<div style="text-align:center;margin-bottom:20px;border:1px solid #000;"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></div>' if synoptic_url else ""
 
 tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
