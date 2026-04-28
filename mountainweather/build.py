@@ -18,6 +18,7 @@ headers = {
 }
 
 data = {}
+planning_outlook = "Planning outlook unavailable."
 
 # Helper function to fix MWIS grammar/punctuation
 def format_sentences(lines):
@@ -44,6 +45,24 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         text = soup.get_text(separator='\n')
         lines = [line.strip() for line in text.split('\n') if line.strip()]
         
+        # --- EXTRACT PLANNING OUTLOOK ONCE ---
+        if planning_outlook == "Planning outlook unavailable.":
+            capturing_outlook = False
+            outlook_lines = []
+            for line in lines:
+                if "Planning Outlook" in line or "Planning outlook" in line:
+                    capturing_outlook = True
+                    continue
+                if capturing_outlook:
+                    # Stop capturing when we hit the footer information
+                    if "Issued at" in line or "Forecast issued" in line or "mwis.org.uk" in line.lower():
+                        break
+                    if line:
+                        outlook_lines.append(line)
+            if outlook_lines:
+                planning_outlook = format_sentences(outlook_lines)
+        # -------------------------------------
+
         days = []
         current_day = None
         current_section = None
@@ -83,7 +102,7 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
                 elif "Freezing Level" in line:
                     current_section = "freezing_level"
                     continue
-                # Ignore sections we don't want cluttering the screen
+                # Ignore sections we don't want cluttering the daily blocks
                 elif any(ignore_str in line for ignore_str in ["Summary for all mountain areas", "Effect of the wind", "Sunshine and air", "Planning Outlook"]):
                     current_section = "ignore"
                     continue
@@ -105,7 +124,8 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
             
         # Format the extracted data into a headline and a bulleted list
         out_html = ""
-        for day in days[:2]: # Only process Day 1 and Day 2 (Today/Tomorrow)
+        # GRAB 3 DAYS INSTEAD OF 2
+        for day in days[:3]: 
             date_label = day.get('date', 'Day')
             
             # Pass everything through our new grammar fixer
@@ -167,8 +187,13 @@ html_content = f"""<!DOCTYPE html>
   body {{ font-family: Georgia, serif; background: #fff; color: #000; margin: 0; padding: 10px; line-height: 1.4; }}
   h1 {{ font-size: 1.8em; border-bottom: 3px solid #000; padding-bottom: 5px; margin-top: 0; text-align: center; }}
   
+  /* Generic Region Styles */
+  .region, details.region {{ border: 2px solid #000; margin-bottom: 15px; padding: 0; }}
+  
+  /* Non-folding headers need explicit background */
+  div.region h2 {{ background: #000; }}
+  
   /* Folding Section Styles */
-  details.region {{ border: 2px solid #000; margin-bottom: 15px; padding: 0; }}
   summary {{ list-style: none; cursor: pointer; outline: none; background: #000; display: block; }}
   summary::-webkit-details-marker {{ display: none; }} /* Hides the default browser arrow */
   
@@ -190,6 +215,13 @@ html_content = f"""<!DOCTYPE html>
 <body>
   <h1>Mountain Weather Dashboard</h1>
   <div class="status">Last automatically updated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</div>
+
+  <div class="region">
+    <h2>Planning Outlook (All Areas)</h2>
+    <div class="region-content">
+      <p>{planning_outlook}</p>
+    </div>
+  </div>
 
   <details class="region">
     <summary><h2><a href="{urls['mwis_se_highlands']}">Southeastern Highlands (MWIS)</a></h2></summary>
