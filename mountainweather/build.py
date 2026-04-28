@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 
+# 1. Configuration: URLs for the data sources
 urls = {
     'mwis_west': 'https://www.mwis.org.uk/forecasts/scottish/west-highlands/text',
     'mwis_cairngorms': 'https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text',
@@ -20,16 +21,23 @@ headers = {
 data = {}
 planning_outlook = "Planning outlook unavailable."
 
+# 2. Helper: Clean grammar and remove redundant MWIS "question" headers
 def format_sentences(lines):
     if not lines: return ""
     cleaned = []
+    ignore_phrases = [
+        "how windy?", "how wet?", "cloud on the hills?", 
+        "how cold?", "freezing level", "headline for", "chance of cloud free"
+    ]
     for line in lines:
         line = line.strip()
-        if not line: continue
+        if not line or any(p in line.lower() for p in ignore_phrases): 
+            continue
         if line[-1] not in ".!?": line += "."
         cleaned.append(line)
     return " ".join(cleaned)
 
+# 3. Helper: Generate the natural language date/time for the header
 def get_natural_timestamp():
     now = datetime.datetime.now()
     day = now.day
@@ -37,7 +45,7 @@ def get_natural_timestamp():
     time_str = now.strftime('%I.%M%p').lower().lstrip('0')
     return now.strftime(f'%A, %B {day}{suffix} at {time_str}')
 
-# Scrape MWIS
+# 4. Scrape MWIS Regions
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=15)
@@ -45,15 +53,16 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         text = soup.get_text(separator='\n')
         lines = [line.strip() for line in text.split('\n') if line.strip()]
         
+        # Pull Planning Outlook once
         if planning_outlook == "Planning outlook unavailable.":
             capturing_outlook = False
             outlook_lines = []
             for line in lines:
-                if "Planning Outlook" in line or "Planning outlook" in line:
+                if "planning outlook" in line.lower():
                     capturing_outlook = True
                     continue
                 if capturing_outlook:
-                    if "Issued at" in line or "Forecast issued" in line or "mwis.org.uk" in line.lower(): break
+                    if any(x in line.lower() for x in ["issued at", "forecast issued", "mwis.org.uk"]): break
                     if line: outlook_lines.append(line)
             if outlook_lines: planning_outlook = format_sentences(outlook_lines)
 
@@ -67,15 +76,18 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
                 current_day = {"date": "Today", "headline": [], "wind": [], "wet": [], "cloud": [], "chance_cloud_free": [], "temp": [], "freezing_level": []}
                 current_section = "date_search"
                 continue
+            
             if current_day is not None:
-                if "Headline for" in line: current_section = "headline"
-                elif "How windy?" in line: current_section = "wind"
-                elif "How Wet?" in line: current_section = "wet"
-                elif "Cloud on the hills?" in line: current_section = "cloud"
-                elif "Chance of cloud free" in line: current_section = "chance_cloud_free"
-                elif "How Cold?" in line: current_section = "temp"
-                elif "Freezing Level" in line: current_section = "freezing_level"
-                elif any(x in line for x in ["Summary", "Effect", "Sunshine", "Planning"]): current_section = "ignore"
+                if "Headline for" in line: current_section = "headline"; continue
+                elif "How windy?" in line: current_section = "wind"; continue
+                elif "How Wet?" in line: current_section = "wet"; continue
+                elif "Cloud on the hills?" in line: current_section = "cloud"; continue
+                elif "Chance of cloud free" in line: current_section = "chance_cloud_free"; continue
+                elif "How Cold?" in line: current_section = "temp"; continue
+                elif "Freezing Level" in line: current_section = "freezing_level"; continue
+                elif any(x in line for x in ["Summary", "Effect", "Sunshine", "Planning"]): 
+                    current_section = "ignore"
+                    continue
                 
                 if current_section == "date_search":
                     day_words = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Today"]
@@ -86,6 +98,7 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
                             break
                 elif current_section and current_section != "ignore":
                     current_day[current_section].append(line)
+                    
         if current_day: days.append(current_day)
             
         out_html = ""
@@ -118,7 +131,7 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
     except Exception as e:
         data[key] = f"Error: {str(e)}"
 
-# Scrape SAIS
+# 5. Scrape SAIS Regions
 for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=15)
@@ -127,10 +140,10 @@ for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_gle
         if "finished for the winter" in text_content: data[key] = "Reporting finished for the winter season."
         else:
             hazard = soup.select_one('.hazard-level h2, .forecast-text p')
-            data[key] = hazard.text.strip() if hazard else "Hazard not found."
+            data[key] = hazard.text.strip() if hazard else "Hazard data not found."
     except Exception as e: data[key] = f"Error: {str(e)}"
 
-# Generate HTML
+# 6. Generate the Dashboard HTML
 html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -146,7 +159,7 @@ html_content = f"""<!DOCTYPE html>
   summary::-webkit-details-marker {{ display: none; }}
   h2 {{ font-size: 1.3em; margin: 0; color: #fff; padding: 5px 10px; }}
   
-  /* Use Variation Selector \FE0E to force monochrome text rendering on mobile */
+  /* Monochrome arrows fix using Variation Selector-15 \\FE0E */
   summary h2::after {{ content: '\\25C0\\FE0E'; float: right; font-size: 0.8em; margin-top: 2px; }}
   details[open] summary h2::after {{ content: '\\25BC\\FE0E'; }}
   
