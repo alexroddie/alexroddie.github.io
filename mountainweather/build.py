@@ -1,4 +1,4 @@
-import requests
+import cloudscraper
 from bs4 import BeautifulSoup
 import datetime
 
@@ -13,40 +13,62 @@ urls = {
     'sais_glencoe': 'https://www.sais.gov.uk/glencoe/'
 }
 
-headers = {'User-Agent': 'Mozilla/5.0'}
+# Use cloudscraper to bypass Cloudflare/Bot-protection that blocks standard GitHub Action IPs
+scraper = cloudscraper.create_scraper()
 data = {}
 
 # Scrape MWIS
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
     try:
-        res = requests.get(urls[key], headers=headers, timeout=10)
+        res = scraper.get(urls[key], timeout=15)
         soup = BeautifulSoup(res.text, 'html.parser')
         
-        # Find Headline
-        headline_tag = soup.find(lambda tag: tag.name == "h3" and "Headline" in tag.text)
-        headline = headline_tag.find_next_sibling('p').text.strip() if headline_tag else "Headline unavailable"
+        # Robust Text Parsing: Ignores HTML tags and just grabs raw text line-by-line
+        text_content = soup.get_text(separator='\n')
+        lines = [line.strip() for line in text_content.split('\n') if line.strip()]
         
-        # Find Summary
-        summary_tag = soup.find(lambda tag: tag.name == "h3" and "Summary" in tag.text)
-        summary = summary_tag.find_next_sibling('p').text.strip() if summary_tag else "Summary unavailable"
+        headline = "Headline unavailable"
+        summary = "Summary unavailable"
         
-        data[key] = f"<div class='headline'>\"{headline}\"</div><div>{summary}</div>"
-    except Exception:
-        data[key] = "Forecast currently unavailable."
+        for i, line in enumerate(lines):
+            if "Headline for" in line:
+                if ":" in line and len(line.split(":", 1)[1].strip()) > 0:
+                    headline = line.split(":", 1)[1].strip()
+                elif i + 1 < len(lines):
+                    headline = lines[i+1]
+                break
+                
+        for i, line in enumerate(lines):
+            if "Summary for" in line:
+                if ":" in line and len(line.split(":", 1)[1].strip()) > 0:
+                    summary = line.split(":", 1)[1].strip()
+                elif i + 1 < len(lines):
+                    summary = lines[i+1]
+                break
+        
+        # Add actual error visibility just in case it still fails
+        if headline == "Headline unavailable" and summary == "Summary unavailable":
+            data[key] = f"<div><strong>Could not parse.</strong> The scraper was blocked or page changed.</div>"
+        else:
+            data[key] = f"<div class='headline'>\"{headline}\"</div><div>{summary}</div>"
+            
+    except Exception as e:
+        data[key] = f"Error fetching forecast: {str(e)}"
 
 # Scrape SAIS
 for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe']:
     try:
-        res = requests.get(urls[key], headers=headers, timeout=10)
+        res = scraper.get(urls[key], timeout=15)
         soup = BeautifulSoup(res.text, 'html.parser')
+        text_content = soup.get_text(separator='\n')
         
-        if "finished for the winter" in res.text:
+        if "finished for the winter" in text_content.lower():
             data[key] = "Reporting finished for the winter season."
         else:
             hazard = soup.select_one('.hazard-level h2, .forecast-text p')
             data[key] = hazard.text.strip() if hazard else "Live hazard data not found."
-    except Exception:
-         data[key] = "Report unavailable."
+    except Exception as e:
+         data[key] = f"Report unavailable. Error: {str(e)}"
 
 # Generate HTML
 html_content = f"""<!DOCTYPE html>
