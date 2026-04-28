@@ -7,6 +7,7 @@ urls = {
     'mwis_cairngorms': 'https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text',
     'mwis_se_highlands': 'https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text',
     'mwis_nw_highlands': 'https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text',
+    'mwis_synoptic': 'https://www.mwis.org.uk/forecasts/synoptic-charts',
     'sais_n_cairngorms': 'https://www.sais.gov.uk/northern-cairngorms/',
     'sais_s_cairngorms': 'https://www.sais.gov.uk/southern-cairngorms/',
     'sais_lochaber': 'https://www.sais.gov.uk/lochaber/',
@@ -16,6 +17,7 @@ urls = {
 headers = {'User-Agent': 'Mozilla/5.0'}
 data = {}
 planning_outlook = "Planning outlook unavailable."
+synoptic_chart_url = None
 
 def format_sentences(lines):
     if not lines: return ""
@@ -35,7 +37,18 @@ def get_natural_timestamp():
     time_str = now.strftime('%I.%M%p').lower().lstrip('0')
     return now.strftime(f'%A, %B {day}{suffix} at {time_str}')
 
+# 1. Scrape Synoptic Chart
+try:
+    res = requests.get(urls['mwis_synoptic'], headers=headers, timeout=15)
+    soup = BeautifulSoup(res.text, 'html.parser')
+    # Find the 'Today' image. Usually the first image in the chart-container or similar
+    chart_img = soup.find('img', alt=lambda x: x and 'Today' in x) or soup.select_one('.chart-container img')
+    if chart_img and chart_img.get('src'):
+        synoptic_chart_url = "https://www.mwis.org.uk" + chart_img.get('src') if chart_img.get('src').startswith('/') else chart_img.get('src')
+except:
+    synoptic_chart_url = None
 
+# 2. Scrape MWIS Regions
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=15)
@@ -81,23 +94,18 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
             date_label = day.get('date', 'Day')
             headline = format_sentences(day.get('headline', []))
             content = ""
-            if headline:
-                content += f"<p style='margin-top:0; margin-bottom:8px;'><em>{headline.rstrip('.')}</em>.</p>"
+            if headline: content += f"<p style='margin-top:0; margin-bottom:8px;'><em>{headline.rstrip('.')}</em>.</p>"
             content += "<ul>"
-            for label, field in [("Wind", "wind"), ("Wet", "wet"), ("Cloud", "cloud"), ("Chance of cloud-free Munros", "chance_cloud_free"), ("Temp", "temp"), ("Freezing level", "freezing_level")]:
-                val = format_sentences(day.get(field, []))
+            for label, fld in [("Wind", "wind"), ("Wet", "wet"), ("Cloud", "cloud"), ("Chance of cloud-free Munros", "chance_cloud_free"), ("Temp", "temp"), ("Freezing level", "freezing_level")]:
+                val = format_sentences(day.get(fld, []))
                 if val: content += f"<li><strong>{label}:</strong> {val}</li>"
             content += "</ul>"
-            
-            if i > 0: 
-                out_html += f"<div class='inner-day'><div class='inner-day-header'><strong>{date_label}</strong></div><div class='inner-content'>{content}</div></div>"
-            else: 
-                out_html += f"<div class='day-one'><strong>{date_label}</strong>{content}</div>"
+            if i > 0: out_html += f"<div class='inner-day'><div class='inner-day-header'><strong>{date_label}</strong></div><div class='inner-content'>{content}</div></div>"
+            else: out_html += f"<div class='day-one'><strong>{date_label}</strong>{content}</div>"
         data[key] = out_html
     except Exception as e: data[key] = f"Error: {str(e)}"
 
-
-for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe']:
+    for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=15)
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -107,55 +115,35 @@ for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_gle
             data[key] = h.text.strip() if h else "Hazard data not found."
     except: data[key] = "Error fetching SAIS."
 
+# Synoptic block
+synoptic_block = f'<div style="text-align:center; margin-bottom:20px; border:1px solid #000;"><img src="{synoptic_chart_url}" style="max-width:100%; height:auto; display:block; margin:0 auto;" /></div>' if synoptic_chart_url else ""
+
 html_content = f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><style>
   body {{ font-family: Georgia, serif; padding: 10px; line-height: 1.5; background: #fff; color: #000; }}
-  h1 {{ text-align: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; line-height: 1.2; }}
-  
+  h1 {{ text-align: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; line-height: 1.1; }}
   .region, details.region {{ border: 2px solid #000; margin-bottom: 20px; padding: 0; }}
-  
-  /* CRITICAL: Constrain header height for Kindle */
-  h2 {{ 
-    background: #000; 
-    color: #fff; 
-    padding: 6px 12px; 
-    margin: 0 !important; 
-    font-size: 1.25em; 
-    line-height: 1.1; 
-    display: block;
-  }}
-  
+  h2 {{ background: #000; color: #fff; padding: 6px 12px; margin: 0 !important; font-size: 1.25em; line-height: 1.1; display: block; }}
   summary {{ cursor: pointer; background: #000; display: block; outline: none; margin: 0; padding: 0; }}
   summary h2::after {{ content: '\\25C0\\FE0E'; float: right; font-size: 0.8em; margin-top: 2px; }}
   details[open] summary h2::after {{ content: '\\25BC\\FE0E'; }}
-  
   .region-content {{ padding: 15px; }}
-  .inner-content {{ padding: 12px 15px; }}
-  .day-one {{ margin-bottom: 15px; }}
-  
   .inner-day {{ border-top: 1px dashed #000; margin-top: 15px; margin-left: -15px; margin-right: -15px; }}
   .inner-day-header {{ background: #eee; color: #000; padding: 6px 15px; font-size: 1.1em; border-bottom: 1px solid #ddd; line-height: 1.2; }}
-
   p {{ margin: 0 0 10px 0; }}
   ul {{ margin: 8px 0; padding-left: 22px; }}
   li {{ margin-bottom: 6px; }}
-  
   .status {{ text-align: center; font-style: italic; font-size: 0.9em; margin-bottom: 20px; color: #444; }}
   a {{ color: inherit; text-decoration: underline; }}
 </style></head><body>
   <h1>Mountain Dashboard</h1>
   <div class="status">Updated {get_natural_timestamp()}</div>
-  
-  <div class="region">
-    <h2>Planning Outlook</h2>
-    <div class="region-content"><p>{planning_outlook}</p></div>
-  </div>
-  
+  <div class="region"><h2>Planning Outlook</h2><div class="region-content"><p>{planning_outlook}</p></div></div>
+  {synoptic_block}
   <details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
   <details class="region"><summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms</a></h2></summary><div class="region-content">{data['mwis_cairngorms']}</div></details>
   <details class="region"><summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary><div class="region-content">{data['mwis_west']}</div></details>
   <details class="region"><summary><h2><a href="{urls['mwis_nw_highlands']}">NW Highlands</a></h2></summary><div class="region-content">{data['mwis_nw_highlands']}</div></details>
-  
   <details class="region"><summary><h2>SAIS Avalanche</h2></summary><div class="region-content"><ul>
     <li><strong>N Cairngorms:</strong> {data['sais_n_cairngorms']}</li>
     <li><strong>S Cairngorms:</strong> {data['sais_s_cairngorms']}</li>
