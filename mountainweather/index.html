@@ -12,13 +12,16 @@
   summary { list-style: none; cursor: pointer; outline: none; background: #000; display: block; }
   summary::-webkit-details-marker { display: none; }
   h2 { font-size: 1.3em; margin: 0; color: #fff; padding: 5px 10px; }
-  summary h2::after { content: '◀'; float: right; font-size: 0.8em; margin-top: 2px; }
-  details[open] summary h2::after { content: '▼'; }
+  
+  /* Use Variation Selector \FE0E to force monochrome text rendering on mobile */
+  summary h2::after { content: '\25C0\FE0E'; float: right; font-size: 0.8em; margin-top: 2px; }
+  details[open] summary h2::after { content: '\25BC\FE0E'; }
   
   details.inner-day { border-top: 1px dashed #000; margin-top: 10px; }
   details.inner-day summary { background: #eee; color: #000; padding: 5px 10px; font-size: 1.1em; }
-  details.inner-day summary::after { content: '◀'; float: right; }
-  details.inner-day[open] summary::after { content: '▼'; }
+  details.inner-day summary::after { content: '\25C0\FE0E'; float: right; }
+  details.inner-day[open] summary::after { content: '\25BC\FE0E'; }
+  
   .inner-content { padding: 10px 0 0 0; }
   .day-one { margin-bottom: 10px; }
 
@@ -32,7 +35,7 @@
 </head>
 <body>
   <h1>Mountain Weather Dashboard</h1>
-  <div class="status">Updated Tuesday, April 28th at 2.57pm</div>
+  <div class="status">Updated Tuesday, April 28th at 3.05pm</div>
 
   <div class="region">
     <h2>Planning Outlook (All Areas)</h2>
