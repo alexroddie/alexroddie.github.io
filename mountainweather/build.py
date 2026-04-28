@@ -1,5 +1,6 @@
 import requests, datetime
 from bs4 import BeautifulSoup
+from zoneinfo import ZoneInfo
 
 urls = {
     'mwis_west': 'https://www.mwis.org.uk/forecasts/scottish/west-highlands/text',
@@ -24,7 +25,7 @@ def format_text(lines):
             cleaned.append(l if l[-1] in ".!?" else l + ".")
     return " ".join(cleaned)
 
-# 1. Scrape Synoptic Chart (Broadened search)
+# 1. Scrape Synoptic Chart
 try:
     res = requests.get(urls['mwis_synoptic'], headers=headers, timeout=10)
     soup = BeautifulSoup(res.text, 'html.parser')
@@ -98,14 +99,16 @@ for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_gle
             data[key] = h.text.strip() if h else "No data."
     except: data[key] = "Error."
 
+
 # 4. Generate HTML
-now = datetime.datetime.now()
+# Force UK time (BST/GMT) instead of GitHub's default UTC
+now = datetime.datetime.now(ZoneInfo("Europe/London"))
 suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
 time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 
-# Synoptic block generated dynamically if URL is found
-chart = f'<div style="text-align:center;margin-bottom:20px;border:1px solid #000;"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></div>' if synoptic_url else ""
+# Border removed, centered
+chart = f'<div style="text-align:center;margin-bottom:20px;"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></div>' if synoptic_url else ""
 
 tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;}}
@@ -122,8 +125,8 @@ p{{margin:0 0 10px 0;}}ul{{margin:8px 0;padding-left:22px;}}li{{margin-bottom:6p
 .status{{text-align:center;font-style:italic;font-size:0.9em;margin-bottom:20px;color:#444;}}
 a{{color:inherit;text-decoration:underline;}}</style></head><body>
 <h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
-<div class="region"><h2>Planning Outlook</h2><div class="region-content"><p>{planning_outlook}</p></div></div>
 {chart}
+<div class="region"><h2>Planning Outlook</h2><div class="region-content"><p>{planning_outlook}</p></div></div>
 <details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms</a></h2></summary><div class="region-content">{data['mwis_cairngorms']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary><div class="region-content">{data['mwis_west']}</div></details>
