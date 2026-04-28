@@ -58,14 +58,14 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
                 elif "How Cold?" in line:
                     current_section = "temp"
                     continue
-                # Ignore sections we don't want cluttering the paragraph
+                # Ignore sections we don't want cluttering the screen
                 elif any(ignore_str in line for ignore_str in ["Summary for all mountain areas", "Effect of the wind", "Chance of cloud free", "Sunshine and air", "Freezing Level", "Planning Outlook"]):
                     current_section = "ignore"
                     continue
                 
                 # Append the text to the correct category
                 if current_section == "date_search":
-                    # Hunt for the day of the week to label the paragraph
+                    # Hunt for the day of the week to label the forecast
                     day_words = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Today"]
                     for dw in day_words:
                         if dw in line:
@@ -78,7 +78,7 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
         if current_day:
             days.append(current_day)
             
-        # Format the extracted data into natural language paragraphs
+        # Format the extracted data into a headline and a bulleted list
         out_html = ""
         for day in days[:2]: # Only process Day 1 and Day 2 (Today/Tomorrow)
             date_label = day.get('date', 'Day')
@@ -88,18 +88,20 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands']:
             cloud = " ".join(day.get('cloud', []))
             temp = " ".join(day.get('temp', []))
             
-            para = f"<strong>{date_label}:</strong> "
+            para = f"<strong>{date_label}:</strong>"
             if headline:
-                para += f"<em>{headline}.</em> "
+                para += f" <em>{headline}.</em>"
             
-            parts = []
-            if wind: parts.append(f"<strong>Wind:</strong> {wind}")
-            if wet: parts.append(f"<strong>Wet:</strong> {wet}")
-            if cloud: parts.append(f"<strong>Cloud:</strong> {cloud}")
-            if temp: parts.append(f"<strong>Temp:</strong> {temp}")
+            out_html += f"<p style='margin-top:0; margin-bottom:5px; font-size:1.05em;'>{para}</p>"
             
-            para += " ".join(parts)
-            out_html += f"<p style='margin-top:0; margin-bottom:12px; font-size:1.05em;'>{para}</p>"
+            # Build the bulleted list if there is data
+            if wind or wet or cloud or temp:
+                out_html += "<ul style='margin-top: 5px; margin-bottom: 15px; padding-left: 20px; font-size: 1.05em;'>"
+                if wind: out_html += f"<li style='margin-bottom: 4px;'><strong>Wind:</strong> {wind}</li>"
+                if wet: out_html += f"<li style='margin-bottom: 4px;'><strong>Wet:</strong> {wet}</li>"
+                if cloud: out_html += f"<li style='margin-bottom: 4px;'><strong>Cloud:</strong> {cloud}</li>"
+                if temp: out_html += f"<li style='margin-bottom: 4px;'><strong>Temp:</strong> {temp}</li>"
+                out_html += "</ul>"
             
         data[key] = out_html if out_html else "<div>Forecast data could not be parsed.</div>"
             
@@ -129,7 +131,7 @@ html_content = f"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mountain Weather Dashboard</title>
 <style>
-  body {{ font-family: sans-serif; background: #fff; color: #000; margin: 0; padding: 10px; line-height: 1.4; }}
+  body {{ font-family: Georgia, serif; background: #fff; color: #000; margin: 0; padding: 10px; line-height: 1.4; }}
   h1 {{ font-size: 1.8em; border-bottom: 3px solid #000; padding-bottom: 5px; margin-top: 0; text-align: center; }}
   h2 {{ font-size: 1.3em; margin: 0 0 10px 0; background: #000; color: #fff; padding: 5px 10px; }}
   p {{ margin: 5px 0; font-size: 1.1em; }}
@@ -139,7 +141,7 @@ html_content = f"""<!DOCTYPE html>
 </style>
 </head>
 <body>
-  <h1>Mountain Dashboard</h1>
+  <h1>Mountain Weather Dashboard</h1>
   <div class="status">Last automatically updated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</div>
 
   <div class="region"><h2>Southeastern Highlands (MWIS)</h2><div class="region-content">{data['mwis_se_highlands']}</div></div>
@@ -149,10 +151,12 @@ html_content = f"""<!DOCTYPE html>
   <div class="region">
     <h2>SAIS Avalanche Conditions</h2>
     <div class="region-content">
-      <p><strong>Northern Cairngorms:</strong> {data['sais_n_cairngorms']}</p>
-      <p><strong>Southern Cairngorms:</strong> {data['sais_s_cairngorms']}</p>
-      <p><strong>Lochaber:</strong> {data['sais_lochaber']}</p>
-      <p><strong>Glencoe:</strong> {data['sais_glencoe']}</p>
+      <ul style='margin-top: 5px; margin-bottom: 15px; padding-left: 20px; font-size: 1.05em;'>
+          <li style='margin-bottom: 4px;'><strong>Northern Cairngorms:</strong> {data['sais_n_cairngorms']}</li>
+          <li style='margin-bottom: 4px;'><strong>Southern Cairngorms:</strong> {data['sais_s_cairngorms']}</li>
+          <li style='margin-bottom: 4px;'><strong>Lochaber:</strong> {data['sais_lochaber']}</li>
+          <li style='margin-bottom: 4px;'><strong>Glencoe:</strong> {data['sais_glencoe']}</li>
+      </ul>
     </div>
   </div>
 </body>
