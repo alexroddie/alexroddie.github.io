@@ -30,7 +30,7 @@ The most feature-rich page, specifically designed for hikers and mountaineers. I
     * **Avalanche Reports (SAIS):** Quick links to winter stability reports (seasonal).
     * **River Levels:** Vital for assessing ford crossings in the backcountry.
 * **Kindle Optimization:** The dashboard strips away navigation bars and sidebars from external sources where possible, focusing purely on the text and data.
-* * **Documentation:** [Readme.md](https://alexroddie.github.io/mountainweather/Readme.md)
+* **Documentation:** [Readme.md](https://alexroddie.github.io/mountainweather/Readme.md)
 
 ---
 
