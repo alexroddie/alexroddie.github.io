@@ -35,20 +35,21 @@
       display: flex; flex-direction: column;
     }
     .outlook-content {
-      font-size: 12pt;
+      font-size: 10pt;
       line-height: 1.4;
       overflow: hidden;
       flex-grow: 1;
     }
     .outlook-content p { margin-top: 0; }
-    /* Safety catch to ensure no italics slip into the TRMNL view from inherited content */
     .right-pane em, .outlook-content em { font-style: normal; }
     .footer {
        height: 40px;
        width: 100%;
        padding: 10px 25px 0 25px;
-       font-size: 14px; text-align: right;
+       font-size: 14px;
        border-top: 1px dashed #000;
+       display: flex;
+       justify-content: space-between;
     }
   </style>
 </head>
@@ -64,6 +65,9 @@
       </div>
     </div>
   </div>
-  <div class="footer">Updated: Wednesday, April 29th at 9.12am</div>
+  <div class="footer">
+    <strong>Mountain Dashboard</strong>
+    <span>Updated: Wednesday, April 29th at 9.16am</span>
+  </div>
 </body>
 </html>
