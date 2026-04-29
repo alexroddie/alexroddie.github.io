@@ -46,18 +46,15 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         soup = BeautifulSoup(res.text, 'html.parser')
         lines = [l.strip() for l in soup.get_text(separator='\n').split('\n') if l.strip()]
         
-        # Scrape "Summary for all mountain areas" - refined to stop at regional headline
         if area_summary == "Summary unavailable.":
             sum_l, sum_cap = [], False
             for l in lines:
                 if "summary for all mountain areas" in l.lower(): sum_cap = True; continue
                 if sum_cap:
-                    # Stop if we hit a regional headline or footer info
                     if any(x in l.lower() for x in ["headline for", "issued at", "forecast issued", "mwis.org.uk", "planning outlook"]): sum_cap = False; break
                     sum_l.append(l)
             if sum_l: area_summary = format_text(sum_l)
 
-        # Scrape "Planning Outlook"
         if planning_outlook == "Outlook unavailable.":
             out_l, cap = [], False
             for l in lines:
@@ -123,7 +120,6 @@ now = datetime.datetime.now(ZoneInfo("Europe/London"))
 suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
 time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
-
 chart = f'<div style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
 # 5. Generate Kindle HTML (index.html)
@@ -136,8 +132,12 @@ summary{{cursor:pointer;background:#000;display:block;outline:none;}}
 summary h2::after{{content:'\\25C0\\FE0E';float:right;font-size:0.8em;margin-top:2px;}}
 details[open] summary h2::after{{content:'\\25BC\\FE0E';}}
 .region-content{{padding:15px;}}
-.inner-day{{border-top:1px dashed #000;margin-top:5px;margin-left:-15px;margin-right:-15px;}}
-.inner-day-header{{background:#eee;color:#000;padding:6px 15px;font-size:1.1em;border-bottom:1px solid #ddd;line-height:1.2;margin-bottom:0;}}
+.inner-day{{border-top:1px dashed #000;margin-top:5px;margin-left:-15px;margin-right:-15px;display:block;}}
+.inner-day-header{{background:#eee;color:#000;padding:6px 15px;font-size:1.1em;border-bottom:1px solid #ddd;line-height:1.2;margin-bottom:0;display:block;cursor:pointer;outline:none;}}
+/* Custom arrow logic for the inner folding summary */
+.inner-day-header::-webkit-details-marker {{display: none;}}
+.inner-day-header::after {{content:'\\25C0\\FE0E';float:right;font-size:0.8em;margin-top:2px;}}
+details[open] .inner-day-header::after {{content:'\\25BC\\FE0E';}}
 .inner-content{{padding:10px 15px 5px 15px;}}
 p{{margin:0 0 10px 0;}}
 ul{{margin:8px 0 0 0;padding-left:22px;}}
@@ -146,7 +146,13 @@ li{{margin-bottom:6px;}}
 a{{color:inherit;text-decoration:underline;}}</style></head><body>
 <h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
 {chart}
-<div class="region"><h2>Summary</h2><div class="region-content"><p>{area_summary}</p><p>{planning_outlook}</p></div></div>
+<div class="region"><h2>Summary</h2><div class="region-content">
+<p>{area_summary}</p>
+<details class="inner-day">
+  <summary class="inner-day-header"><strong>Planning Outlook</strong></summary>
+  <div class="inner-content"><p>{planning_outlook}</p></div>
+</details>
+</div></div>
 <details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms</a></h2></summary><div class="region-content">{data['mwis_cairngorms']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary><div class="region-content">{data['mwis_west']}</div></details>
@@ -165,7 +171,6 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 # 6. Generate TRMNL HTML (trmnl.html)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
 se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>" if trmnl_se_date else ""
-
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
 body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;}}
