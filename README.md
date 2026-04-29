@@ -15,13 +15,14 @@ The main landing page features a vertical list of large, tappable links. This ac
 * **Design:** Large text, generous spacing (to prevent accidental taps), and no images.
 * **Primary Links:** Direct paths to the Weather Now and Mountain Dashboard pages, along with external text-only resources.
 
-### 🌤 Weather Now `https://alexroddie.github.io/weathernow/index.html`
+### 🌤 Weather Now `weathernow/index.html`
 A dedicated page for localized, real-time weather conditions.
 * **Features:** Displays current temperature, wind speed, and a simplified 3-day forecast.
 * **Optimization:** Uses a "mobile-first" and "E-Ink first" layout. Data is presented in a clear, tabular, or list-based format that renders perfectly in grayscale.
 * **Data Source:** (Usually configured for a specific home location or region, such as Meigle/Ardler or the Scottish Highlands).
+* **Documentation:** `[Readme.md](https://alexroddie.github.io/weathernow/Readme.md)`
 
-### 🏔 Mountain Dashboard
+### 🏔 Mountain Dashboard `mountainweather/index.html`
 The most feature-rich page, specifically designed for hikers and mountaineers. It aggregates critical mountain safety data into a single view.
 * **Content Sections:**
     * **MWIS Forecasts:** Direct links to the Mountain Weather Information Service PDF/text summaries.
@@ -29,6 +30,7 @@ The most feature-rich page, specifically designed for hikers and mountaineers. I
     * **Avalanche Reports (SAIS):** Quick links to winter stability reports (seasonal).
     * **River Levels:** Vital for assessing ford crossings in the backcountry.
 * **Kindle Optimization:** The dashboard strips away navigation bars and sidebars from external sources where possible, focusing purely on the text and data.
+* * **Documentation:** `[Readme.md](https://alexroddie.github.io/mountainweather/Readme.md)`
 
 ---
 
