@@ -144,7 +144,6 @@ li{{margin-bottom:6px;}}
 a{{color:inherit;text-decoration:underline;}}
 
 @media screen and (max-width: 600px) {{
-  /* Mobile width updated to 94% to match Kindle margins */
   body {{ max-width: 94%; padding: 5px; font-size: 1.1em; }}
   h1 {{ font-size: 1.6em; max-width: 85%; margin: 0 auto 20px auto; }}
   .region-content {{ padding: 10px; }}
@@ -179,7 +178,10 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 
 # 6. Generate TRMNL HTML (trmnl.html)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
-se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>" if trmnl_se_date else ""
+
+# Updated se_summary_html to use area_summary (the top-level Kindle summary) 
+# and set the font size to 10pt to match the planning outlook.
+trmnl_main_summary = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0; font-size: 10pt;'>{area_summary}</p></div>" if trmnl_se_date else ""
 
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
@@ -190,6 +192,6 @@ body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;fon
 .right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
 .outlook-content{{font-size:10pt;line-height:1.4;overflow:hidden;flex-grow:1;}}
 .outlook-content p{{margin-top:0;}}.right-pane em,.outlook-content em{{font-style:normal;}}
-</style></head><body><div class="main-content"><div class="left-pane">{trmnl_img}</div><div class="right-pane">{se_summary_html}<div class="outlook-content"><p>{planning_outlook}</p></div></div></div></body></html>"""
+</style></head><body><div class="main-content"><div class="left-pane">{trmnl_img}</div><div class="right-pane">{trmnl_main_summary}<div class="outlook-content"><p>{planning_outlook}</p></div></div></div></body></html>"""
 
 with open("trmnl.html", "w", encoding="utf-8") as f: f.write(trmnl_tmpl)
