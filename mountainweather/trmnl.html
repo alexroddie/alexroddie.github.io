@@ -41,6 +41,8 @@
       flex-grow: 1;
     }
     .outlook-content p { margin-top: 0; }
+    /* Safety catch to ensure no italics slip into the TRMNL view from inherited content */
+    .right-pane em, .outlook-content em { font-style: normal; }
     .footer {
        height: 40px;
        width: 100%;
@@ -62,6 +64,6 @@
       </div>
     </div>
   </div>
-  <div class="footer">Updated: Wednesday, April 29th at 9.10am</div>
+  <div class="footer">Updated: Wednesday, April 29th at 9.12am</div>
 </body>
 </html>
