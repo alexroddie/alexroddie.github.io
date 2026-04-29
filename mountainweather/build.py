@@ -99,15 +99,12 @@ for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_gle
             data[key] = h.text.strip() if h else "No data."
     except: data[key] = "Error."
 
-
 # 4. Generate HTML
-# Force UK time (BST/GMT) instead of GitHub's default UTC
 now = datetime.datetime.now(ZoneInfo("Europe/London"))
 suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
 time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 
-# Border removed, centered
 chart = f'<div style="text-align:center;margin-bottom:20px;"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></div>' if synoptic_url else ""
 
 tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
@@ -121,6 +118,7 @@ details[open] summary h2::after{{content:'\\25BC\\FE0E';}}
 .region-content{{padding:15px;}}
 .inner-day{{border-top:1px dashed #000;margin-top:15px;margin-left:-15px;margin-right:-15px;}}
 .inner-day-header{{background:#eee;color:#000;padding:6px 15px;font-size:1.1em;border-bottom:1px solid #ddd;line-height:1.2;}}
+.inner-content{{padding:15px;}}
 p{{margin:0 0 10px 0;}}ul{{margin:8px 0;padding-left:22px;}}li{{margin-bottom:6px;}}
 .status{{text-align:center;font-style:italic;font-size:0.9em;margin-bottom:20px;color:#444;}}
 a{{color:inherit;text-decoration:underline;}}</style></head><body>
