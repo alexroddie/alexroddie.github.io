@@ -1,10 +1,19 @@
-name: Update Mountain Weather Dashboard
+name: Mountain Dashboard Update
 
 on:
   schedule:
-    # Runs at 04:30, 10:30, 16:30, and 17:30 UTC (GMT) every day
-    - cron: '30 4,10,16,17 * * *'
+    # Clustered schedule to handle BST/GMT shifts and GitHub Action latency.
+    # Fires at 15 past the hour for:
+    # - 05:15 & 06:15 UTC (Morning updates)
+    # - 15:15, 16:15, 17:15, & 18:15 UTC (Evening updates to catch MWIS)
+    - cron: '15 5,6,15,16,17,18 * * *'
   workflow_dispatch: 
+
+# Prevents "traffic jams": If a delayed run is still active when a new one 
+# is triggered, GitHub will cancel the older run and start the fresh one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -17,8 +26,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # CRITICAL: This forces Git to push using your human credentials. 
-          # GitHub sees this as daily human activity. The 60-day rule will never trigger.
+          # Using a Personal Access Token ensures GitHub treats these updates 
+          # as "human activity," preventing the 60-day automatic pause.
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} 
 
       - name: Set up Python
@@ -40,7 +49,9 @@ jobs:
           git config --global user.email "action@github.com"
           git add -A
           
+          # Allow empty commits to ensure the activity timestamp always updates.
           git commit --allow-empty -m "Auto-update forecast dashboard"
           
+          # Rebase handles cases where the repo might have changed during the run.
           git pull origin main --rebase
           git push origin main
