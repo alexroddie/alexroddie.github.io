@@ -1,4 +1,4 @@
-# Markdown Documentation: Weather Now
+# Documentation: Weather Now
 
 ## Project Overview
 **Weather Now** is a standalone, browser-based software solution designed for high-legibility displays, macOS desktop widgets, and E-Ink devices (specifically the Amazon Kindle Paperwhite). 
