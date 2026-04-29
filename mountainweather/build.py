@@ -120,8 +120,6 @@ now = datetime.datetime.now(ZoneInfo("Europe/London"))
 suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
 time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
-
-# Added class="chart-container" for mobile targeting
 chart = f'<div class="chart-container" style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
 # 5. Generate Kindle HTML (index.html)
@@ -145,27 +143,24 @@ li{{margin-bottom:6px;}}
 .status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
 a{{color:inherit;text-decoration:underline;}}
 
-/* Mobile responsiveness logic */
 @media screen and (max-width: 600px) {{
   body {{ max-width: 98%; padding: 5px; font-size: 1.1em; }}
-  /* Scaled down heading size and narrowed width */
   h1 {{ font-size: 1.6em; max-width: 85%; margin: 0 auto 20px auto; }}
   .region-content {{ padding: 10px; }}
   .inner-day {{ margin-left: -10px; margin-right: -10px; }}
   .inner-content {{ padding: 10px 10px 5px 10px; }}
-  /* Force chart image to match box width */
   .chart-container a img {{ width: 100%; }}
 }}
 </style></head><body>
 <h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
 {chart}
-<div class="region"><h2>Summary</h2><div class="region-content">
+<details class="region" open><summary><h2>Summary</h2></summary><div class="region-content">
 <p>{area_summary}</p>
 <div class="inner-day">
   <div class="inner-day-header"><strong>Planning Outlook</strong></div>
   <div class="inner-content"><p>{planning_outlook}</p></div>
 </div>
-</div></div>
+</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms</a></h2></summary><div class="region-content">{data['mwis_cairngorms']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary><div class="region-content">{data['mwis_west']}</div></details>
@@ -184,6 +179,7 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 # 6. Generate TRMNL HTML (trmnl.html)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
 se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>" if trmnl_se_date else ""
+
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
 body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;flex-direction:column;}}
