@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation: Adaptive Weather Dashboard</title>
+    <title>Documentation: Kindle Link Index</title>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -11,6 +11,8 @@
             --accent-color: #444444;
             --code-bg: #f4f4f4;
             --border-color: #dddddd;
+            --warning-bg: #fdf2f2;
+            --warning-border: #e02424;
         }
 
         body {
@@ -25,7 +27,7 @@
 
         header {
             border-bottom: 3px solid var(--text-color);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             padding-bottom: 20px;
         }
 
@@ -35,6 +37,176 @@
             line-height: 1.1;
         }
 
+        .meta-info {
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        .warning-box {
+            background-color: var(--warning-bg);
+            border-left: 5px solid var(--warning-border);
+            padding: 15px 20px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+        }
+
+        ul {
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.6rem;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--code-bg);
+            padding: 2px 5px;
+            font-size: 0.95em;
+            border-radius: 3px;
+        }
+
+        a {
+            color: var(--text-color);
+            text-decoration: underline;
+        }
+
+        a:hover {
+            color: #555;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 40px 0;
+        }
+
+        .nested-list {
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            body { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Kindle Link Index</h1>
+        <div class="meta-info">
+            <p><strong>URL:</strong> <a href="https://alexroddie.github.io/">https://alexroddie.github.io/</a></p>
+            <p><strong>Author:</strong> Alex Roddie</p>
+            <p><strong>Purpose:</strong> A minimalist, E-Ink optimized gateway for outdoor weather data and essential mountain links.</p>
+        </div>
+    </header>
+
+    <div class="warning-box">
+        Please do not edit any of these files. They are for Alex Roddie's personal use only.
+    </div>
+
+    <section id="overview">
+        <h2>1. Overview</h2>
+        <p>The Kindle Link Index serves as a home page for Kindle users who need quick access to critical information while in the field. Because the Kindle’s experimental browser has limited processing power and a grayscale E-Ink display, this site uses minimal JavaScript, zero heavy assets, and high-contrast CSS to ensure readability and speed.</p>
+    </section>
+
+    <section id="key-pages">
+        <h2>2. Key Pages</h2>
+
+        <h3>Home Index</h3>
+        <p>The main landing page features a vertical list of large, tappable links. This acts as a centralized hub to prevent the user from having to type complex URLs into the Kindle’s slow keyboard.</p>
+        <ul>
+            <li><strong>Design:</strong> Large text, generous spacing (to prevent accidental taps), and no images.</li>
+            <li><strong>Primary Links:</strong> Direct paths to the Weather Now and Mountain Dashboard pages, along with external text-only resources.</li>
+        </ul>
+
+        <h3>Weather Now <code>weathernow/index.html</code></h3>
+        <p>A dedicated page for localized, real-time weather conditions.</p>
+        <ul>
+            <li><strong>Features:</strong> Displays current temperature, wind speed, and a simplified 3-day forecast.</li>
+            <li><strong>Optimization:</strong> Uses a "mobile-first" and "E-Ink first" layout. Data is presented in a clear, tabular, or list-based format that renders perfectly in grayscale.</li>
+            <li><strong>Data Source:</strong> Usually configured for a specific home location or region. The Open-Meteo API is the data source.</li>
+            <li><strong>Documentation:</strong> <a href="https://alexroddie.github.io/weathernow/Readme.md">Readme.md</a></li>
+        </ul>
+
+        <h3>Mountain Dashboard <code>mountainweather/index.html</code></h3>
+        <p>The most feature-rich page, specifically designed for hikers and mountaineers. It aggregates critical mountain safety data into a single view.</p>
+        <ul>
+            <li><strong>Content Sections:</strong>
+                <ul class="nested-list">
+                    <li><strong>MWIS Forecasts:</strong> Direct links to the Mountain Weather Information Service text summaries.</li>
+                    <li><strong>Avalanche Reports (SAIS):</strong> Quick links to winter stability reports (seasonal).</li>
+                </ul>
+            </li>
+            <li><strong>Kindle Optimization:</strong> The dashboard strips away navigation bars and sidebars from external sources where possible, focusing purely on the text and data.</li>
+            <li><strong>Documentation:</strong> <a href="https://alexroddie.github.io/mountainweather/Readme.md">Readme.md</a></li>
+        </ul>
+    </section>
+
+    <section id="optimization">
+        <h2>3. Kindle Optimization Features</h2>
+        <p>To cater to the unique constraints of the Kindle, the site employs the following:</p>
+        <ul>
+            <li><strong>System Fonts:</strong> Uses basic serif or sans-serif stacks to avoid loading external web fonts.</li>
+            <li><strong>No Fixed Elements:</strong> Avoiding "sticky" headers that often glitch during scrolling on E-Ink.</li>
+            <li><strong>Grayscale Palette:</strong> Every element is defined in pure black (#000), white (#FFF), or high-contrast grey to ensure no information is lost when the browser converts colors.</li>
+            <li><strong>Low Payload:</strong> The entire site is typically under 50KB, allowing for fast loading even on 3G or weak 4G tethered connections.</li>
+        </ul>
+    </section>
+
+    <section id="usage">
+        <h2>4. How to Use on Your Kindle</h2>
+        <ol>
+            <li><strong>Open the Browser:</strong> On your Kindle, go to <code>Menu</code> (three dots) -> <code>Web Browser</code>.</li>
+            <li><strong>Enter the URL:</strong> Type in <code>alexroddie.github.io</code>.</li>
+            <li><strong>Bookmark It:</strong> Once loaded, tap the Menu icon again and select <strong>Bookmark this Page</strong>.</li>
+            <li><strong>Set as Homepage:</strong> (Optional) Some Kindle versions allow you to set a default page; setting this as your home makes it your "outdoor dashboard" every time you open the browser.</li>
+        </ol>
+    </section>
+
+    <section id="technical">
+        <h2>5. Technical Details</h2>
+        <ul>
+            <li><strong>Hosting:</strong> Hosted on GitHub Pages for 100% uptime and SSL security.</li>
+            <li><strong>Framework:</strong> Built with raw HTML5 and CSS3 (No heavy frameworks like Bootstrap or React).</li>
+            <li><strong>Maintenance:</strong> To update links or the Weather Now location, the files must be edited in the GitHub repository.</li>
+        </ul>
+    </section>
+
+    <section id="resources">
+        <h2>6. Resources & External Links</h2>
+        <ul>
+            <li>The dashboard provides curated shortcuts to various external resources.</li>
+            <li>Edit the <code>index.html</code> file to adapt these.</li>
+        </ul>
+    </section>
+
+    <footer style="margin-top: 80px; font-size: 0.9rem; color: #888; border-top: 1px solid var(--border-color); padding-top: 20px;">
+        <p>Documentation for Alex Roddie's Kindle Index Project.</p>
+    </footer>
+
+</body>
+</html>
         h2 {
             font-size: 1.8rem;
             border-bottom: 1px solid var(--border-color);
