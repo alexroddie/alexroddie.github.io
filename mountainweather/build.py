@@ -151,14 +151,12 @@ se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 
 
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
-body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;flex-direction:column;}}
-.main-content{{display:flex;width:100%;flex-grow:1;overflow:hidden;}}
-.left-pane{{width:50%;height:100%;padding:20px 15px 15px 25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
+body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;}}
+.left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:center;}}
 .left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
-.right-pane{{width:50%;height:100%;padding:20px 25px 15px 15px;display:flex;flex-direction:column;}}
+.right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
 .outlook-content{{font-size:10pt;line-height:1.4;overflow:hidden;flex-grow:1;}}
 .outlook-content p{{margin-top:0;}}.right-pane em,.outlook-content em{{font-style:normal;}}
-.footer{{height:40px;width:100%;padding:10px 25px 0 25px;font-size:14px;border-top:1px solid #000;display:flex;justify-content:space-between;}}
-</style></head><body><div class="main-content"><div class="left-pane">{trmnl_img}</div><div class="right-pane">{se_summary_html}<div class="outlook-content"><p>{planning_outlook}</p></div></div></div><div class="footer"><strong>Mountain Dashboard</strong><span>Updated: {ts}</span></div></body></html>"""
+</style></head><body><div class="left-pane">{trmnl_img}</div><div class="right-pane">{se_summary_html}<div class="outlook-content"><p>{planning_outlook}</p></div></div></body></html>"""
 
 with open("trmnl.html", "w", encoding="utf-8") as f: f.write(trmnl_tmpl)
