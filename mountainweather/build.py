@@ -11,7 +11,9 @@ urls = {
     'sais_n_cairngorms': 'https://www.sais.gov.uk/northern-cairngorms/',
     'sais_s_cairngorms': 'https://www.sais.gov.uk/southern-cairngorms/',
     'sais_lochaber': 'https://www.sais.gov.uk/lochaber/',
-    'sais_glencoe': 'https://www.sais.gov.uk/glencoe/'
+    'sais_glencoe': 'https://www.sais.gov.uk/glencoe/',
+    'sais_creag_meagaidh': 'https://www.sais.gov.uk/creag-meagaidh/',
+    'sais_torridon': 'https://www.sais.gov.uk/torridon/'
 }
 
 headers = {'User-Agent': 'Mozilla/5.0'}
@@ -75,7 +77,6 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
                 elif sec != "ignore": cur[sec].append(l)
         if cur: days.append(cur)
         
-        # Capture TRMNL specific data for SE Highlands Day 1
         if key == 'mwis_se_highlands' and len(days) > 0:
             trmnl_se_date = days[0].get('date', 'Today')
             trmnl_se_headline = format_text(days[0].get('headline', []))
@@ -94,8 +95,8 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         data[key] = html
     except: data[key] = "Error fetching region."
 
-# 3. Scrape SAIS
-for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe']:
+# 3. Scrape SAIS (Now including Creag Meagaidh and Torridon)
+for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe', 'sais_creag_meagaidh', 'sais_torridon']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=10)
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -139,8 +140,12 @@ a{{color:inherit;text-decoration:underline;}}</style></head><body>
 <details class="region"><summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary><div class="region-content">{data['mwis_west']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_nw_highlands']}">NW Highlands</a></h2></summary><div class="region-content">{data['mwis_nw_highlands']}</div></details>
 <details class="region"><summary><h2>SAIS Avalanche</h2></summary><div class="region-content"><ul>
-<li><strong>N Cairngorms:</strong> {data['sais_n_cairngorms']}</li><li><strong>S Cairngorms:</strong> {data['sais_s_cairngorms']}</li>
-<li><strong>Lochaber:</strong> {data['sais_lochaber']}</li><li><strong>Glencoe:</strong> {data['sais_glencoe']}</li>
+<li><strong>S Cairngorms:</strong> {data['sais_s_cairngorms']}</li>
+<li><strong>N Cairngorms:</strong> {data['sais_n_cairngorms']}</li>
+<li><strong>Glencoe:</strong> {data['sais_glencoe']}</li>
+<li><strong>Lochaber:</strong> {data['sais_lochaber']}</li>
+<li><strong>Creag Meagaidh:</strong> {data['sais_creag_meagaidh']}</li>
+<li><strong>Torridon:</strong> {data['sais_torridon']}</li>
 </ul></div></details></body></html>"""
 
 with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
