@@ -173,19 +173,18 @@ a{{color:inherit;text-decoration:underline;}}
 
 with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 
-# 6. Generate TRMNL HTML (trmnl.html) - DYNAMIC SCALING ADDED
+# 6. Generate TRMNL HTML (trmnl.html) - CORRECTED THRESHOLDS
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available.</p>"
 
-# TRMNL AUTO-SCALING LOGIC
 total_chars = len(area_summary) + len(planning_outlook)
 t_body_size = "11pt"
 t_header_size = "17px"
 
-# If content is very long, scale down to fit the 480px screen height
-if total_chars > 1300:
+# Logic updated to your preferred 800/1200 thresholds
+if total_chars > 1200:
     t_body_size = "9pt"
     t_header_size = "15px"
-elif total_chars > 1000:
+elif total_chars > 800:
     t_body_size = "10pt"
     t_header_size = "16px"
 
