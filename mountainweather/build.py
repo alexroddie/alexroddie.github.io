@@ -140,12 +140,12 @@ a{{color:inherit;text-decoration:underline;}}</style></head><body>
 <details class="region"><summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary><div class="region-content">{data['mwis_west']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_nw_highlands']}">NW Highlands</a></h2></summary><div class="region-content">{data['mwis_nw_highlands']}</div></details>
 <details class="region"><summary><h2>SAIS Avalanche</h2></summary><div class="region-content"><ul>
-<li><strong>S Cairngorms:</strong> {data['sais_s_cairngorms']}</li>
-<li><strong>N Cairngorms:</strong> {data['sais_n_cairngorms']}</li>
-<li><strong>Glencoe:</strong> {data['sais_glencoe']}</li>
-<li><strong>Lochaber:</strong> {data['sais_lochaber']}</li>
-<li><strong>Creag Meagaidh:</strong> {data['sais_creag_meagaidh']}</li>
-<li><strong>Torridon:</strong> {data['sais_torridon']}</li>
+<li><strong><a href="{urls['sais_s_cairngorms']}">S Cairngorms</a>:</strong> {data['sais_s_cairngorms']}</li>
+<li><strong><a href="{urls['sais_n_cairngorms']}">N Cairngorms</a>:</strong> {data['sais_n_cairngorms']}</li>
+<li><strong><a href="{urls['sais_glencoe']}">Glencoe</a>:</strong> {data['sais_glencoe']}</li>
+<li><strong><a href="{urls['sais_lochaber']}">Lochaber</a>:</strong> {data['sais_lochaber']}</li>
+<li><strong><a href="{urls['sais_creag_meagaidh']}">Creag Meagaidh</a>:</strong> {data['sais_creag_meagaidh']}</li>
+<li><strong><a href="{urls['sais_torridon']}">Torridon</a>:</strong> {data['sais_torridon']}</li>
 </ul></div></details></body></html>"""
 
 with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
@@ -154,7 +154,6 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
 se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>" if trmnl_se_date else ""
 
-# Fixed .left-pane justify-content to flex-start to align image with text top
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
 body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;}}
