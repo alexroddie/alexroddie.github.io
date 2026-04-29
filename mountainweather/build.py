@@ -142,9 +142,14 @@ ul{{margin:8px 0 0 0;padding-left:22px;}}
 li{{margin-bottom:6px;}}
 .status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
 a{{color:inherit;text-decoration:underline;}}
+
+/* Mobile responsiveness logic */
 @media screen and (max-width: 600px) {{
   body {{ max-width: 98%; padding: 5px; font-size: 1.1em; }}
-  .region-content, .inner-content {{ padding: 10px; }}
+  .region-content {{ padding: 10px; }}
+  /* Corrected logic: negative margin must match container padding to prevent breakout */
+  .inner-day {{ margin-left: -10px; margin-right: -10px; }}
+  .inner-content {{ padding: 10px 10px 5px 10px; }}
 }}
 </style></head><body>
 <h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
@@ -174,8 +179,6 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 # 6. Generate TRMNL HTML (trmnl.html)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
 se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>" if trmnl_se_date else ""
-
-# Monochrome Mountain SVG Border - Updated to Line Art Style
 mountain_svg = """
 <div style="width: 100%; height: 40px; overflow: hidden; margin-top: auto; border-top: 1px solid black; background: white;">
   <svg viewBox="0 0 800 40" preserveAspectRatio="none" style="width: 100%; height: 100%; display: block;">
@@ -184,7 +187,6 @@ mountain_svg = """
   </svg>
 </div>
 """
-
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
 body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;flex-direction:column;}}
