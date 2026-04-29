@@ -75,6 +75,7 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
                 elif sec != "ignore": cur[sec].append(l)
         if cur: days.append(cur)
         
+        # Capture TRMNL specific data for SE Highlands Day 1
         if key == 'mwis_se_highlands' and len(days) > 0:
             trmnl_se_date = days[0].get('date', 'Today')
             trmnl_se_headline = format_text(days[0].get('headline', []))
@@ -113,7 +114,6 @@ ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div style="text-align:center;margin-bottom:20px;"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></div>' if synoptic_url else ""
 
 # 5. Generate Kindle HTML (index.html)
-# Updated Kindle body CSS to restrict width to 90% and center it
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;max-width:90%;margin:0 auto;}}
 h1{{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;line-height:1.1;}}
@@ -128,90 +128,6 @@ details[open] summary h2::after{{content:'\\25BC\\FE0E';}}
 .inner-content{{padding:10px 15px 5px 15px;}}
 p{{margin:0 0 10px 0;}}
 ul{{margin:8px 0 0 0;padding-left:22px;}}
-li{{margin-bottom:6px;}}
-.status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
-a{{color:inherit;text-decoration:underline;}}</style></head><body>
-<h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
-{chart}
-<div class="region"><h2>Planning Outlook</h2><div class="region-content"><p>{planning_outlook}</p></div></div>
-<details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
-<details class="region"><summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms</a></h2></summary><div class="region-content">{data['mwis_cairngorms']}</div></details>
-<details class="region"><summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary><div class="region-content">{data['mwis_west']}</div></details>
-<details class="region"><summary><h2><a href="{urls['mwis_nw_highlands']}">NW Highlands</a></h2></summary><div class="region-content">{data['mwis_nw_highlands']}</div></details>
-<details class="region"><summary><h2>SAIS Avalanche</h2></summary><div class="region-content"><ul>
-<li><strong>N Cairngorms:</strong> {data['sais_n_cairngorms']}</li><li><strong>S Cairngorms:</strong> {data['sais_s_cairngorms']}</li>
-<li><strong>Lochaber:</strong> {data['sais_lochaber']}</li><li><strong>Glencoe:</strong> {data['sais_glencoe']}</li>
-</ul></div></details></body></html>"""
-
-with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
-
-# 6. Generate TRMNL HTML (trmnl.html)
-trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
-se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>" if trmnl_se_date else ""
-
-trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{{box-sizing:border-box;}}
-body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;flex-direction:column;}}
-.main-content{{display:flex;width:100%;flex-grow:1;overflow:hidden;}}
-.left-pane{{width:50%;height:100%;padding:20px 15px 15px 25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
-.left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
-.right-pane{{width:50%;height:100%;padding:20px 25px 15px 15px;display:flex;flex-direction:column;}}
-.outlook-content{{font-size:10pt;line-height:1.4;overflow:hidden;flex-grow:1;}}
-.outlook-content p{{margin-top:0;}}.right-pane em,.outlook-content em{{font-style:normal;}}
-.footer{{height:40px;width:100%;padding:10px 25px 0 25px;font-size:14px;border-top:1px solid #000;display:flex;justify-content:space-between;}}
-</style></head><body><div class="main-content"><div class="left-pane">{trmnl_img}</div><div class="right-pane">{se_summary_html}<div class="outlook-content"><p>{planning_outlook}</p></div></div></div><div class="footer"><strong>Mountain Dashboard</strong><span>Updated: {ts}</span></div></body></html>"""
-
-with open("trmnl.html", "w", encoding="utf-8") as f: f.write(trmnl_tmpl)            trmnl_se_headline = format_text(days[0].get('headline', []))
-        
-        html = ""
-        for i, d in enumerate(days[:3]):
-            head = format_text(d['headline'])
-            content = f"<p><em>{head.rstrip('.')}</em>.</p>" if head else ""
-            content += "<ul>"
-            for lbl, fld in [("Wind","wind"),("Wet","wet"),("Cloud","cloud"),("Chance of cloud-free Munros","chance_cloud_free"),("Temp","temp"),("Freezing level","freezing_level")]:
-                val = format_text(d[fld])
-                if val: content += f"<li><strong>{lbl}:</strong> {val}</li>"
-            content += "</ul>"
-            if i > 0: html += f"<div class='inner-day'><div class='inner-day-header'><strong>{d['date']}</strong></div><div class='inner-content'>{content}</div></div>"
-            else: html += f"<div class='day-one'><strong>{d['date']}</strong>{content}</div>"
-        data[key] = html
-    except: data[key] = "Error fetching region."
-
-# 3. Scrape SAIS
-for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe']:
-    try:
-        res = requests.get(urls[key], headers=headers, timeout=10)
-        soup = BeautifulSoup(res.text, 'html.parser')
-        if "finished" in soup.get_text().lower(): data[key] = "Season finished."
-        else:
-            h = soup.select_one('.hazard-level h2, .forecast-text p')
-            data[key] = h.text.strip() if h else "No data."
-    except: data[key] = "Error."
-
-# 4. Generate Timestamps
-now = datetime.datetime.now(ZoneInfo("Europe/London"))
-suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
-time_str = now.strftime('%I.%M%p').lower().lstrip('0')
-ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
-
-chart = f'<div style="text-align:center;margin-bottom:20px;"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></div>' if synoptic_url else ""
-
-# 5. Generate Kindle HTML (index.html)
-# Tightened up inner-day-header margin and zeroed out ul margin
-kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;}}
-h1{{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;line-height:1.1;}}
-.region,details.region{{border:2px solid #000;margin-bottom:20px;padding:0;}}
-h2{{background:#000;color:#fff;padding:6px 12px;margin:0!important;font-size:1.25em;line-height:1.1;display:block;}}
-summary{{cursor:pointer;background:#000;display:block;outline:none;}}
-summary h2::after{{content:'\\25C0\\FE0E';float:right;font-size:0.8em;margin-top:2px;}}
-details[open] summary h2::after{{content:'\\25BC\\FE0E';}}
-.region-content{{padding:15px;}}
-.inner-day{{border-top:1px dashed #000;margin-top:5px;margin-left:-15px;margin-right:-15px;}}
-.inner-day-header{{background:#eee;color:#000;padding:6px 15px;font-size:1.1em;border-bottom:1px solid #ddd;line-height:1.2;margin-bottom:0;}}
-.inner-content{{padding:10px 15px 5px 15px;}}
-p{{margin:0 0 10px 0;}}
-ul{{margin:8px 0 0 0;padding-left:22px;}} /* Removed bottom margin */
 li{{margin-bottom:6px;}}
 .status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
 a{{color:inherit;text-decoration:underline;}}</style></head><body>
