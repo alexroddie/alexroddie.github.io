@@ -121,7 +121,7 @@ time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div class="chart-container" style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
-# 5. Generate Kindle HTML (index.html)
+# 5. Generate Kindle HTML (index.html) - UNCHANGED
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
@@ -173,8 +173,21 @@ a{{color:inherit;text-decoration:underline;}}
 
 with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 
-# 6. Generate TRMNL HTML (trmnl.html)
+# 6. Generate TRMNL HTML (trmnl.html) - DYNAMIC SCALING ADDED
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available.</p>"
+
+# TRMNL AUTO-SCALING LOGIC
+total_chars = len(area_summary) + len(planning_outlook)
+t_body_size = "11pt"
+t_header_size = "17px"
+
+# If content is very long, scale down to fit the 480px screen height
+if total_chars > 1300:
+    t_body_size = "9pt"
+    t_header_size = "15px"
+elif total_chars > 1000:
+    t_body_size = "10pt"
+    t_header_size = "16px"
 
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
@@ -183,10 +196,8 @@ body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;fon
 .left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
 .left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
 .right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
-/* Day heading bumped by 1pt (approx 1px) to 17px */
-.date-header{{font-size:17px;font-weight:bold;margin-bottom:5px;display:block;}}
-/* Body text bumped by 1pt to 11pt */
-.body-text{{font-size:11pt;line-height:1.2;margin:0 0 15px 0;}}
+.date-header{{font-size:{t_header_size};font-weight:bold;margin-bottom:5px;display:block;}}
+.body-text{{font-size:{t_body_size};line-height:1.2;margin:0 0 15px 0;}}
 .outlook-section{{flex-grow:1;overflow:hidden;}}
 </style></head><body><div class="main-content">
 <div class="left-pane">{trmnl_img}</div>
