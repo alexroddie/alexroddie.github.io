@@ -175,11 +175,12 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
 se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>" if trmnl_se_date else ""
 
-# Monochrome Mountain SVG Border
+# Monochrome Mountain SVG Border - Updated to Line Art Style
 mountain_svg = """
-<div style="width: 100%; height: 40px; overflow: hidden; margin-top: auto;">
+<div style="width: 100%; height: 40px; overflow: hidden; margin-top: auto; border-top: 1px solid black; background: white;">
   <svg viewBox="0 0 800 40" preserveAspectRatio="none" style="width: 100%; height: 100%; display: block;">
-    <path d="M0 40 L40 25 L80 35 L120 15 L160 30 L200 10 L240 32 L280 18 L320 35 L360 12 L400 28 L440 15 L480 33 L520 20 L560 35 L600 10 L640 28 L680 15 L720 34 L760 22 L800 40 Z" fill="black" />
+    <path d="M0,40 L150,10 L300,40 M450,40 L600,15 L750,40" stroke="black" stroke-width="1.5" fill="none" opacity="0.4" />
+    <path d="M100,40 L250,5 L400,40 M350,40 L500,8 L650,40 M600,40 L700,20 L800,40" stroke="black" stroke-width="1.5" fill="none" />
   </svg>
 </div>
 """
