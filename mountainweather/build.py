@@ -160,10 +160,21 @@ trmnl_tmpl = f"""<!DOCTYPE html>
       border-right: 4px solid #000;
       padding: 15px;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      align-items: center; justify-content: flex-start;
+    }}
+    h1, h2 {{
+      margin: 0 0 15px 0;
+      border-bottom: 3px solid #000;
+      padding-bottom: 5px;
+      width: 100%;
+    }}
+    h1 {{
+      font-size: 26px; text-align: center;
     }}
     .left-pane img {{
-      max-width: 100%; max-height: 100%;
+      max-width: 100%; 
+      min-height: 0; /* Ensures the image shrinks nicely under the new H1 tag */
+      flex-grow: 1;
       object-fit: contain;
     }}
     .right-pane {{
@@ -172,14 +183,13 @@ trmnl_tmpl = f"""<!DOCTYPE html>
       display: flex; flex-direction: column;
     }}
     h2 {{
-      margin: 0 0 15px 0;
-      font-size: 26px; text-transform: uppercase;
-      border-bottom: 3px solid #000; padding-bottom: 5px;
+      font-size: 24px;
     }}
     .outlook-content {{
-      font-size: 18px; line-height: 1.5;
+      font-size: 15px; /* Reduced from 18px */
+      line-height: 1.4;
       overflow: hidden;
-      flex-grow: 1; /* Fills available space */
+      flex-grow: 1;
     }}
     .outlook-content p {{ margin-top: 0; }}
     .timestamp {{
@@ -191,6 +201,7 @@ trmnl_tmpl = f"""<!DOCTYPE html>
 </head>
 <body>
   <div class="left-pane">
+    <h1>Mountain Dashboard</h1>
     {trmnl_img}
   </div>
   <div class="right-pane">
