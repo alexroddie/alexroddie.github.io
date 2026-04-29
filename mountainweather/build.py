@@ -95,7 +95,7 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         data[key] = html
     except: data[key] = "Error fetching region."
 
-# 3. Scrape SAIS (Now including Creag Meagaidh and Torridon)
+# 3. Scrape SAIS
 for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe', 'sais_creag_meagaidh', 'sais_torridon']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=10)
@@ -154,10 +154,11 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
 se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>" if trmnl_se_date else ""
 
+# Fixed .left-pane justify-content to flex-start to align image with text top
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
 body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;}}
-.left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:center;}}
+.left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
 .left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
 .right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
 .outlook-content{{font-size:10pt;line-height:1.4;overflow:hidden;flex-grow:1;}}
