@@ -117,7 +117,7 @@ chart = f'<div style="text-align:center;margin-bottom:20px;"><a href="{urls["mwi
 
 # 5. Generate Kindle HTML (index.html)
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;max-width:95%;margin:0 auto;}}
+body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;max-width:94%;margin:0 auto;}}
 h1{{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;line-height:1.1;}}
 .region,details.region{{border:2px solid #000;margin-bottom:20px;padding:0;}}
 h2{{background:#000;color:#fff;padding:6px 12px;margin:0!important;font-size:1.25em;line-height:1.1;display:block;}}
