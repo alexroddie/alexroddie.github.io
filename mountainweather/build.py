@@ -144,7 +144,8 @@ li{{margin-bottom:6px;}}
 a{{color:inherit;text-decoration:underline;}}
 
 @media screen and (max-width: 600px) {{
-  body {{ max-width: 98%; padding: 5px; font-size: 1.1em; }}
+  /* Mobile width updated to 94% to match Kindle margins */
+  body {{ max-width: 94%; padding: 5px; font-size: 1.1em; }}
   h1 {{ font-size: 1.6em; max-width: 85%; margin: 0 auto 20px auto; }}
   .region-content {{ padding: 10px; }}
   .inner-day {{ margin-left: -10px; margin-right: -10px; }}
