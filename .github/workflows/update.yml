@@ -2,8 +2,8 @@ name: Update Mountain Weather Dashboard
 
 on:
   schedule:
-    # Runs at 04:30, 11:30, 16:30, and 17:30 UTC (GMT) every day
-    - cron: '30 4,11,16,17 * * *'
+    # Runs at 04:30, 10:30, 16:30, and 17:30 UTC (GMT) every day
+    - cron: '30 4,10,16,17 * * *'
   workflow_dispatch: 
 
 jobs:
