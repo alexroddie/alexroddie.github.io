@@ -1,7 +1,3 @@
-This is the official documentation for the **Kindle Link Index**, a lightweight, high-contrast web portal designed specifically for the Amazon Kindle’s experimental browser.
-
----
-
 # Kindle Link Index: Documentation
 **URL:** [https://alexroddie.github.io/](https://alexroddie.github.io/)  
 **Author:** Alex Roddie  
@@ -19,7 +15,7 @@ The main landing page features a vertical list of large, tappable links. This ac
 * **Design:** Large text, generous spacing (to prevent accidental taps), and no images.
 * **Primary Links:** Direct paths to the Weather Now and Mountain Dashboard pages, along with external text-only resources.
 
-### 🌤 Weather Now
+### 🌤 Weather Now `https://alexroddie.github.io/weathernow/index.html`
 A dedicated page for localized, real-time weather conditions.
 * **Features:** Displays current temperature, wind speed, and a simplified 3-day forecast.
 * **Optimization:** Uses a "mobile-first" and "E-Ink first" layout. Data is presented in a clear, tabular, or list-based format that renders perfectly in grayscale.
