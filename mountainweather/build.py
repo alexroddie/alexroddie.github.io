@@ -16,6 +16,7 @@ urls = {
 
 headers = {'User-Agent': 'Mozilla/5.0'}
 data, planning_outlook, synoptic_url = {}, "Outlook unavailable.", None
+trmnl_se_date, trmnl_se_headline = "", ""
 
 def format_text(lines):
     ignore = ["how windy?", "how wet?", "cloud on the hills?", "how cold?", "freezing level", "headline for", "chance of cloud free"]
@@ -73,6 +74,11 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
                         if d in l: cur["date"] = d; sec = "ignore"; break
                 elif sec != "ignore": cur[sec].append(l)
         if cur: days.append(cur)
+        
+        # Capture TRMNL specific data for SE Highlands Day 1
+        if key == 'mwis_se_highlands' and len(days) > 0:
+            trmnl_se_date = days[0].get('date', 'Today')
+            trmnl_se_headline = format_text(days[0].get('headline', []))
         
         html = ""
         for i, d in enumerate(days[:3]):
@@ -140,6 +146,10 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 # 6. Generate TRMNL HTML (trmnl.html)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
 
+se_summary_html = ""
+if trmnl_se_date and trmnl_se_headline:
+    se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'><em>{trmnl_se_headline.rstrip('.')}</em>.</p></div>"
+
 trmnl_tmpl = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -160,21 +170,10 @@ trmnl_tmpl = f"""<!DOCTYPE html>
       border-right: 4px solid #000;
       padding: 15px;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: flex-start;
-    }}
-    h1, h2 {{
-      margin: 0 0 15px 0;
-      border-bottom: 3px solid #000;
-      padding-bottom: 5px;
-      width: 100%;
-    }}
-    h1 {{
-      font-size: 26px; text-align: center;
+      align-items: center; justify-content: center;
     }}
     .left-pane img {{
-      max-width: 100%; 
-      min-height: 0; /* Ensures the image shrinks nicely under the new H1 tag */
-      flex-grow: 1;
+      max-width: 100%; max-height: 100%;
       object-fit: contain;
     }}
     .right-pane {{
@@ -182,11 +181,8 @@ trmnl_tmpl = f"""<!DOCTYPE html>
       padding: 20px 25px;
       display: flex; flex-direction: column;
     }}
-    h2 {{
-      font-size: 24px;
-    }}
     .outlook-content {{
-      font-size: 15px; /* Reduced from 18px */
+      font-size: 14px; /* Reduced to 14px as requested */
       line-height: 1.4;
       overflow: hidden;
       flex-grow: 1;
@@ -201,11 +197,10 @@ trmnl_tmpl = f"""<!DOCTYPE html>
 </head>
 <body>
   <div class="left-pane">
-    <h1>Mountain Dashboard</h1>
     {trmnl_img}
   </div>
   <div class="right-pane">
-    <h2>Planning Outlook</h2>
+    {se_summary_html}
     <div class="outlook-content">
       <p>{planning_outlook}</p>
     </div>
