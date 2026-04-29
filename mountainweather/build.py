@@ -187,7 +187,7 @@ trmnl_tmpl = f"""<!DOCTYPE html>
       display: flex; flex-direction: column;
     }}
     .outlook-content {{
-      font-size: 10pt; /* Dropped from 12pt to accommodate Georgia font metrics */
+      font-size: 10pt;
       line-height: 1.4;
       overflow: hidden;
       flex-grow: 1;
@@ -198,8 +198,10 @@ trmnl_tmpl = f"""<!DOCTYPE html>
        height: 40px;
        width: 100%;
        padding: 10px 25px 0 25px;
-       font-size: 14px; text-align: right;
+       font-size: 14px;
        border-top: 1px dashed #000;
+       display: flex;
+       justify-content: space-between;
     }}
   </style>
 </head>
@@ -215,7 +217,10 @@ trmnl_tmpl = f"""<!DOCTYPE html>
       </div>
     </div>
   </div>
-  <div class="footer">Updated: {ts}</div>
+  <div class="footer">
+    <strong>Mountain Dashboard</strong>
+    <span>Updated: {ts}</span>
+  </div>
 </body>
 </html>"""
 
