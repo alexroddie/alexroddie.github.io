@@ -2,8 +2,7 @@ name: Update Mountain Weather Dashboard
 
 on:
   schedule:
-    # Runs at 05:00, 17:00, and 18:00 UTC (GMT) every day
-    - cron: '0 5,17,18 * * *'
+   - cron: '30 4,11,16,17 * * *'
   workflow_dispatch: 
 
 jobs:
@@ -16,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # CRITICAL: Downloads full history so Git can rebase properly
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -24,13 +23,14 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4
+        # Added tzdata to ensure the Europe/London timezone works
+        run: pip install requests beautifulsoup4 tzdata
 
-      - name: Locate and Run Scraper
+      - name: Run Scraper
+        # Explicitly move into your folder and run the script
         run: |
-          SCRIPT_PATH=$(find . -iname "*.py" | head -n 1)
-          cd "$(dirname "$SCRIPT_PATH")"
-          python "$(basename "$SCRIPT_PATH")"
+          cd mountainweather
+          python build.py
 
       - name: Commit and Push
         run: |
@@ -40,6 +40,5 @@ jobs:
           
           git commit --allow-empty -m "Auto-update forecast dashboard"
           
-          # Explicitly target the main branch for the pull and push
           git pull origin main --rebase
           git push origin main
