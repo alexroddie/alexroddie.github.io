@@ -17,7 +17,7 @@ urls = {
 }
 
 headers = {'User-Agent': 'Mozilla/5.0'}
-data, planning_outlook, synoptic_url = {}, "Outlook unavailable.", None
+data, planning_outlook, area_summary, synoptic_url = {}, "Outlook unavailable.", "Summary unavailable.", None
 trmnl_se_date, trmnl_se_headline = "", ""
 
 def format_text(lines):
@@ -46,6 +46,17 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         soup = BeautifulSoup(res.text, 'html.parser')
         lines = [l.strip() for l in soup.get_text(separator='\n').split('\n') if l.strip()]
         
+        # Scrape "Summary for all mountain areas"
+        if area_summary == "Summary unavailable.":
+            sum_l, sum_cap = [], False
+            for l in lines:
+                if "summary for all mountain areas" in l.lower(): sum_cap = True; continue
+                if sum_cap:
+                    if any(x in l.lower() for x in ["issued at", "forecast issued", "mwis.org.uk", "planning outlook"]): sum_cap = False; continue
+                    sum_l.append(l)
+            if sum_l: area_summary = format_text(sum_l)
+
+        # Scrape "Planning Outlook"
         if planning_outlook == "Outlook unavailable.":
             out_l, cap = [], False
             for l in lines:
@@ -112,7 +123,6 @@ suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
 time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 
-# Chart image is now wrapped in a hyperlink for the Kindle dashboard
 chart = f'<div style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
 # 5. Generate Kindle HTML (index.html)
@@ -135,7 +145,7 @@ li{{margin-bottom:6px;}}
 a{{color:inherit;text-decoration:underline;}}</style></head><body>
 <h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
 {chart}
-<div class="region"><h2>Planning Outlook</h2><div class="region-content"><p>{planning_outlook}</p></div></div>
+<div class="region"><h2>Summary</h2><div class="region-content"><p>{area_summary}</p><p>{planning_outlook}</p></div></div>
 <details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms</a></h2></summary><div class="region-content">{data['mwis_cairngorms']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_west']}">W Highlands</a></h2></summary><div class="region-content">{data['mwis_west']}</div></details>
