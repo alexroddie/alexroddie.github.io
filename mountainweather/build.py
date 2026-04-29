@@ -123,6 +123,7 @@ ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
 # 5. Generate Kindle HTML (index.html)
+# Removed .inner-day-header arrow logic
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;max-width:94%;margin:0 auto;}}
 h1{{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;line-height:1.1;}}
@@ -133,11 +134,7 @@ summary h2::after{{content:'\\25C0\\FE0E';float:right;font-size:0.8em;margin-top
 details[open] summary h2::after{{content:'\\25BC\\FE0E';}}
 .region-content{{padding:15px;}}
 .inner-day{{border-top:1px dashed #000;margin-top:5px;margin-left:-15px;margin-right:-15px;display:block;}}
-.inner-day-header{{background:#eee;color:#000;padding:6px 15px;font-size:1.1em;border-bottom:1px solid #ddd;line-height:1.2;margin-bottom:0;display:block;cursor:pointer;outline:none;}}
-/* Custom arrow logic for the inner folding summary */
-.inner-day-header::-webkit-details-marker {{display: none;}}
-.inner-day-header::after {{content:'\\25C0\\FE0E';float:right;font-size:0.8em;margin-top:2px;}}
-details[open] .inner-day-header::after {{content:'\\25BC\\FE0E';}}
+.inner-day-header{{background:#eee;color:#000;padding:6px 15px;font-size:1.1em;border-bottom:1px solid #ddd;line-height:1.2;margin-bottom:0;display:block;}}
 .inner-content{{padding:10px 15px 5px 15px;}}
 p{{margin:0 0 10px 0;}}
 ul{{margin:8px 0 0 0;padding-left:22px;}}
@@ -148,10 +145,10 @@ a{{color:inherit;text-decoration:underline;}}</style></head><body>
 {chart}
 <div class="region"><h2>Summary</h2><div class="region-content">
 <p>{area_summary}</p>
-<details class="inner-day">
-  <summary class="inner-day-header"><strong>Planning Outlook</strong></summary>
+<div class="inner-day">
+  <div class="inner-day-header"><strong>Planning Outlook</strong></div>
   <div class="inner-content"><p>{planning_outlook}</p></div>
-</details>
+</div>
 </div></div>
 <details class="region"><summary><h2><a href="{urls['mwis_se_highlands']}">SE Highlands</a></h2></summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
 <details class="region"><summary><h2><a href="{urls['mwis_cairngorms']}">Cairngorms</a></h2></summary><div class="region-content">{data['mwis_cairngorms']}</div></details>
