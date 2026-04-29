@@ -83,7 +83,7 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         html = ""
         for i, d in enumerate(days[:3]):
             head = format_text(d['headline'])
-            content = f"<p><em>{head.rstrip('.')}</em>.</p>" if head else ""
+            content = f"<p>{head.rstrip('.')}.</p>" if head else ""
             content += "<ul>"
             for lbl, fld in [("Wind","wind"),("Wet","wet"),("Cloud","cloud"),("Chance of cloud-free Munros","chance_cloud_free"),("Temp","temp"),("Freezing level","freezing_level")]:
                 val = format_text(d[fld])
@@ -127,7 +127,7 @@ details[open] summary h2::after{{content:'\\25BC\\FE0E';}}
 .inner-day-header{{background:#eee;color:#000;padding:6px 15px;font-size:1.1em;border-bottom:1px solid #ddd;line-height:1.2;}}
 .inner-content{{padding:15px;}}
 p{{margin:0 0 10px 0;}}ul{{margin:8px 0;padding-left:22px;}}li{{margin-bottom:6px;}}
-.status{{text-align:center;font-style:italic;font-size:0.9em;margin-bottom:20px;color:#444;}}
+.status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
 a{{color:inherit;text-decoration:underline;}}</style></head><body>
 <h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
 {chart}
@@ -148,29 +148,34 @@ trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic
 
 se_summary_html = ""
 if trmnl_se_date and trmnl_se_headline:
-    se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'><em>{trmnl_se_headline.rstrip('.')}</em>.</p></div>"
+    se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>"
 
 trmnl_tmpl = f"""<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
     * {{ box-sizing: border-box; }}
     body {{
       margin: 0; padding: 0;
       width: 800px; height: 480px; /* STRICT TRMNL DIMENSIONS */
       background: #fff; color: #000;
-      font-family: 'Inter', sans-serif;
+      font-family: Georgia, serif;
       overflow: hidden; /* Prevent scrollbars in screenshot */
       display: flex;
+      flex-direction: column;
+    }}
+    .main-content {{
+      display: flex;
+      width: 100%;
+      flex-grow: 1; /* Takes up all available space except the footer */
+      overflow: hidden;
     }}
     .left-pane {{
       width: 50%; height: 100%;
-      border-right: 4px solid #000;
-      padding: 15px;
+      padding: 20px 15px 15px 25px; /* Matches right pane top margin */
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      align-items: center; justify-content: flex-start;
     }}
     .left-pane img {{
       max-width: 100%; max-height: 100%;
@@ -178,34 +183,38 @@ trmnl_tmpl = f"""<!DOCTYPE html>
     }}
     .right-pane {{
       width: 50%; height: 100%;
-      padding: 20px 25px;
+      padding: 20px 25px 15px 15px;
       display: flex; flex-direction: column;
     }}
     .outlook-content {{
-      font-size: 14px; /* Reduced to 14px as requested */
+      font-size: 12pt;
       line-height: 1.4;
       overflow: hidden;
       flex-grow: 1;
     }}
     .outlook-content p {{ margin-top: 0; }}
-    .timestamp {{
-       margin-top: 15px;
-       font-size: 14px; font-style: italic; text-align: right;
-       border-top: 1px dashed #000; padding-top: 10px;
+    .footer {{
+       height: 40px;
+       width: 100%;
+       padding: 10px 25px 0 25px;
+       font-size: 14px; text-align: right;
+       border-top: 1px dashed #000;
     }}
   </style>
 </head>
 <body>
-  <div class="left-pane">
-    {trmnl_img}
-  </div>
-  <div class="right-pane">
-    {se_summary_html}
-    <div class="outlook-content">
-      <p>{planning_outlook}</p>
+  <div class="main-content">
+    <div class="left-pane">
+      {trmnl_img}
     </div>
-    <div class="timestamp">Updated: {ts}</div>
+    <div class="right-pane">
+      {se_summary_html}
+      <div class="outlook-content">
+        <p>{planning_outlook}</p>
+      </div>
+    </div>
   </div>
+  <div class="footer">Updated: {ts}</div>
 </body>
 </html>"""
 
