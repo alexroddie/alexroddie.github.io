@@ -18,21 +18,10 @@
       border-right: 4px solid #000;
       padding: 15px;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: flex-start;
-    }
-    h1, h2 {
-      margin: 0 0 15px 0;
-      border-bottom: 3px solid #000;
-      padding-bottom: 5px;
-      width: 100%;
-    }
-    h1 {
-      font-size: 26px; text-align: center;
+      align-items: center; justify-content: center;
     }
     .left-pane img {
-      max-width: 100%; 
-      min-height: 0; /* Ensures the image shrinks nicely under the new H1 tag */
-      flex-grow: 1;
+      max-width: 100%; max-height: 100%;
       object-fit: contain;
     }
     .right-pane {
@@ -40,11 +29,8 @@
       padding: 20px 25px;
       display: flex; flex-direction: column;
     }
-    h2 {
-      font-size: 24px;
-    }
     .outlook-content {
-      font-size: 15px; /* Reduced from 18px */
+      font-size: 14px; /* Reduced to 14px as requested */
       line-height: 1.4;
       overflow: hidden;
       flex-grow: 1;
@@ -59,15 +45,14 @@
 </head>
 <body>
   <div class="left-pane">
-    <h1>Mountain Dashboard</h1>
     <img src="https://www.mwis.org.uk/forecast-chart-images/MWI-WM14465.jpg" />
   </div>
   <div class="right-pane">
-    <h2>Planning Outlook</h2>
+    <div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>Wednesday</strong><p style='margin: 5px 0 0 0;'><em>Light wind, becoming gustier. Patchy fog, sunshine</em>.</p></div>
     <div class="outlook-content">
       <p>Dry and sunny through Thursday, but windy with powerful gusts particularly England and Wales. Then a change to more mixed conditions, with sporadic bursts of rain developing on Friday. In the short-term, very dry grass and moorland conditions over mountain terrain continues to present a very high fire risk. Lower pressure into the Bank Holiday weekend - cooler with a mix of sunny spells and showers in the extended forecast, but uncertain local details. Higher Scottish mountains particularly toward the north at least briefly dropping to around freezing over the weekend. Also expect slight frost more widely in sheltered valleys up to dawn through this week and the weekend where skies are clear.</p>
     </div>
-    <div class="timestamp">Updated: Wednesday, April 29th at 9.00am</div>
+    <div class="timestamp">Updated: Wednesday, April 29th at 9.05am</div>
   </div>
 </body>
 </html>
