@@ -114,6 +114,7 @@ ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div style="text-align:center;margin-bottom:20px;"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></div>' if synoptic_url else ""
 
 # 5. Generate Kindle HTML (index.html)
+# Notice the .inner-content padding has been reduced on the bottom (15px 15px 5px 15px)
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;}}
 h1{{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;line-height:1.1;}}
@@ -125,7 +126,7 @@ details[open] summary h2::after{{content:'\\25BC\\FE0E';}}
 .region-content{{padding:15px;}}
 .inner-day{{border-top:1px dashed #000;margin-top:15px;margin-left:-15px;margin-right:-15px;}}
 .inner-day-header{{background:#eee;color:#000;padding:6px 15px;font-size:1.1em;border-bottom:1px solid #ddd;line-height:1.2;}}
-.inner-content{{padding:15px;}}
+.inner-content{{padding:15px 15px 5px 15px;}}
 p{{margin:0 0 10px 0;}}ul{{margin:8px 0;padding-left:22px;}}li{{margin-bottom:6px;}}
 .status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
 a{{color:inherit;text-decoration:underline;}}</style></head><body>
@@ -199,7 +200,7 @@ trmnl_tmpl = f"""<!DOCTYPE html>
        width: 100%;
        padding: 10px 25px 0 25px;
        font-size: 14px;
-       border-top: 1px dashed #000;
+       border-top: 1px solid #000; /* Changed from dashed to solid */
        display: flex;
        justify-content: space-between;
     }}
