@@ -18,7 +18,7 @@ urls = {
 
 headers = {'User-Agent': 'Mozilla/5.0'}
 data, planning_outlook, area_summary, synoptic_url = {}, "Outlook unavailable.", "Summary unavailable.", None
-trmnl_se_date, trmnl_se_headline = "", ""
+trmnl_se_date = ""
 
 def format_text(lines):
     ignore = ["how windy?", "how wet?", "cloud on the hills?", "how cold?", "freezing level", "headline for", "chance of cloud free"]
@@ -88,7 +88,6 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         
         if key == 'mwis_se_highlands' and len(days) > 0:
             trmnl_se_date = days[0].get('date', 'Today')
-            trmnl_se_headline = format_text(days[0].get('headline', []))
         
         html = ""
         for i, d in enumerate(days[:3]):
@@ -142,14 +141,12 @@ ul{{margin:8px 0 0 0;padding-left:22px;}}
 li{{margin-bottom:6px;}}
 .status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
 a{{color:inherit;text-decoration:underline;}}
-
 @media screen and (max-width: 600px) {{
   body {{ max-width: 94%; padding: 5px; font-size: 1.1em; }}
   h1 {{ font-size: 1.6em; max-width: 85%; margin: 0 auto 20px auto; }}
   .region-content {{ padding: 10px; }}
   .inner-day {{ margin-left: -10px; margin-right: -10px; }}
   .inner-content {{ padding: 10px 10px 5px 10px; }}
-  .chart-container a img {{ width: 100%; }}
 }}
 </style></head><body>
 <h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
@@ -177,11 +174,7 @@ a{{color:inherit;text-decoration:underline;}}
 with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 
 # 6. Generate TRMNL HTML (trmnl.html)
-trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
-
-# Updated se_summary_html to use area_summary (the top-level Kindle summary) 
-# and set the font size to 10pt to match the planning outlook.
-trmnl_main_summary = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0; font-size: 10pt;'>{area_summary}</p></div>" if trmnl_se_date else ""
+trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available.</p>"
 
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
@@ -190,8 +183,21 @@ body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;fon
 .left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
 .left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
 .right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
-.outlook-content{{font-size:10pt;line-height:1.4;overflow:hidden;flex-grow:1;}}
-.outlook-content p{{margin-top:0;}}.right-pane em,.outlook-content em{{font-style:normal;}}
-</style></head><body><div class="main-content"><div class="left-pane">{trmnl_img}</div><div class="right-pane">{trmnl_main_summary}<div class="outlook-content"><p>{planning_outlook}</p></div></div></div></body></html>"""
+.date-header{{font-size:16px;font-weight:bold;margin-bottom:5px;display:block;}}
+/* Line height set to 1.2 for visual parity */
+.body-text{{font-size:10pt;line-height:1.2;margin:0 0 15px 0;}}
+.outlook-section{{flex-grow:1;overflow:hidden;}}
+</style></head><body><div class="main-content">
+<div class="left-pane">{trmnl_img}</div>
+<div class="right-pane">
+    <div class="summary-section">
+        <span class="date-header">{trmnl_se_date}</span>
+        <p class="body-text">{area_summary}</p>
+    </div>
+    <div class="outlook-section">
+        <p class="body-text">{planning_outlook}</p>
+    </div>
+</div>
+</div></body></html>"""
 
 with open("trmnl.html", "w", encoding="utf-8") as f: f.write(trmnl_tmpl)
