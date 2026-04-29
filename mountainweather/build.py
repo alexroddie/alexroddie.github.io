@@ -75,7 +75,7 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
                 elif sec != "ignore": cur[sec].append(l)
         if cur: days.append(cur)
         
-        # Capture TRMNL specific data for SE Highlands Day 1 (raw text, no HTML tags)
+        # Capture TRMNL specific data for SE Highlands Day 1
         if key == 'mwis_se_highlands' and len(days) > 0:
             trmnl_se_date = days[0].get('date', 'Today')
             trmnl_se_headline = format_text(days[0].get('headline', []))
@@ -83,7 +83,6 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         html = ""
         for i, d in enumerate(days[:3]):
             head = format_text(d['headline'])
-            # CRITICAL FIX: Restored the <em> tags here so the Kindle version is unchanged
             content = f"<p><em>{head.rstrip('.')}</em>.</p>" if head else ""
             content += "<ul>"
             for lbl, fld in [("Wind","wind"),("Wet","wet"),("Cloud","cloud"),("Chance of cloud-free Munros","chance_cloud_free"),("Temp","temp"),("Freezing level","freezing_level")]:
@@ -149,7 +148,6 @@ trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic
 
 se_summary_html = ""
 if trmnl_se_date and trmnl_se_headline:
-    # Explicitly using raw TRMNL text variables to avoid any inherited HTML formatting
     se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>"
 
 trmnl_tmpl = f"""<!DOCTYPE html>
@@ -189,13 +187,12 @@ trmnl_tmpl = f"""<!DOCTYPE html>
       display: flex; flex-direction: column;
     }}
     .outlook-content {{
-      font-size: 12pt;
+      font-size: 10pt; /* Dropped from 12pt to accommodate Georgia font metrics */
       line-height: 1.4;
       overflow: hidden;
       flex-grow: 1;
     }}
     .outlook-content p {{ margin-top: 0; }}
-    /* Safety catch to ensure no italics slip into the TRMNL view from inherited content */
     .right-pane em, .outlook-content em {{ font-style: normal; }}
     .footer {{
        height: 40px;
