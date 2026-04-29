@@ -1,1 +1,244 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation: Weather Now</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --accent-color: #444444;
+            --code-bg: #f4f4f4;
+            --border-color: #dddddd;
+            --table-header: #f9f9f9;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            border-bottom: 3px solid var(--text-color);
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+
+        ul, ol {
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.6rem;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--code-bg);
+            padding: 2px 5px;
+            font-size: 0.95em;
+            border-radius: 3px;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--table-header);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 40px 0;
+        }
+
+        .highlight {
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            body { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Documentation: Weather Now</h1>
+        <p style="font-style: italic; color: #666; margin-top: 10px;">Context-Aware Weather Reporting Solution</p>
+    </header>
+
+    <section id="project-overview">
+        <h2>Project Overview</h2>
+        <p><strong>Weather Now</strong> is a dual-platform weather reporting solution designed for high-contrast, minimalist displays. It originated as a custom firmware implementation for <strong>TRMNL</strong> (e-ink hardware) and was subsequently adapted into a <strong>Standalone JavaScript</strong> application for macOS desktop widgets (via Plash) and legacy E-Ink browsers (Amazon Kindle).</p>
+        <p>The system interfaces with the <strong>Open-Meteo API</strong> to provide localized, context-aware weather summaries that prioritize future trends over redundant current data.</p>
+    </section>
+
+    <section id="implementation-a">
+        <h2>1. Implementation Path A: TRMNL (Liquid)</h2>
+        <p>The TRMNL version is designed to run on the TRMNL hardware backend using the Liquid templating language. Since TRMNL is a server-side environment, the logic handles time offsets and daylight savings manually.</p>
+
+        <h3>A. Environment Configuration</h3>
+        <ul>
+            <li><strong>Language:</strong> Liquid</li>
+            <li><strong>Data Source:</strong> Custom API Integration (Open-Meteo)</li>
+            <li><strong>Coordinates:</strong> <code>latitude=56.60712432274488</code>, <code>longitude=-3.0858753489219812</code></li>
+            <li><strong>Timezone Logic:</strong> Uses a manual BST/GMT offset block to adjust <code>hr_now</code> based on the last Sunday of March and October.</li>
+        </ul>
+
+        <h3>B. Deployment</h3>
+        <ol>
+            <li>Create a <strong>New Private Plugin</strong> in the TRMNL Dashboard.</li>
+            <li>Set the <strong>Data Source</strong> to the Open-Meteo URL.</li>
+            <li>Paste the Liquid code into the <strong>Markup</strong> section.</li>
+            <li>Ensure no <code>{% comment %}</code> tags remain, as some Liquid parsers on the backend may trigger syntax errors if tags are left unclosed.</li>
+        </ol>
+    </section>
+
+    <section id="implementation-b">
+        <h2>2. Implementation Path B: Standalone (JavaScript)</h2>
+        <p>The Standalone version is a self-contained <code>.html</code> file that performs its own API fetches. It is optimized for macOS desktop use and the Kindle Paperwhite "Experimental Browser."</p>
+
+        <h3>A. Technical Architecture</h3>
+        <ul>
+            <li><strong>Languages:</strong> HTML5, CSS3, Vanilla JS (ES6+).</li>
+            <li><strong>Timezone Handling:</strong> Managed via the <code>&amp;timezone=Europe/London</code> API parameter.</li>
+            <li><strong>Unit Control:</strong> Explicitly requests <code>&amp;wind_speed_unit=mph</code> to ensure consistency across platforms.</li>
+        </ul>
+
+        <h3>B. Deployment</h3>
+        <ul>
+            <li><strong>macOS Widget:</strong> Save as <code>weather.html</code> and load into <strong>Plash</strong>. Set the refresh interval to 15–30 minutes.</li>
+            <li><strong>Kindle:</strong> Host the file on a local/public URL. The CSS includes a <code>rotate(-90deg)</code> media query to force landscape orientation on portrait-locked Kindle browsers.</li>
+        </ul>
+    </section>
+
+    <section id="core-features">
+        <h2>3. Core Features &amp; "Secret Sauce" Logic</h2>
+        <p>Both versions of <strong>Weather Now</strong> share the same logical "blindfold" architecture to ensure the dashboard remains informative throughout the day.</p>
+
+        <h3>A. The "Blindfold" Methodology</h3>
+        <p>To prevent repeating data shown in the 5-hour hourly scale, the <strong>Later</strong> and <strong>Overnight</strong> sections ignore the immediate future. All secondary scans begin strictly at <code>hr_now + 6</code>.</p>
+
+        <h3>B. "Later" Section Logic</h3>
+        <ul>
+            <li><span class="highlight">High Temperature:</span> Compares the max temperature from <code>hr_now + 6</code> through Midnight against the official daily high. If the daily high has already occurred, the High display is hidden.</li>
+            <li><span class="highlight">Low Temperature:</span> Scans from the end of the hourly scale through to 6:00 AM the following morning.</li>
+            <li><span class="highlight">Sync Logic:</span> The <code>scanEnd</code> is set to <code>endOfDayIdx + 7</code> to ensure the "Later" low matches the "Overnight" low exactly.</li>
+        </ul>
+
+        <h3>C. The "Overnight" Summary</h3>
+        <ul>
+            <li><span class="highlight">Fixed Window:</span> Targets 10:00 PM to 6:00 AM.</li>
+            <li><span class="highlight">Precipitation Risk:</span> Identifies the specific hour of highest risk and outputs the time (e.g., "Rain at 4am").</li>
+            <li><span class="highlight">Condition Mapping:</span> Translates WMO codes (0-99) into human-readable strings, adjusted for night-time visibility (e.g., Code 0 = "Clear").</li>
+        </ul>
+    </section>
+
+    <section id="visual-style">
+        <h2>4. Visual Style &amp; Formatting</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Specification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Canvas Size</strong></td>
+                    <td>840px x 480px</td>
+                </tr>
+                <tr>
+                    <td><strong>Typography</strong></td>
+                    <td><code>Georgia, serif</code> (Main), <code>Sans-Serif</code> (System)</td>
+                </tr>
+                <tr>
+                    <td><strong>Primary Temp</strong></td>
+                    <td>115px (Line-height 0.8)</td>
+                </tr>
+                <tr>
+                    <td><strong>Grid Layout</strong></td>
+                    <td>5-column CSS Grid with a terminal "Later" column</td>
+                </tr>
+                <tr>
+                    <td><strong>Flourish</strong></td>
+                    <td>Custom SVG "Swoosh" path for editorial aesthetic</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="troubleshooting">
+        <h2>5. Maintenance &amp; Troubleshooting</h2>
+        <ul>
+            <li><span class="highlight">Coordinates:</span> Always use high-precision decimals (<code>56.607...</code>) to ensure the Open-Meteo 1km grid model matches across all devices.</li>
+            <li><span class="highlight">Wind Discrepancies:</span> The Open-Meteo API defaults to km/h. Standalone implementations must include the <code>wind_speed_unit=mph</code> flag in the URL.</li>
+            <li><span class="highlight">Liquid Errors:</span> If the TRMNL version fails to render, check for unclosed Liquid tags. <strong>Weather Now</strong> uses <code>index.of</code> logic in JS but requires direct index targeting in Liquid.</li>
+            <li><span class="highlight">Kindle Scaling:</span> If the dashboard clips on a Kindle, adjust the <code>scale(0.92)</code> factor in the CSS <code>kindle-wrapper</code>.</li>
+        </ul>
+    </section>
+
+    <footer style="margin-top: 80px; font-size: 0.9rem; color: #888; border-top: 1px solid var(--border-color); padding-top: 20px;">
+        <p>Documentation for the Weather Now Project &copy; 2026</p>
+    </footer>
+
+</body>
+</html>
