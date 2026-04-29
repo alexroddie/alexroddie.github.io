@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      width: 800px; height: 480px; /* STRICT TRMNL DIMENSIONS */
+      background: #fff; color: #000;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden; /* Prevent scrollbars in screenshot */
+      display: flex;
+    }
+    .left-pane {
+      width: 50%; height: 100%;
+      border-right: 4px solid #000;
+      padding: 15px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .left-pane img {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain;
+    }
+    .right-pane {
+      width: 50%; height: 100%;
+      padding: 20px 25px;
+      display: flex; flex-direction: column;
+    }
+    h2 {
+      margin: 0 0 15px 0;
+      font-size: 26px; text-transform: uppercase;
+      border-bottom: 3px solid #000; padding-bottom: 5px;
+    }
+    .outlook-content {
+      font-size: 18px; line-height: 1.5;
+      overflow: hidden;
+      flex-grow: 1; /* Fills available space */
+    }
+    .outlook-content p { margin-top: 0; }
+    .timestamp {
+       margin-top: 15px;
+       font-size: 14px; font-style: italic; text-align: right;
+       border-top: 1px dashed #000; padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="left-pane">
+    <img src="https://www.mwis.org.uk/forecast-chart-images/MWI-WM14465.jpg" />
+  </div>
+  <div class="right-pane">
+    <h2>Planning Outlook</h2>
+    <div class="outlook-content">
+      <p>Dry and sunny through Thursday, but windy with powerful gusts particularly England and Wales. Then a change to more mixed conditions, with sporadic bursts of rain developing on Friday. In the short-term, very dry grass and moorland conditions over mountain terrain continues to present a very high fire risk. Lower pressure into the Bank Holiday weekend - cooler with a mix of sunny spells and showers in the extended forecast, but uncertain local details. Higher Scottish mountains particularly toward the north at least briefly dropping to around freezing over the weekend. Also expect slight frost more widely in sheltered valleys up to dawn through this week and the weekend where skies are clear.</p>
+    </div>
+    <div class="timestamp">Updated: Wednesday, April 29th at 8.56am</div>
+  </div>
+</body>
+</html>
