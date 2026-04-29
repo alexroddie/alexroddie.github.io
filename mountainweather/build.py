@@ -99,7 +99,7 @@ for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_gle
             data[key] = h.text.strip() if h else "No data."
     except: data[key] = "Error."
 
-# 4. Generate HTML
+# 4. Generate Timestamps
 now = datetime.datetime.now(ZoneInfo("Europe/London"))
 suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
 time_str = now.strftime('%I.%M%p').lower().lstrip('0')
@@ -107,7 +107,8 @@ ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 
 chart = f'<div style="text-align:center;margin-bottom:20px;"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></div>' if synoptic_url else ""
 
-tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+# 5. Generate Kindle HTML (index.html)
+kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;}}
 h1{{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;line-height:1.1;}}
 .region,details.region{{border:2px solid #000;margin-bottom:20px;padding:0;}}
@@ -134,4 +135,72 @@ a{{color:inherit;text-decoration:underline;}}</style></head><body>
 <li><strong>Lochaber:</strong> {data['sais_lochaber']}</li><li><strong>Glencoe:</strong> {data['sais_glencoe']}</li>
 </ul></div></details></body></html>"""
 
-with open("index.html", "w", encoding="utf-8") as f: f.write(tmpl)
+with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
+
+# 6. Generate TRMNL HTML (trmnl.html)
+trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
+
+trmnl_tmpl = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    * {{ box-sizing: border-box; }}
+    body {{
+      margin: 0; padding: 0;
+      width: 800px; height: 480px; /* STRICT TRMNL DIMENSIONS */
+      background: #fff; color: #000;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden; /* Prevent scrollbars in screenshot */
+      display: flex;
+    }}
+    .left-pane {{
+      width: 50%; height: 100%;
+      border-right: 4px solid #000;
+      padding: 15px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }}
+    .left-pane img {{
+      max-width: 100%; max-height: 100%;
+      object-fit: contain;
+    }}
+    .right-pane {{
+      width: 50%; height: 100%;
+      padding: 20px 25px;
+      display: flex; flex-direction: column;
+    }}
+    h2 {{
+      margin: 0 0 15px 0;
+      font-size: 26px; text-transform: uppercase;
+      border-bottom: 3px solid #000; padding-bottom: 5px;
+    }}
+    .outlook-content {{
+      font-size: 18px; line-height: 1.5;
+      overflow: hidden;
+      flex-grow: 1; /* Fills available space */
+    }}
+    .outlook-content p {{ margin-top: 0; }}
+    .timestamp {{
+       margin-top: 15px;
+       font-size: 14px; font-style: italic; text-align: right;
+       border-top: 1px dashed #000; padding-top: 10px;
+    }}
+  </style>
+</head>
+<body>
+  <div class="left-pane">
+    {trmnl_img}
+  </div>
+  <div class="right-pane">
+    <h2>Planning Outlook</h2>
+    <div class="outlook-content">
+      <p>{planning_outlook}</p>
+    </div>
+    <div class="timestamp">Updated: {ts}</div>
+  </div>
+</body>
+</html>"""
+
+with open("trmnl.html", "w", encoding="utf-8") as f: f.write(trmnl_tmpl)
