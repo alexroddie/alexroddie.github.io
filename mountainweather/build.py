@@ -123,7 +123,6 @@ ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
 # 5. Generate Kindle HTML (index.html)
-# Added Viewport Meta and Media Query for Mobile responsiveness
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
@@ -143,8 +142,6 @@ ul{{margin:8px 0 0 0;padding-left:22px;}}
 li{{margin-bottom:6px;}}
 .status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
 a{{color:inherit;text-decoration:underline;}}
-
-/* Mobile responsiveness - Only triggers on small screens (phones) */
 @media screen and (max-width: 600px) {{
   body {{ max-width: 98%; padding: 5px; font-size: 1.1em; }}
   .region-content, .inner-content {{ padding: 10px; }}
@@ -177,14 +174,25 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 # 6. Generate TRMNL HTML (trmnl.html)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available today.</p>"
 se_summary_html = f"<div style='margin-bottom: 15px;'><strong style='font-size: 16px;'>{trmnl_se_date}</strong><p style='margin: 5px 0 0 0;'>{trmnl_se_headline.rstrip('.')}.</p></div>" if trmnl_se_date else ""
+
+# Monochrome Mountain SVG Border
+mountain_svg = """
+<div style="width: 100%; height: 40px; overflow: hidden; margin-top: auto;">
+  <svg viewBox="0 0 800 40" preserveAspectRatio="none" style="width: 100%; height: 100%; display: block;">
+    <path d="M0 40 L40 25 L80 35 L120 15 L160 30 L200 10 L240 32 L280 18 L320 35 L360 12 L400 28 L440 15 L480 33 L520 20 L560 35 L600 10 L640 28 L680 15 L720 34 L760 22 L800 40 Z" fill="black" />
+  </svg>
+</div>
+"""
+
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
-body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;}}
+body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;flex-direction:column;}}
+.main-content{{display:flex;width:100%;flex-grow:1;overflow:hidden;}}
 .left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
 .left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
 .right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
 .outlook-content{{font-size:10pt;line-height:1.4;overflow:hidden;flex-grow:1;}}
 .outlook-content p{{margin-top:0;}}.right-pane em,.outlook-content em{{font-style:normal;}}
-</style></head><body><div class="left-pane">{trmnl_img}</div><div class="right-pane">{se_summary_html}<div class="outlook-content"><p>{planning_outlook}</p></div></div></body></html>"""
+</style></head><body><div class="main-content"><div class="left-pane">{trmnl_img}</div><div class="right-pane">{se_summary_html}<div class="outlook-content"><p>{planning_outlook}</p></div></div></div>{mountain_svg}</body></html>"""
 
 with open("trmnl.html", "w", encoding="utf-8") as f: f.write(trmnl_tmpl)
