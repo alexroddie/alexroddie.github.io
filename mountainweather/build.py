@@ -46,13 +46,14 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         soup = BeautifulSoup(res.text, 'html.parser')
         lines = [l.strip() for l in soup.get_text(separator='\n').split('\n') if l.strip()]
         
-        # Scrape "Summary for all mountain areas"
+        # Scrape "Summary for all mountain areas" - refined to stop at regional headline
         if area_summary == "Summary unavailable.":
             sum_l, sum_cap = [], False
             for l in lines:
                 if "summary for all mountain areas" in l.lower(): sum_cap = True; continue
                 if sum_cap:
-                    if any(x in l.lower() for x in ["issued at", "forecast issued", "mwis.org.uk", "planning outlook"]): sum_cap = False; continue
+                    # Stop if we hit a regional headline or footer info
+                    if any(x in l.lower() for x in ["headline for", "issued at", "forecast issued", "mwis.org.uk", "planning outlook"]): sum_cap = False; break
                     sum_l.append(l)
             if sum_l: area_summary = format_text(sum_l)
 
