@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      actions: write # Required for the API ping below
+      actions: write
 
     steps:
       - name: Checkout repository
@@ -34,6 +34,7 @@ jobs:
 
       - name: Commit and Push
         run: |
+          # The bot handles the commits so your contribution graph stays clean
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "action@github.com"
           git add -A
@@ -45,5 +46,6 @@ jobs:
 
       - name: Prevent 60-Day Suspension
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # CRITICAL: This hits the API using your human PAT, resetting the 60-day clock
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: gh workflow enable update.yml
