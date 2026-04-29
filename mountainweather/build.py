@@ -123,8 +123,10 @@ ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
 # 5. Generate Kindle HTML (index.html)
-# Removed .inner-day-header arrow logic
-kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+# Added Viewport Meta and Media Query for Mobile responsiveness
+kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
 body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;max-width:94%;margin:0 auto;}}
 h1{{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;line-height:1.1;}}
 .region,details.region{{border:2px solid #000;margin-bottom:20px;padding:0;}}
@@ -140,7 +142,14 @@ p{{margin:0 0 10px 0;}}
 ul{{margin:8px 0 0 0;padding-left:22px;}}
 li{{margin-bottom:6px;}}
 .status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
-a{{color:inherit;text-decoration:underline;}}</style></head><body>
+a{{color:inherit;text-decoration:underline;}}
+
+/* Mobile responsiveness - Only triggers on small screens (phones) */
+@media screen and (max-width: 600px) {{
+  body {{ max-width: 98%; padding: 5px; font-size: 1.1em; }}
+  .region-content, .inner-content {{ padding: 10px; }}
+}}
+</style></head><body>
 <h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
 {chart}
 <div class="region"><h2>Summary</h2><div class="region-content">
