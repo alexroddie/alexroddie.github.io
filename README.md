@@ -15,7 +15,7 @@ The Kindle Link Index serves as a home page for Kindle users who need quick acce
 The main landing page features a vertical list of large, tappable links. This acts as a centralized hub to prevent the user from having to type complex URLs into the Kindle’s slow keyboard.
 * **Design:** Large text, generous spacing (to prevent accidental taps), and no images.
 * **Primary Links:** Direct paths to the Weather Now and Mountain Dashboard pages, along with external text-only resources.
-
+ 
 ### Weather Now `weathernow/index.html`
 A dedicated page for localized, real-time weather conditions.
 * **Features:** Displays current temperature, wind speed, and a simplified 3-day forecast.
