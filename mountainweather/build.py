@@ -1,4 +1,4 @@
-import requests, datetime
+import requests, datetime, re
 from bs4 import BeautifulSoup
 from zoneinfo import ZoneInfo
 
@@ -20,14 +20,6 @@ headers = {'User-Agent': 'Mozilla/5.0'}
 data, planning_outlook, area_summary, synoptic_url = {}, "Outlook unavailable.", "Summary unavailable.", None
 trmnl_se_date = ""
 
-def format_text(lines):
-    ignore = ["how windy?", "how wet?", "cloud on the hills?", "how cold?", "freezing level", "headline for", "chance of cloud free"]
-    cleaned = []
-    for l in [line.strip() for line in lines if line.strip()]:
-        if not any(p in l.lower() for p in ignore):
-            cleaned.append(l if l[-1] in ".!?" else l + ".")
-    return " ".join(cleaned)
-
 # 1. Scrape Synoptic Chart
 try:
     res = requests.get(urls['mwis_synoptic'], headers=headers, timeout=10)
@@ -44,48 +36,30 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
     try:
         res = requests.get(urls[key], headers=headers, timeout=10)
         soup = BeautifulSoup(res.text, 'html.parser')
-        lines = [l.strip() for l in soup.get_text(separator='\n').split('\n') if l.strip()]
         
-        sum_l, out_l = [], []
-        sum_cap, out_cap = False, False
+        # Get the full text as one long string to avoid line-break issues
+        full_text = soup.get_text(separator=' ')
+        # Clean up excessive whitespace/newlines
+        full_text = ' '.join(full_text.split())
 
-        for l in lines:
-            lower_l = l.lower()
+        # --- GLOABAL SEARCH: Area Summary ---
+        if area_summary == "Summary unavailable.":
+            # Find everything between the Summary header and the next logical section
+            sum_match = re.search(r"Summary for all mountain areas(.*?)(Headline for|Planning Outlook)", full_text, re.IGNORECASE)
+            if sum_match:
+                content = sum_match.group(1).strip().lstrip('.').lstrip(':').strip()
+                if content: area_summary = content
 
-            # Area Summary Trigger
-            if "summary for all mountain areas" in lower_l:
-                sum_cap = True
-                # Grab same-line content without losing original casing
-                content = l[lower_l.find("summary for all mountain areas") + len("summary for all mountain areas"):].strip().lstrip('.').lstrip(':').strip()
-                if content: sum_l.append(content)
-                continue
-            
-            # Planning Outlook Trigger
-            if "planning outlook" in lower_l:
-                sum_cap = False # Stop summary capture if it was running
-                out_cap = True
-                content = l[lower_l.find("planning outlook") + len("planning outlook"):].strip().lstrip('.').lstrip(':').strip()
-                if content: out_l.append(content)
-                continue
+        # --- GLOBAL SEARCH: Planning Outlook ---
+        if planning_outlook == "Outlook unavailable.":
+            # Find everything after Planning Outlook until the footer navigation
+            out_match = re.search(r"Planning Outlook(.*?)(Viewing Forecast For|©|$)", full_text, re.IGNORECASE)
+            if out_match:
+                content = out_match.group(1).strip().lstrip('.').lstrip(':').strip()
+                if content: planning_outlook = content
 
-            # Stop Summary if we hit a headline
-            if sum_cap and "headline for" in lower_l:
-                sum_cap = False
-
-            # Stop Outlook if we hit the footer
-            if out_cap and "viewing forecast for" in lower_l:
-                out_cap = False
-
-            # Capture content based on active state
-            if sum_cap: sum_l.append(l)
-            if out_cap: out_l.append(l)
-
-        if sum_l and area_summary == "Summary unavailable.":
-            area_summary = format_text(sum_l)
-        if out_l and planning_outlook == "Outlook unavailable.":
-            planning_outlook = format_text(out_l)
-
-        # Regional Day Parsing (Headline, Wind, etc.)
+        # --- REGIONAL DAILY DATA (Line-based parsing is fine for structured tables) ---
+        lines = [l.strip() for l in soup.get_text(separator='\n').split('\n') if l.strip()]
         days, cur = [], None
         for l in lines:
             if "Viewing Forecast For" in l:
@@ -111,13 +85,19 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         if key == 'mwis_se_highlands' and len(days) > 0:
             trmnl_se_date = days[0].get('date', 'Today')
         
+        # Format the 3-day regional view for the Kindle (index.html)
+        def format_day_text(lines):
+            ignore = ["how windy?", "how wet?", "cloud on the hills?", "how cold?", "freezing level", "headline for", "chance of cloud free"]
+            cleaned = [l if l[-1] in ".!?" else l + "." for l in lines if not any(p in l.lower() for p in ignore)]
+            return " ".join(cleaned)
+
         html = ""
         for i, d in enumerate(days[:3]):
-            head = format_text(d['headline'])
+            head = format_day_text(d['headline'])
             content = f"<p><em>{head.rstrip('.')}</em>.</p>" if head else ""
             content += "<ul>"
             for lbl, fld in [("Wind","wind"),("Wet","wet"),("Cloud","cloud"),("Chance of cloud-free Munros","chance_cloud_free"),("Temp","temp"),("Freezing level","freezing_level")]:
-                val = format_text(d[fld])
+                val = format_day_text(d[fld])
                 if val: content += f"<li><strong>{lbl}:</strong> {val}</li>"
             content += "</ul>"
             if i > 0: html += f"<div class='inner-day'><div class='inner-day-header'><strong>{d['date']}</strong></div><div class='inner-content'>{content}</div></div>"
@@ -143,7 +123,7 @@ time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div class="chart-container" style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
-# 5. Generate Kindle HTML (index.html) - Presentation strictly preserved
+# 5. Generate Kindle HTML (index.html) - PRESENTATION PRESERVED
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
 <style>
 body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;max-width:94%;margin:0 auto;}}
@@ -187,7 +167,7 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 # 6. Generate TRMNL HTML (trmnl.html)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available.</p>"
 
-# Dynamic Scaling (Thresholds 800/1200)
+# DYNAMIC SCALING: Thresholds 800/1200
 total_chars = len(area_summary) + len(planning_outlook)
 t_body_size = "11pt"
 t_header_size = "17px"
