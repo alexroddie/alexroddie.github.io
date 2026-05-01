@@ -1,4 +1,4 @@
-import requests, datetime
+import requests, datetime, re
 from bs4 import BeautifulSoup
 from zoneinfo import ZoneInfo
 
@@ -18,17 +18,11 @@ urls = {
 
 headers = {'User-Agent': 'Mozilla/5.0'}
 data, planning_outlook, area_summary, synoptic_url = {}, "Outlook unavailable.", "Summary unavailable.", None
-trmnl_se_date = ""
-day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+trmnl_se_date = "Today"
 
-def format_text(lines):
-    ignore = ["how windy?", "how wet?", "cloud on the hills?", "how cold?", "freezing level", "headline for", "chance of cloud free"]
-    cleaned = []
-    for l in [line.strip() for line in lines if line.strip()]:
-        l = l.lstrip('.').lstrip(':').strip()
-        if l and not any(p in l.lower() for p in ignore):
-            cleaned.append(l if l[-1] in ".!?" else l + ".")
-    return " ".join(cleaned)
+def clean_val(val):
+    val = re.sub(r"^[\.\:\?]+", "", val).strip()
+    return val if val == "" or val[-1] in ".!?" else val + "."
 
 # 1. Scrape Synoptic Chart
 try:
@@ -41,114 +35,114 @@ try:
             break
 except: pass
 
-# 2. Scrape MWIS Regions
+# 2. Scrape MWIS Regions (Line-Break Independent Logic)
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=10)
         soup = BeautifulSoup(res.text, 'html.parser')
-        lines = [l.strip() for l in soup.get_text(separator='\n').split('\n') if l.strip()]
+        # Flatten all text into a single string so line breaks don't matter
+        full_text = ' '.join(soup.get_text(separator=' ').split())
         
-        sum_l, out_l = [], []
-        sum_cap, out_cap = False, False
-
-        for l in lines:
-            low_l = l.lower()
-
-            # Area Summary
-            if "summary for all mountain areas" in low_l:
-                sum_cap = True
-                idx = low_l.find("summary for all mountain areas") + len("summary for all mountain areas")
-                content = l[idx:].strip().lstrip('.').lstrip(':').strip()
-                if content: sum_l.append(content)
-                continue
+        # Area Summary & Outlook
+        if area_summary == "Summary unavailable.":
+            m_sum = re.search(r"Summary for all mountain areas\.?(.*?)(?:Headline for|Planning Outlook|How windy)", full_text, re.IGNORECASE)
+            if m_sum: area_summary = clean_val(m_sum.group(1))
             
-            # Planning Outlook
-            if "planning outlook" in low_l:
-                sum_cap = False
-                out_cap = True
-                idx = low_l.find("planning outlook") + len("planning outlook")
-                content = l[idx:].strip().lstrip('.').lstrip(':').strip()
-                if content: out_l.append(content)
-                continue
+        if planning_outlook == "Outlook unavailable.":
+            m_out = re.search(r"Planning Outlook\.?(.*?)(?:Viewing Forecast For|©|$)", full_text, re.IGNORECASE)
+            if m_out: planning_outlook = clean_val(m_out.group(1))
 
-            # Stop Captures
-            if sum_cap and "headline for" in low_l: sum_cap = False
-            if out_cap and ("viewing forecast for" in low_l or "copyright" in low_l): out_cap = False
-
-            if sum_cap: sum_l.append(l)
-            if out_cap: out_l.append(l)
-
-        if sum_l and area_summary == "Summary unavailable.": area_summary = format_text(sum_l)
-        if out_l and planning_outlook == "Outlook unavailable.": planning_outlook = format_text(out_l)
-
-        # Regional Daily Parsing
-        days, cur = [], None
-        for l in lines:
-            low_l = l.lower()
-            
-            # Smart Date Trigger: Looks for explicit text OR just a date (e.g. "Saturday 2 May")
-            is_date = False
-            if len(l) < 30 and any(d in l for d in day_names):
-                if not any(x in low_l for x in ["how", "cloud", "freezing", "chance", "summary", "outlook", "headline"]):
-                    is_date = True
-
-            if "viewing forecast for" in low_l or is_date:
-                if cur: days.append(cur)
-                date_str = l.replace("Viewing Forecast For", "").replace("viewing forecast for", "").strip(' .:')
-                # Default to headline capture so we don't lose text if MWIS drops the "Headline for" anchor
-                cur = {"date": date_str, "headline":[], "wind":[], "wet":[], "cloud":[], "chance_cloud_free":[], "temp":[], "freezing_level":[]}
-                sec = "headline" 
-                continue
-                
-            if cur:
-                if "headline for" in low_l: sec = "headline"
-                elif "how windy?" in low_l: sec = "wind"
-                elif "how wet?" in low_l: sec = "wet"
-                elif "cloud on the hills?" in low_l: sec = "cloud"
-                elif "chance of cloud free" in low_l: sec = "chance_cloud_free"
-                elif "how cold?" in low_l: sec = "temp"
-                elif "freezing level" in low_l: sec = "freezing_level"
-                elif any(x in low_l for x in ["summary", "effect", "sunshine", "planning"]): sec = "ignore"
-                elif sec != "ignore": cur[sec].append(l)
-                
-        if cur: days.append(cur)
+        # Extract Days using "How windy?" as the structural anchor
+        hw_matches = list(re.finditer(r"How windy\?(?:\s*\([^\)]+\))?", full_text, re.IGNORECASE))
+        days = []
         
+        for i, hw in enumerate(hw_matches):
+            day = {"date": "Today", "headline": "", "wind": "", "wet": "", "cloud": "", "chance_cloud_free": "", "temp": "", "freezing_level": ""}
+            
+            # Find the text chunk that contains the Date and Headline
+            if i == 0: pre_text = full_text[:hw.start()]
+            else:
+                prev_fl = re.search(r"Freezing Level\.?", full_text[hw_matches[i-1].start():hw.start()], re.IGNORECASE)
+                if prev_fl: pre_text = full_text[hw_matches[i-1].start() + prev_fl.end() : hw.start()]
+                else: pre_text = full_text[hw_matches[i-1].end():hw.start()]
+                    
+            # Extract Date
+            day_match = re.search(r"(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)[a-zA-Z0-9\s]*\d{4}", pre_text, re.IGNORECASE)
+            if day_match: day["date"] = day_match.group(0).strip()
+            else:
+                day_match = re.search(r"(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)", pre_text, re.IGNORECASE)
+                if day_match: day["date"] = day_match.group(0).strip()
+                
+            # Extract Headline
+            hl_match = re.search(r"Headline for[^\.]*\.(.*)", pre_text, re.IGNORECASE)
+            if hl_match: day["headline"] = clean_val(hl_match.group(1))
+
+            # Extract the actual weather metrics for this day
+            end_idx = hw_matches[i+1].start() if i+1 < len(hw_matches) else len(full_text)
+            day_text = full_text[hw.start():end_idx]
+            
+            all_m = r"(?:How windy\?|Effect of the wind[^\?]*\?|How Wet\?|Cloud on the hills\?|Chance of cloud free[^\?]*\?|Sunshine and air clarity\?|How Cold\?(?:\s*\([^\)]+\))?|Freezing Level\.?|©|$)"
+            
+            def get_f(f_regex):
+                fm = re.search(f_regex, day_text, re.IGNORECASE)
+                if not fm: return ""
+                rem = day_text[fm.end():]
+                nm = re.search(all_m, rem, re.IGNORECASE)
+                return clean_val(rem[:nm.start()]) if nm else clean_val(rem)
+                
+            day["wind"] = get_f(r"How windy\?(?:\s*\([^\)]+\))?")
+            day["wet"] = get_f(r"How Wet\?")
+            day["cloud"] = get_f(r"Cloud on the hills\?")
+            day["chance_cloud_free"] = get_f(r"Chance of cloud free[^\?]*\?")
+            day["temp"] = get_f(r"How Cold\?(?:\s*\([^\)]+\))?")
+            day["freezing_level"] = get_f(r"Freezing Level\.?")
+            
+            days.append(day)
+            if len(days) == 3: break
+            
         if key == 'mwis_se_highlands' and len(days) > 0:
             trmnl_se_date = days[0].get('date', 'Today')
-        
+
+        # Build Kindle HTML
         html = ""
-        for i, d in enumerate(days[:3]):
-            head = format_text(d['headline'])
-            content = f"<p><em>{head.rstrip('.')}</em>.</p>" if head else ""
+        for i, d in enumerate(days):
+            content = f"<p><em>{d['headline']}</em></p>" if d['headline'] else ""
             content += "<ul>"
-            for lbl, fld in [("Wind","wind"),("Wet","wet"),("Cloud","cloud"),("Chance of cloud-free Munros","chance_cloud_free"),("Temp","temp"),("Freezing level","freezing_level")]:
-                val = format_text(d[fld])
+            for lbl, val in [("Wind", d["wind"]), ("Wet", d["wet"]), ("Cloud", d["cloud"]), ("Chance of cloud-free Munros", d["chance_cloud_free"]), ("Temp", d["temp"]), ("Freezing level", d["freezing_level"])]:
                 if val: content += f"<li><strong>{lbl}:</strong> {val}</li>"
             content += "</ul>"
             if i > 0: html += f"<div class='inner-day'><div class='inner-day-header'><strong>{d['date']}</strong></div><div class='inner-content'>{content}</div></div>"
             else: html += f"<div class='day-one'><strong>{d['date']}</strong>{content}</div>"
+            
+        if not html: html = "<p>Data structure altered by MWIS. Awaiting scraper update.</p>"
         data[key] = html
-    except: data[key] = "Error fetching region."
+    except Exception as e:
+        data[key] = f"Error fetching region. ({e})"
 
-# 3. Scrape SAIS
+# 3. Scrape SAIS (Fixed: Looks directly for data, ignores broad text changes)
 for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe', 'sais_creag_meagaidh', 'sais_torridon']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=10)
         soup = BeautifulSoup(res.text, 'html.parser')
-        if "finished" in soup.get_text().lower(): data[key] = "Season finished."
+        h = soup.select_one('.hazard-level h2')
+        if h: data[key] = h.text.strip()
         else:
-            h = soup.select_one('.hazard-level h2, .forecast-text p')
-            data[key] = h.text.strip() if h else "No data."
+            text = soup.get_text().lower()
+            if "avalanche hazard will be low" in text: data[key] = "Low"
+            elif "avalanche hazard will be moderate" in text: data[key] = "Moderate"
+            elif "avalanche hazard will be considerable" in text: data[key] = "Considerable"
+            elif "avalanche hazard will be high" in text: data[key] = "High"
+            else: data[key] = "No data / Season finished."
     except: data[key] = "Error."
 
-# 4. Generate Timestamps & Chart HTML
+# 4. Generate Timestamps
 now = datetime.datetime.now(ZoneInfo("Europe/London"))
 suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
 time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div class="chart-container" style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
-# 5. Generate Kindle HTML (index.html) - EXACT FORMATTING RESTORED
+# 5. Generate Kindle HTML (index.html) - CSS AND ARROWS 100% RESTORED
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
