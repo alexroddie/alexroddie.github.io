@@ -63,12 +63,12 @@ except Exception as e:
     area_summary = f"Error fetching text data: {e}"
     planning_outlook = "Check connection."
 
-# 4. Generate TRMNL Layout with strict scaling rules
+# 4. Generate TRMNL Layout with updated scaling rules
 trmnl_img = f'<img src="{chart_src}" />' if chart_src else "<p>No synoptic chart available.</p>"
 
 total_chars = len(area_summary) + len(planning_outlook)
 
-# Default base sizing (under 700 chars)
+# Default base sizing (under 680 chars)
 t_body_size = "12pt"
 t_header_size = "17pt"
 
