@@ -44,37 +44,39 @@ try:
     if lines:
         planning_outlook = lines[-1]
 
-    # Extract Date: Grab the first "Day" block and aggressively strip "Forecast"
+    # Extract Date: Look for "Viewing Forecast For", then grab the next line with a day
+    found_viewing_marker = False
     for line in lines:
-        if any(day in line for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]):
-            if len(line) < 40 and not any(word in line.lower() for word in ["summary", "outlook", "wind", "cloud"]):
-                # Forcefully remove "Forecast" or "'s Forecast" to leave just the day/date
-                trmnl_se_date = line.replace("'s Forecast", "").replace(" Forecast", "").strip()
-                break
+        if "viewing forecast for" in line.lower():
+            found_viewing_marker = True
+            
+        if found_viewing_marker and any(day in line for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]):
+            trmnl_se_date = line.strip()
+            break
                 
 except Exception as e:
     area_summary = f"Error fetching text data: {e}"
     planning_outlook = "Check connection."
 
-# 4. Generate TRMNL Layout with Tweaked Scaling
+# 4. Generate TRMNL Layout with New Scaling Rules
 trmnl_img = f'<img src="{chart_src}" />' if chart_src else "<p>No synoptic chart available.</p>"
 
 total_chars = len(area_summary) + len(planning_outlook)
 
-# Default base sizing
-t_body_size = "11pt"
-t_header_size = "17pt"
+# Default base sizing (under 700 chars)
+t_body_size = "12pt"
+t_header_size = "18pt"
 
-# Adjusted scaling rules
+# Cascading adjustments based on your character thresholds
 if total_chars > 1200:
     t_body_size = "9pt"
     t_header_size = "15pt"
-elif total_chars > 800:
+elif total_chars > 850:
     t_body_size = "10pt"
     t_header_size = "16pt"
-elif total_chars < 600:
-    t_body_size = "12pt"
-    t_header_size = "18pt"
+elif total_chars > 700:
+    t_body_size = "11pt"
+    t_header_size = "17pt"
 
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
