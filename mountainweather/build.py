@@ -70,18 +70,18 @@ total_chars = len(area_summary) + len(planning_outlook)
 
 # Default base sizing (under 700 chars)
 t_body_size = "12pt"
-t_header_size = "18pt"
+t_header_size = "17pt"
 
 # Cascading adjustments based on character thresholds
 if total_chars > 1200:
     t_body_size = "9pt"
     t_header_size = "15pt"
-elif total_chars > 850:
+elif total_chars > 830:
     t_body_size = "10pt"
     t_header_size = "16pt"
-elif total_chars > 700:
+elif total_chars > 680:
     t_body_size = "11pt"
-    t_header_size = "17pt"
+    t_header_size = "16pt"
 
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
