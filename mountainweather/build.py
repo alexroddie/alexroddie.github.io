@@ -20,9 +20,6 @@ headers = {'User-Agent': 'Mozilla/5.0'}
 data, planning_outlook, area_summary, synoptic_url = {}, "Outlook unavailable.", "Summary unavailable.", None
 trmnl_se_date = "Today"
 
-# Highly specific Regex to isolate ONLY the formatted date, ignoring preamble junk
-date_regex = r"\b(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)(?:\s+\d{4})?\b"
-
 def clean_val(val):
     val = re.sub(r"^[\.\:\?\-\s]+", "", val).strip()
     if not val: return ""
@@ -39,93 +36,108 @@ try:
             break
 except: pass
 
-# 2. Scrape MWIS Regions
+# 2. Scrape MWIS Regions using Strict Block-Mapping
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=10)
         soup = BeautifulSoup(res.text, 'html.parser')
-        full_text = ' '.join(soup.get_text(separator=' ').split())
         
-        # Area Summary & Outlook
-        if area_summary == "Summary unavailable.":
-            m_sum = re.search(r"Summary for all mountain areas\.?(.*?)(?:Planning Outlook|Viewing Forecast For|" + date_regex + ")", full_text, re.IGNORECASE)
-            if m_sum: area_summary = clean_val(m_sum.group(1))
-            
-        if planning_outlook == "Outlook unavailable.":
-            m_out = re.search(r"Planning Outlook\.?(.*?)(?:Viewing Forecast For|" + date_regex + ")", full_text, re.IGNORECASE)
-            if m_out: planning_outlook = clean_val(m_out.group(1))
+        # PRE-CLEANING: Eradicate all known junk text before parsing begins
+        raw_text = soup.get_text(separator=' ')
+        junk_to_remove = [
+            r"www\.mwis\.org\.uk",
+            r"©\s*Copyright.*?(?=\s|$)",
+            r"Viewing Forecast For\s*(?:Southeastern Highlands|The Northwest Highlands|West Highlands|Cairngorms NP and Monadhliath)",
+            r"Forecast issued at[^\.]*?(?:\d{4}|\.)",
+            r"Last updated[^\.]*?(?:\d{4}|\.)"
+        ]
+        for j in junk_to_remove:
+            raw_text = re.sub(j, "", raw_text, flags=re.IGNORECASE)
+        full_text = ' '.join(raw_text.split()) # Normalize spacing
 
-        # Extract Days using structural boundaries
+        # STEP 1: Map the exact start/end index of every major section
+        blocks = []
+        
+        m_sum = re.search(r"Summary for all mountain areas\.?", full_text, re.IGNORECASE)
+        if m_sum: blocks.append({"name": "summary", "start": m_sum.start(), "end": m_sum.end()})
+            
+        m_out = re.search(r"(?:Planning Outlook|Looking Ahead)\.?", full_text, re.IGNORECASE)
+        if m_out: blocks.append({"name": "outlook", "start": m_out.start(), "end": m_out.end()})
+
+        date_regex = r"\b(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)(?:\s+\d{4})?\b"
         hw_matches = list(re.finditer(r"How windy\?(?:\s*\([^\)]+\))?", full_text, re.IGNORECASE))
-        days = []
-        day_boundaries = []
         
-        # Step 1: Establish precise start lines for every day to prevent bleeding
-        for i, hw in enumerate(hw_matches):
-            dates_before = list(re.finditer(date_regex, full_text[:hw.start()], re.IGNORECASE))
-            if dates_before:
-                start_idx = dates_before[-1].start()
-                date_str = dates_before[-1].group(0).strip()
-                headline_raw = full_text[dates_before[-1].end():hw.start()]
+        for i, hw in enumerate(hw_matches[:3]):
+            text_before_hw = full_text[:hw.start()]
+            dates = list(re.finditer(date_regex, text_before_hw, re.IGNORECASE))
+            
+            # Find the date that specifically belongs to this day block
+            prev_limit = blocks[-1]["end"] if blocks else 0
+            valid_dates = [d for d in dates if d.start() >= prev_limit]
+            
+            if valid_dates:
+                d_match = valid_dates[-1]
+                blocks.append({"name": f"day_{i}", "start": d_match.start(), "end": d_match.end(), "date_str": d_match.group(0).strip()})
             else:
-                start_idx = hw_matches[i-1].end() if i > 0 else 0
-                date_str = "Day " + str(i+1)
-                headline_raw = full_text[start_idx:hw.start()]
-                
-            day_boundaries.append({
-                'start_idx': start_idx,
-                'hw_start': hw.start(),
-                'date_str': date_str,
-                'headline_raw': headline_raw
-            })
+                blocks.append({"name": f"day_{i}", "start": hw.start(), "end": hw.start(), "date_str": f"Day {i+1}"})
 
-        # Step 2: Extract data constrained strictly within those boundaries
-        for i, boundary in enumerate(day_boundaries):
-            day = {"date": boundary['date_str'], "headline": "", "wind": "", "wet": "", "cloud": "", "chance_cloud_free": "", "temp": "", "freezing_level": ""}
-            
-            # Clean Headline Extractor
-            hl_raw = boundary['headline_raw']
-            hl_match = re.search(r"Headline for[^\.]*\.(.*)", hl_raw, re.IGNORECASE)
-            if hl_match:
-                day["headline"] = clean_val(hl_match.group(1))
-            else:
-                # Discarding preamble junk if MWIS forgets the "Headline for" anchor
-                hl_clean = re.sub(r"(?:www\.mwis\.org\.uk|©.*|Viewing Forecast For.*)", "", hl_raw, flags=re.IGNORECASE)
-                day["headline"] = clean_val(hl_clean)
+        # Sort all blocks by their physical position in the text
+        blocks = sorted(blocks, key=lambda x: x["start"])
+        days = []
 
-            # Hard limit: This ensures Freezing Level stops before the next day's date
-            if i + 1 < len(day_boundaries):
-                end_idx = day_boundaries[i+1]['start_idx']
-            else:
-                copy_match = re.search(r"(?:©|www\.mwis\.org\.uk|Forecast issued)", full_text[boundary['hw_start']:], re.IGNORECASE)
-                end_idx = boundary['hw_start'] + copy_match.start() if copy_match else len(full_text)
+        # STEP 2: Extract data constrained strictly within the mapped blocks
+        for i, b in enumerate(blocks):
+            # The hard boundary: This block's text MUST end where the next block begins
+            chunk_end = blocks[i+1]["start"] if i + 1 < len(blocks) else len(full_text)
+            chunk_text = full_text[b["end"]:chunk_end].strip()
+            
+            if b["name"] == "summary":
+                val = clean_val(chunk_text)
+                if val: area_summary = val
                 
-            day_text = full_text[boundary['hw_start']:end_idx]
-            
-            all_m = r"(?:How windy\?|Effect of the wind[^\?]*\?|How Wet\?|Cloud on the hills\?|Chance of cloud free[^\?]*\?|Sunshine and air clarity\?|How Cold\?(?:\s*\([^\)]+\))?|Freezing Level\.?|$)"
-            
-            def get_f(f_regex):
-                fm = re.search(f_regex, day_text, re.IGNORECASE)
-                if not fm: return ""
-                rem = day_text[fm.end():]
-                nm = re.search(all_m, rem, re.IGNORECASE)
-                val = rem[:nm.start()] if nm else rem
-                return clean_val(val)
+            elif b["name"] == "outlook":
+                val = clean_val(chunk_text)
+                if val: planning_outlook = val
                 
-            day["wind"] = get_f(r"How windy\?(?:\s*\([^\)]+\))?")
-            day["wet"] = get_f(r"How Wet\?")
-            day["cloud"] = get_f(r"Cloud on the hills\?")
-            day["chance_cloud_free"] = get_f(r"Chance of cloud free[^\?]*\?")
-            day["temp"] = get_f(r"How Cold\?(?:\s*\([^\)]+\))?")
-            day["freezing_level"] = get_f(r"Freezing Level\.?")
-            
-            days.append(day)
-            if len(days) == 3: break
-            
+            elif b["name"].startswith("day_"):
+                day_dict = {"date": b["date_str"], "headline": "", "wind": "", "wet": "", "cloud": "", "chance_cloud_free": "", "temp": "", "freezing_level": ""}
+                
+                # Map metrics inside the day chunk
+                metric_regexes = {
+                    "wind": r"How windy\?(?:\s*\([^\)]+\))?",
+                    "wet": r"How Wet\?",
+                    "cloud": r"Cloud on the hills\?",
+                    "chance_cloud_free": r"Chance of cloud free[^\?]*\?",
+                    "temp": r"How Cold\?(?:\s*\([^\)]+\))?",
+                    "freezing_level": r"Freezing Level\.?"
+                }
+                
+                found_metrics = []
+                for m_key, reg in metric_regexes.items():
+                    m = re.search(reg, chunk_text, re.IGNORECASE)
+                    if m: found_metrics.append({"key": m_key, "start": m.start(), "end": m.end()})
+                found_metrics = sorted(found_metrics, key=lambda x: x["start"])
+                
+                # Extract Headline (Everything before the first metric)
+                if found_metrics:
+                    hl_raw = chunk_text[:found_metrics[0]["start"]].strip()
+                    hl_raw = re.sub(r"^Headline for[^\.]*\.", "", hl_raw, flags=re.IGNORECASE).strip()
+                    day_dict["headline"] = clean_val(hl_raw)
+                else:
+                    day_dict["headline"] = clean_val(chunk_text)
+                    
+                # Extract individual metrics with zero bleed
+                for idx, fm in enumerate(found_metrics):
+                    val_start = fm["end"]
+                    val_end = found_metrics[idx+1]["start"] if idx+1 < len(found_metrics) else len(chunk_text)
+                    day_dict[fm["key"]] = clean_val(chunk_text[val_start:val_end])
+                    
+                days.append(day_dict)
+                
         if key == 'mwis_se_highlands' and len(days) > 0:
             trmnl_se_date = days[0].get('date', 'Today')
 
-        # Build HTML
+        # Build HTML (Formatting completely preserved)
         html = ""
         for i, d in enumerate(days):
             content = f"<p><em>{d['headline']}</em></p>" if d['headline'] else ""
@@ -164,7 +176,7 @@ time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div class="chart-container" style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
-# 5. Generate Kindle HTML (index.html) - NO STYLING CHANGES
+# 5. Generate Kindle HTML (index.html)
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
@@ -216,7 +228,7 @@ a{{color:inherit;text-decoration:underline;}}
 
 with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 
-# 6. Generate TRMNL HTML (trmnl.html) - NO STYLING CHANGES
+# 6. Generate TRMNL HTML (trmnl.html)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available.</p>"
 
 total_chars = len(area_summary) + len(planning_outlook)
