@@ -18,64 +18,71 @@ urls = {
 
 headers = {'User-Agent': 'Mozilla/5.0'}
 data, planning_outlook, area_summary, synoptic_url = {}, "Outlook unavailable.", "Summary unavailable.", None
-trmnl_se_date = ""
+trmnl_se_date = datetime.datetime.now(ZoneInfo("Europe/London")).strftime('%A')
 
-# 1. Scrape Synoptic Chart
+def format_text(lines):
+    ignore = ["how windy?", "how wet?", "cloud on the hills?", "how cold?", "freezing level", "headline for", "chance of cloud free"]
+    cleaned = []
+    for l in [line.strip() for line in lines if line.strip()]:
+        l = l.lstrip('.').lstrip(':').strip() # Remove accidental header artifacts
+        if l and not any(p in l.lower() for p in ignore):
+            cleaned.append(l if l[-1] in ".!?" else l + ".")
+    return " ".join(cleaned)
+
+# 1. SCRAPE SYNOPTIC CHART (Structural search)
 try:
     res = requests.get(urls['mwis_synoptic'], headers=headers, timeout=10)
     soup = BeautifulSoup(res.text, 'html.parser')
     for img in soup.find_all('img'):
         src = img.get('src', '')
-        if ('chart' in src.lower() or 'synoptic' in src.lower()) and 'logo' not in src.lower():
+        # Identify the synoptic chart by content, excluding common UI logos
+        if any(x in src.lower() for x in ['chart', 'synoptic']) and 'logo' not in src.lower():
             synoptic_url = "https://www.mwis.org.uk" + src if src.startswith('/') else src
             break
 except: pass
 
-# 2. Scrape MWIS Regions
+# 2. SCRAPE MWIS DATA (Regex-Hardened)
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=10)
         soup = BeautifulSoup(res.text, 'html.parser')
         
-        # Get the full text as one long string to avoid line-break issues
-        full_text = soup.get_text(separator=' ')
-        # Clean up excessive whitespace/newlines
-        full_text = ' '.join(full_text.split())
+        # Flatten text to one searchable string to handle shifting line breaks
+        full_page_text = ' '.join(soup.get_text(separator=' ').split())
 
-        # --- GLOABAL SEARCH: Area Summary ---
+        # --- SUMMARY SCRAPER (Regex) ---
         if area_summary == "Summary unavailable.":
-            # Find everything between the Summary header and the next logical section
-            sum_match = re.search(r"Summary for all mountain areas(.*?)(Headline for|Planning Outlook)", full_text, re.IGNORECASE)
-            if sum_match:
-                content = sum_match.group(1).strip().lstrip('.').lstrip(':').strip()
-                if content: area_summary = content
+            # Captures everything between the Summary header and the next logical section
+            match = re.search(r"summary for all mountain areas(.*?)(headline for|planning outlook)", full_page_text, re.IGNORECASE)
+            if match:
+                area_summary = match.group(1).strip().lstrip('.').lstrip(':').strip()
 
-        # --- GLOBAL SEARCH: Planning Outlook ---
+        # --- OUTLOOK SCRAPER (Regex) ---
         if planning_outlook == "Outlook unavailable.":
-            # Find everything after Planning Outlook until the footer navigation
-            out_match = re.search(r"Planning Outlook(.*?)(Viewing Forecast For|©|$)", full_text, re.IGNORECASE)
-            if out_match:
-                content = out_match.group(1).strip().lstrip('.').lstrip(':').strip()
-                if content: planning_outlook = content
+            # Captures everything from the header until the very end of the page content
+            match = re.search(r"planning outlook(.*?)(viewing forecast for|©|$)", full_page_text, re.IGNORECASE)
+            if match:
+                planning_outlook = match.group(1).strip().lstrip('.').lstrip(':').strip()
 
-        # --- REGIONAL DAILY DATA (Line-based parsing is fine for structured tables) ---
+        # --- REGIONAL DAILY PARSING (Flexible Partial Match) ---
         lines = [l.strip() for l in soup.get_text(separator='\n').split('\n') if l.strip()]
         days, cur = [], None
         for l in lines:
-            if "Viewing Forecast For" in l:
+            low_l = l.lower()
+            if "viewing forecast for" in low_l:
                 if cur: days.append(cur)
                 cur = {"date": "Today", "headline":[], "wind":[], "wet":[], "cloud":[], "chance_cloud_free":[], "temp":[], "freezing_level":[]}
                 sec = "date"
                 continue
             if cur:
-                if "Headline for" in l: sec = "headline"
-                elif "How windy?" in l: sec = "wind"
-                elif "How Wet?" in l: sec = "wet"
-                elif "Cloud on the hills?" in l: sec = "cloud"
-                elif "Chance of cloud free" in l: sec = "chance_cloud_free"
-                elif "How Cold?" in l: sec = "temp"
-                elif "Freezing Level" in l: sec = "freezing_level"
-                elif any(x in l for x in ["Summary", "Effect", "Sunshine", "Planning"]): sec = "ignore"
+                if "headline for" in low_l: sec = "headline"
+                elif "how windy?" in low_l: sec = "wind"
+                elif "how wet?" in low_l: sec = "wet"
+                elif "cloud on the hills?" in low_l: sec = "cloud"
+                elif "chance of cloud free" in low_l: sec = "chance_cloud_free"
+                elif "how cold?" in low_l: sec = "temp"
+                elif "freezing level" in low_l: sec = "freezing_level"
+                elif any(x in low_l for x in ["summary", "effect", "sunshine", "planning"]): sec = "ignore"
                 elif sec == "date":
                     for d in ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]:
                         if d in l: cur["date"] = d; sec = "ignore"; break
@@ -85,27 +92,22 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         if key == 'mwis_se_highlands' and len(days) > 0:
             trmnl_se_date = days[0].get('date', 'Today')
         
-        # Format the 3-day regional view for the Kindle (index.html)
-        def format_day_text(lines):
-            ignore = ["how windy?", "how wet?", "cloud on the hills?", "how cold?", "freezing level", "headline for", "chance of cloud free"]
-            cleaned = [l if l[-1] in ".!?" else l + "." for l in lines if not any(p in l.lower() for p in ignore)]
-            return " ".join(cleaned)
-
+        # Build Kindle content blocks
         html = ""
         for i, d in enumerate(days[:3]):
-            head = format_day_text(d['headline'])
+            head = format_text(d['headline'])
             content = f"<p><em>{head.rstrip('.')}</em>.</p>" if head else ""
             content += "<ul>"
-            for lbl, fld in [("Wind","wind"),("Wet","wet"),("Cloud","cloud"),("Chance of cloud-free Munros","chance_cloud_free"),("Temp","temp"),("Freezing level","freezing_level")]:
-                val = format_day_text(d[fld])
+            for lbl, fld in [("Wind","wind"),("Wet","wet"),("Cloud","cloud"),("Chance of Munros","chance_cloud_free"),("Temp","temp"),("Freezing","freezing_level")]:
+                val = format_text(d[fld])
                 if val: content += f"<li><strong>{lbl}:</strong> {val}</li>"
             content += "</ul>"
             if i > 0: html += f"<div class='inner-day'><div class='inner-day-header'><strong>{d['date']}</strong></div><div class='inner-content'>{content}</div></div>"
             else: html += f"<div class='day-one'><strong>{d['date']}</strong>{content}</div>"
         data[key] = html
-    except: data[key] = "Error fetching region."
+    except: data[key] = "Region data error."
 
-# 3. Scrape SAIS
+# 3. SCRAPE SAIS (Avalanche)
 for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_glencoe', 'sais_creag_meagaidh', 'sais_torridon']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=10)
@@ -116,90 +118,58 @@ for key in ['sais_n_cairngorms', 'sais_s_cairngorms', 'sais_lochaber', 'sais_gle
             data[key] = h.text.strip() if h else "No data."
     except: data[key] = "Error."
 
-# 4. Generate Timestamps
+# 4. GENERATE TIMESTAMPS
 now = datetime.datetime.now(ZoneInfo("Europe/London"))
 suff = 'th' if 11<=now.day<=13 else {1:'st',2:'nd',3:'rd'}.get(now.day%10, 'th')
-time_str = now.strftime('%I.%M%p').lower().lstrip('0')
-ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
-chart = f'<div class="chart-container" style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
+ts = now.strftime(f'%A, %B {now.day}{suff} at %I.%M%p').lower().lstrip('0')
+chart_html = f'<div style="text-align:center;margin-bottom:20px;"><img src="{synoptic_url}" style="max-width:100%;height:auto;"/></div>' if synoptic_url else ""
 
-# 5. Generate Kindle HTML (index.html) - PRESENTATION PRESERVED
-kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
-<style>
+# 5. GENERATE KINDLE HTML (index.html)
+kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;max-width:94%;margin:0 auto;}}
-h1{{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;line-height:1.1;}}
-.region,details.region{{border:2px solid #000;margin-bottom:20px;padding:0;}}
-summary{{cursor:pointer;background:#000;color:#fff;padding:6px 12px;font-size:1.25em;line-height:1.1;display:block;outline:none;list-style:none;font-weight:bold;}}
-.region-content{{padding:15px;}}
-.inner-day{{border-top:1px dashed #000;margin-top:5px;margin-left:-15px;margin-right:-15px;display:block;}}
-.inner-day-header{{background:#eee;color:#000;padding:6px 15px;font-size:1.1em;border-bottom:1px solid #ddd;line-height:1.2;margin-bottom:0;display:block;}}
-.inner-content{{padding:10px 15px 5px 15px;}}
-p{{margin:0 0 10px 0;}}
-ul{{margin:8px 0 0 0;padding-left:22px;}}
-li{{margin-bottom:6px;}}
-.status{{text-align:center;font-size:0.9em;margin-bottom:20px;color:#444;}}
-a{{color:inherit;text-decoration:underline;}}
+h1{{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;}}
+.region{{border:2px solid #000;margin-bottom:20px;padding:0;}}
+summary{{cursor:pointer;background:#000;color:#fff;padding:8px 12px;font-size:1.2em;font-weight:bold;display:block;}}
+.content{{padding:15px;}}
+.inner-day{{border-top:1px dashed #000;margin-top:5px;padding-top:5px;}}
+.inner-day-header{{background:#eee;padding:4px 15px;font-weight:bold;}}
+.status{{text-align:center;font-size:0.9em;margin-bottom:20px;}}
 </style></head><body>
 <h1>Mountain Dashboard</h1><div class="status">Updated {ts}</div>
-{chart}
-<details class="region" open><summary>Summary</summary><div class="region-content">
+{chart_html}
+<details class="region" open><summary>Summary & Outlook</summary><div class="content">
 <p>{area_summary}</p>
-<div class="inner-day">
-  <div class="inner-day-header"><strong>Planning Outlook</strong></div>
-  <div class="inner-content"><p>{planning_outlook}</p></div>
-</div>
+<div class="inner-day"><div class="inner-day-header">Planning Outlook</div><div style="padding:10px;">{planning_outlook}</div></div>
 </div></details>
-<details class="region"><summary>SE Highlands</summary><div class="region-content">{data['mwis_se_highlands']}</div></details>
-<details class="region"><summary>Cairngorms</summary><div class="region-content">{data['mwis_cairngorms']}</div></details>
-<details class="region"><summary>W Highlands</summary><div class="region-content">{data['mwis_west']}</div></details>
-<details class="region"><summary>NW Highlands</summary><div class="region-content">{data['mwis_nw_highlands']}</div></details>
-<details class="region"><summary>SAIS Avalanche</summary><div class="region-content"><ul>
-<li><strong>S Cairngorms:</strong> {data['sais_s_cairngorms']}</li>
-<li><strong>N Cairngorms:</strong> {data['sais_n_cairngorms']}</li>
-<li><strong>Glencoe:</strong> {data['sais_glencoe']}</li>
-<li><strong>Lochaber:</strong> {data['sais_lochaber']}</li>
-<li><strong>Creag Meagaidh:</strong> {data['sais_creag_meagaidh']}</li>
-<li><strong>Torridon:</strong> {data['sais_torridon']}</li>
+<details class="region"><summary>SE Highlands</summary><div class="content">{data.get('mwis_se_highlands', 'N/A')}</div></details>
+<details class="region"><summary>Cairngorms</summary><div class="content">{data.get('mwis_cairngorms', 'N/A')}</div></details>
+<details class="region"><summary>SAIS Avalanche</summary><div class="content"><ul>
+<li><strong>S Cairngorms:</strong> {data.get('sais_s_cairngorms','N/A')}</li>
+<li><strong>N Cairngorms:</strong> {data.get('sais_n_cairngorms','N/A')}</li>
+<li><strong>Glencoe:</strong> {data.get('sais_glencoe','N/A')}</li>
 </ul></div></details></body></html>"""
 
 with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 
-# 6. Generate TRMNL HTML (trmnl.html)
-trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available.</p>"
-
-# DYNAMIC SCALING: Thresholds 800/1200
+# 6. GENERATE TRMNL HTML (trmnl.html)
 total_chars = len(area_summary) + len(planning_outlook)
-t_body_size = "11pt"
-t_header_size = "17px"
-
-if total_chars > 1200:
-    t_body_size = "9pt"
-    t_header_size = "15px"
-elif total_chars > 800:
-    t_body_size = "10pt"
-    t_header_size = "16px"
+t_body_size, t_header_size = "11pt", "17px"
+if total_chars > 1200: t_body_size, t_header_size = "9pt", "15px"
+elif total_chars > 800: t_body_size, t_header_size = "10pt", "16px"
 
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{{box-sizing:border-box;}}
-body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;flex-direction:column;}}
-.main-content{{display:flex;width:100%;flex-grow:1;overflow:hidden;}}
-.left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
-.left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
-.right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
-.date-header{{font-size:{t_header_size};font-weight:bold;margin-bottom:5px;display:block;}}
-.body-text{{font-size:{t_body_size};line-height:1.2;margin:0 0 15px 0;}}
-.outlook-section{{flex-grow:1;overflow:hidden;}}
-</style></head><body><div class="main-content">
-<div class="left-pane">{trmnl_img}</div>
-<div class="right-pane">
-    <div class="summary-section">
-        <span class="date-header">{trmnl_se_date}</span>
-        <p class="body-text">{area_summary}</p>
-    </div>
-    <div class="outlook-section">
-        <p class="body-text">{planning_outlook}</p>
-    </div>
-</div>
+body{{margin:0;padding:0;width:800px;height:480px;font-family:Georgia,serif;display:flex;}}
+.left{{width:50%;padding:25px;display:flex;align-items:center;justify-content:center;}}
+.left img{{max-width:100%;max-height:100%;object-fit:contain;}}
+.right{{width:50%;padding:25px;display:flex;flex-direction:column;}}
+.header{{font-size:{t_header_size};font-weight:bold;margin-bottom:8px;}}
+.body{{font-size:{t_body_size};line-height:1.2;margin-bottom:15px;}}
+</style></head><body>
+<div class="left"><img src="{synoptic_url}" /></div>
+<div class="right">
+    <div class="header">{trmnl_se_date}</div>
+    <div class="body">{area_summary}</div>
+    <div class="body">{planning_outlook}</div>
 </div></body></html>"""
 
 with open("trmnl.html", "w", encoding="utf-8") as f: f.write(trmnl_tmpl)
