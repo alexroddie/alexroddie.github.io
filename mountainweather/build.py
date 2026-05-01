@@ -1,6 +1,5 @@
-import requests, datetime
+import requests
 from bs4 import BeautifulSoup
-from zoneinfo import ZoneInfo
 
 # 1. Configuration
 mwis_text_url = 'https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text'
@@ -45,30 +44,37 @@ try:
     if lines:
         planning_outlook = lines[-1]
 
-    # Optional: Try to grab the date from the first "Day" block for the header
+    # Extract Date: Grab the first "Day" block and aggressively strip "Forecast"
     for line in lines:
         if any(day in line for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]):
             if len(line) < 40 and not any(word in line.lower() for word in ["summary", "outlook", "wind", "cloud"]):
-                trmnl_se_date = line
+                # Forcefully remove "Forecast" or "'s Forecast" to leave just the day/date
+                trmnl_se_date = line.replace("'s Forecast", "").replace(" Forecast", "").strip()
                 break
                 
 except Exception as e:
     area_summary = f"Error fetching text data: {e}"
     planning_outlook = "Check connection."
 
-# 4. Generate TRMNL Layout
+# 4. Generate TRMNL Layout with Tweaked Scaling
 trmnl_img = f'<img src="{chart_src}" />' if chart_src else "<p>No synoptic chart available.</p>"
 
 total_chars = len(area_summary) + len(planning_outlook)
-t_body_size = "11pt"
-t_header_size = "17px"
 
+# Default base sizing
+t_body_size = "11pt"
+t_header_size = "17pt"
+
+# Adjusted scaling rules
 if total_chars > 1200:
     t_body_size = "9pt"
-    t_header_size = "15px"
+    t_header_size = "15pt"
 elif total_chars > 800:
     t_body_size = "10pt"
-    t_header_size = "16px"
+    t_header_size = "16pt"
+elif total_chars < 600:
+    t_body_size = "12pt"
+    t_header_size = "18pt"
 
 trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
 *{{box-sizing:border-box;}}
