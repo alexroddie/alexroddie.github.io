@@ -20,11 +20,26 @@ headers = {'User-Agent': 'Mozilla/5.0'}
 data, planning_outlook, area_summary, synoptic_url = {}, "Outlook unavailable.", "Summary unavailable.", None
 trmnl_se_date = "Today"
 
-def clean_text(text):
-    text = ' '.join(text.split()) # Normalize spaces
-    text = re.sub(r"^[\.\:\?\-\s]+", "", text).strip()
-    if not text: return ""
-    return text if text[-1] in ".!?" else text + "."
+def sanitize_mwis_text(text):
+    """Aggressively eradicates dynamic junk and sub-questions before parsing."""
+    # 1. Kill dynamic timestamps (e.g., "Fri 1st May 26 at 2:58PM")
+    text = re.sub(r"(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{2,4}\s+at\s+\d{1,2}:\d{2}[AP]M", " ", text, flags=re.IGNORECASE)
+    # 2. Kill the sub-questions that bleed into main fields
+    text = re.sub(r"Effect of the wind on you\??", " ", text, flags=re.IGNORECASE)
+    text = re.sub(r"Sunshine and air clarity\??", " ", text, flags=re.IGNORECASE)
+    # 3. Kill repetitive region names and preamble
+    text = re.sub(r"Viewing Forecast For", " ", text, flags=re.IGNORECASE)
+    text = re.sub(r"Southeastern Highlands|The Northwest Highlands|West Highlands|Cairngorms NP and Monadhliath", " ", text, flags=re.IGNORECASE)
+    # 4. Kill general footer junk
+    text = re.sub(r"www\.mwis\.org\.uk|©\s*Copyright|Forecast issued|Last updated", " ", text, flags=re.IGNORECASE)
+    
+    # Normalize spacing
+    return ' '.join(text.split())
+
+def clean_val(val):
+    val = re.sub(r"^[\.\:\?\-\s]+", "", val).strip()
+    if not val: return ""
+    return val if val[-1] in ".!?" else val + "."
 
 # 1. Scrape Synoptic Chart
 try:
@@ -37,134 +52,81 @@ try:
             break
 except: pass
 
-# 2. Scrape MWIS Regions via State Machine
+# 2. Scrape MWIS Regions
 for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highlands']:
     try:
         res = requests.get(urls[key], headers=headers, timeout=10)
         soup = BeautifulSoup(res.text, 'html.parser')
         
-        # Extract lines, dropping empty ones
-        lines = [l.strip() for l in soup.get_text(separator='\n').split('\n') if l.strip()]
-        
-        # PRE-FILTER: Eradicate junk lines entirely
-        clean_lines = []
-        for l in lines:
-            if re.search(r"www\.mwis\.org\.uk|©\s*Copyright|Forecast issued|Last updated", l, re.IGNORECASE):
-                continue
-            clean_lines.append(l)
+        # Pull raw text and immediately run the sanitizer
+        raw_text = soup.get_text(separator=' ')
+        clean_text = sanitize_mwis_text(raw_text)
 
-        # STATE MACHINE VARIABLES
-        state = "INIT"
-        reg_summary = ""
-        reg_outlook = ""
+        # Global Summary & Outlook (Using flexible fallbacks)
+        if area_summary == "Summary unavailable.":
+            m_sum = re.search(r"Summary for all mountain areas\.?(.*?)(?:Planning Outlook|Looking Ahead|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)", clean_text, re.IGNORECASE)
+            if m_sum: area_summary = clean_val(m_sum.group(1))
+            
+        if planning_outlook == "Outlook unavailable.":
+            m_out = re.search(r"(?:Planning Outlook|Looking Ahead)\.?(.*?)(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)", clean_text, re.IGNORECASE)
+            if m_out: planning_outlook = clean_val(m_out.group(1))
+
+        # Split into individual days using strictly defined Date Regex
+        date_regex = r"((?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4})"
+        
+        # This splits the massive string into chunks starting with the date
+        day_chunks = re.split(date_regex, clean_text, flags=re.IGNORECASE)
+        
         days = []
-        cur_day = None
-
-        # Process chronologically top-to-bottom
-        for l in clean_lines:
-            low = l.lower()
-
-            # --- CHECK FOR NEW DAY ---
-            day_regex = r"\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b\s*\d{1,2}?(?:st|nd|rd|th)?"
-            day_match = re.search(day_regex, low)
-            is_new_day = False
-            date_name = ""
-
-            if "viewing forecast for" in low:
-                is_new_day = True
-                # Strip out the preamble and region names to leave just the date
-                clean_d = re.sub(r"(?i)viewing forecast for|southeastern highlands|the northwest highlands|west highlands|cairngorms np and monadhliath", "", l).strip()
-                date_name = clean_d if clean_d else (day_match.group(0).title() if day_match else f"Day {len(days)+1}")
-            elif day_match and len(l) < 50 and not any(k in low for k in ["summary", "outlook", "how", "cloud", "chance", "freezing"]):
-                is_new_day = True
-                date_name = l.strip()
-
-            if is_new_day:
-                if cur_day: days.append(cur_day)
-                cur_day = {"date": date_name.title(), "headline": "", "wind": "", "wet": "", "cloud": "", "chance": "", "temp": "", "freezing": ""}
-                state = "HEADLINE"
-                continue
-
-            # --- CHECK FOR STATE TRANSITIONS ---
-            if "summary for all mountain areas" in low:
-                state = "SUMMARY"
-                content = l[low.find("summary for all mountain areas") + len("summary for all mountain areas"):].strip(" .:-")
-                if content: reg_summary += " " + content
-                continue
+        # day_chunks[0] is the preamble/summary. The rest are Date, Content, Date, Content...
+        for i in range(1, len(day_chunks)-1, 2):
+            if len(days) >= 3: break
+            
+            date_str = day_chunks[i].strip()
+            chunk_text = day_chunks[i+1]
+            
+            day_dict = {"date": date_str, "headline": "", "wind": "", "wet": "", "cloud": "", "chance": "", "temp": "", "freezing": ""}
+            
+            # Map out where each section starts in this chunk
+            metrics = [
+                ("wind", r"How windy\?(?:\s*\([^\)]+\))?"),
+                ("wet", r"How Wet\?"),
+                ("cloud", r"Cloud on the hills\?"),
+                ("chance", r"Chance of cloud free[^\?]*\?"),
+                ("temp", r"How Cold\?(?:\s*\([^\)]+\))?"),
+                ("freezing", r"Freezing Level\.?")
+            ]
+            
+            positions = []
+            for key_name, reg in metrics:
+                m = re.search(reg, chunk_text, re.IGNORECASE)
+                if m: positions.append({"key": key_name, "start": m.start(), "end": m.end()})
+            
+            positions.sort(key=lambda x: x["start"])
+            
+            # Extract Headline (Everything before the very first header, usually "How windy?")
+            if positions:
+                hl_raw = chunk_text[:positions[0]["start"]].strip()
+                day_dict["headline"] = clean_val(re.sub(r"Headline for[^\.]*\.", "", hl_raw, flags=re.IGNORECASE))
+            
+            # Extract Metrics (Stop reading exactly where the next metric begins)
+            for idx, pos in enumerate(positions):
+                val_start = pos["end"]
+                val_end = positions[idx+1]["start"] if idx+1 < len(positions) else len(chunk_text)
+                day_dict[pos["key"]] = clean_val(chunk_text[val_start:val_end])
                 
-            if "planning outlook" in low or "looking ahead" in low:
-                state = "OUTLOOK"
-                anchor = "planning outlook" if "planning outlook" in low else "looking ahead"
-                content = l[low.find(anchor) + len(anchor):].strip(" .:-")
-                if content: reg_outlook += " " + content
-                continue
-
-            if cur_day:
-                if "headline for" in low:
-                    state = "HEADLINE"
-                    content = l[low.find("headline for") + len("headline for"):].strip(" .:-")
-                    if content: cur_day["headline"] += " " + content
-                    continue
-                elif "how windy" in low:
-                    state = "WIND"
-                    content = l[low.find("?")+1:] if "?" in low else l[low.find("windy")+5:]
-                    if content: cur_day["wind"] += " " + content.strip(" .:-")
-                    continue
-                elif "how wet" in low:
-                    state = "WET"
-                    content = l[low.find("?")+1:] if "?" in low else l[low.find("wet")+3:]
-                    if content: cur_day["wet"] += " " + content.strip(" .:-")
-                    continue
-                elif "cloud on the hills" in low:
-                    state = "CLOUD"
-                    content = l[low.find("?")+1:] if "?" in low else l[low.find("hills")+5:]
-                    if content: cur_day["cloud"] += " " + content.strip(" .:-")
-                    continue
-                elif "chance of cloud free" in low:
-                    state = "CHANCE"
-                    content = l[low.find("?")+1:] if "?" in low else l[low.find("munros")+6:] if "munros" in low else l[low.find("free")+4:]
-                    if content: cur_day["chance"] += " " + content.strip(" .:-")
-                    continue
-                elif "how cold" in low:
-                    state = "TEMP"
-                    content = l[low.find("?")+1:] if "?" in low else l[low.find("cold")+4:]
-                    if content: cur_day["temp"] += " " + content.strip(" .:-")
-                    continue
-                elif "freezing level" in low:
-                    state = "FREEZING"
-                    content = l[low.find("level")+5:].strip(" .:-")
-                    if content: cur_day["freezing"] += " " + content
-                    continue
-
-            # --- ACCUMULATE TEXT INTO THE ACTIVE BUCKET ---
-            if state == "SUMMARY": reg_summary += " " + l
-            elif state == "OUTLOOK": reg_outlook += " " + l
-            elif state == "HEADLINE" and cur_day: cur_day["headline"] += " " + l
-            elif state == "WIND" and cur_day: cur_day["wind"] += " " + l
-            elif state == "WET" and cur_day: cur_day["wet"] += " " + l
-            elif state == "CLOUD" and cur_day: cur_day["cloud"] += " " + l
-            elif state == "CHANCE" and cur_day: cur_day["chance"] += " " + l
-            elif state == "TEMP" and cur_day: cur_day["temp"] += " " + l
-            elif state == "FREEZING" and cur_day: cur_day["freezing"] += " " + l
-
-        if cur_day: days.append(cur_day)
-        
-        # Apply the captured global summary/outlook if it's the first time seeing them
-        if area_summary == "Summary unavailable." and reg_summary: area_summary = clean_text(reg_summary)
-        if planning_outlook == "Outlook unavailable." and reg_outlook: planning_outlook = clean_text(reg_outlook)
+            days.append(day_dict)
 
         if key == 'mwis_se_highlands' and len(days) > 0:
             trmnl_se_date = days[0].get('date', 'Today')
 
-        # Build Kindle HTML
+        # Build HTML
         html = ""
-        for i, d in enumerate(days[:3]):
-            head = clean_text(d['headline'])
-            content = f"<p><em>{head}</em></p>" if head else ""
+        for i, d in enumerate(days):
+            content = f"<p><em>{d['headline']}</em></p>" if d['headline'] else ""
             content += "<ul>"
             for lbl, val in [("Wind", d["wind"]), ("Wet", d["wet"]), ("Cloud", d["cloud"]), ("Chance of cloud-free Munros", d["chance"]), ("Temp", d["temp"]), ("Freezing level", d["freezing"])]:
-                c_val = clean_text(val)
-                if c_val: content += f"<li><strong>{lbl}:</strong> {c_val}</li>"
+                if val: content += f"<li><strong>{lbl}:</strong> {val}</li>"
             content += "</ul>"
             if i > 0: html += f"<div class='inner-day'><div class='inner-day-header'><strong>{d['date']}</strong></div><div class='inner-content'>{content}</div></div>"
             else: html += f"<div class='day-one'><strong>{d['date']}</strong>{content}</div>"
