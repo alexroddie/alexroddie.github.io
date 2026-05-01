@@ -46,36 +46,46 @@ for key in ['mwis_west', 'mwis_cairngorms', 'mwis_se_highlands', 'mwis_nw_highla
         soup = BeautifulSoup(res.text, 'html.parser')
         lines = [l.strip() for l in soup.get_text(separator='\n').split('\n') if l.strip()]
         
-        # Area Summary: Capture from trigger until next section
-        if area_summary == "Summary unavailable.":
-            sum_l, sum_cap = [], False
-            for l in lines:
-                if "summary for all mountain areas" in l.lower():
-                    sum_cap = True
-                    # Check if there's text after the header on the same line
-                    content = l.lower().split("summary for all mountain areas")[-1].strip().lstrip('.').lstrip(':').strip()
-                    if content: sum_l.append(content)
-                    continue
-                if sum_cap:
-                    if any(x in l.lower() for x in ["headline for", "planning outlook"]): sum_cap = False; break
-                    sum_l.append(l)
-            if sum_l: area_summary = format_text(sum_l)
+        sum_l, out_l = [], []
+        sum_cap, out_cap = False, False
 
-        # Planning Outlook: Capture everything from trigger to end of page
-        if planning_outlook == "Outlook unavailable.":
-            out_l, cap = [], False
-            for l in lines:
-                if "planning outlook" in l.lower():
-                    cap = True
-                    # Check if there's text after the header on the same line
-                    content = l.lower().split("planning outlook")[-1].strip().lstrip('.').lstrip(':').strip()
-                    if content: out_l.append(content)
-                    continue
-                if cap:
-                    if "viewing forecast for" in l.lower(): cap = False; break
-                    out_l.append(l)
-            if out_l: planning_outlook = format_text(out_l)
+        for l in lines:
+            lower_l = l.lower()
 
+            # Area Summary Trigger
+            if "summary for all mountain areas" in lower_l:
+                sum_cap = True
+                # Grab same-line content without losing original casing
+                content = l[lower_l.find("summary for all mountain areas") + len("summary for all mountain areas"):].strip().lstrip('.').lstrip(':').strip()
+                if content: sum_l.append(content)
+                continue
+            
+            # Planning Outlook Trigger
+            if "planning outlook" in lower_l:
+                sum_cap = False # Stop summary capture if it was running
+                out_cap = True
+                content = l[lower_l.find("planning outlook") + len("planning outlook"):].strip().lstrip('.').lstrip(':').strip()
+                if content: out_l.append(content)
+                continue
+
+            # Stop Summary if we hit a headline
+            if sum_cap and "headline for" in lower_l:
+                sum_cap = False
+
+            # Stop Outlook if we hit the footer
+            if out_cap and "viewing forecast for" in lower_l:
+                out_cap = False
+
+            # Capture content based on active state
+            if sum_cap: sum_l.append(l)
+            if out_cap: out_l.append(l)
+
+        if sum_l and area_summary == "Summary unavailable.":
+            area_summary = format_text(sum_l)
+        if out_l and planning_outlook == "Outlook unavailable.":
+            planning_outlook = format_text(out_l)
+
+        # Regional Day Parsing (Headline, Wind, etc.)
         days, cur = [], None
         for l in lines:
             if "Viewing Forecast For" in l:
@@ -133,7 +143,7 @@ time_str = now.strftime('%I.%M%p').lower().lstrip('0')
 ts = now.strftime(f'%A, %B {now.day}{suff} at {time_str}')
 chart = f'<div class="chart-container" style="text-align:center;margin-bottom:20px;"><a href="{urls["mwis_synoptic"]}"><img src="{synoptic_url}" style="max-width:100%;height:auto;display:block;margin:0 auto;"/></a></div>' if synoptic_url else ""
 
-# 5. Generate Kindle HTML (index.html) - UNCHANGED
+# 5. Generate Kindle HTML (index.html) - Presentation strictly preserved
 kindle_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
 <style>
 body{{font-family:Georgia,serif;padding:10px;line-height:1.5;background:#fff;color:#000;max-width:94%;margin:0 auto;}}
@@ -177,6 +187,7 @@ with open("index.html", "w", encoding="utf-8") as f: f.write(kindle_tmpl)
 # 6. Generate TRMNL HTML (trmnl.html)
 trmnl_img = f'<img src="{synoptic_url}" />' if synoptic_url else "<p>No synoptic chart available.</p>"
 
+# Dynamic Scaling (Thresholds 800/1200)
 total_chars = len(area_summary) + len(planning_outlook)
 t_body_size = "11pt"
 t_header_size = "17px"
