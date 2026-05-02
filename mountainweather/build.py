@@ -29,19 +29,19 @@ try:
     raw_text = BeautifulSoup(res.text, 'html.parser').get_text(separator='\n')
     lines = [line.strip() for line in raw_text.split('\n') if line.strip()]
 
-    # Extract Summary: Find "Summary", grab the line immediately after it.
+    # Extract Summary
     for i, line in enumerate(lines):
         if "summary" in line.lower() and i + 1 < len(lines):
             area_summary = lines[i+1]
             break
 
-    # Extract Outlook: Find "Planning Outlook" (or Looking Ahead), grab the line immediately after it.
+    # Extract Outlook
     for i, line in enumerate(lines):
         if ("planning outlook" in line.lower() or "looking ahead" in line.lower()) and i + 1 < len(lines):
             planning_outlook = lines[i+1]
             break
 
-    # Extract Date: Look for "Viewing Forecast For", grab the next line with a day
+    # Extract Date
     found_viewing_marker = False
     for line in lines:
         if "viewing forecast for" in line.lower():
@@ -51,7 +51,7 @@ try:
             trmnl_se_date = line.strip()
             break
             
-    # Fallback: If "Viewing Forecast For" is missing, just grab the first valid date line
+    # Fallback Date
     if trmnl_se_date == "Today":
         for line in lines:
              if any(day in line for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]):
@@ -63,7 +63,7 @@ except Exception as e:
     area_summary = f"Error fetching text data: {e}"
     planning_outlook = "Check connection."
 
-# 4. Generate Responsive Layout
+# 4. Generate Layout (TRMNL Default + Kindle Media Query)
 trmnl_img = f'<img src="{chart_src}" />' if chart_src else "<p>No synoptic chart available.</p>"
 
 total_chars = len(area_summary) + len(planning_outlook)
@@ -87,20 +87,34 @@ trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 *{{box-sizing:border-box;}}
-body{{margin:0;padding:0;width:100vw;min-height:100vh;background:#fff;color:#000;font-family:Georgia,serif;display:flex;flex-direction:column;}}
+
+/* TRMNL STRICT DEFAULTS (800x480) */
+body{{
+    margin:0; padding:0;
+    width:800px; height:480px; 
+    background:#fff; color:#000; 
+    font-family:Georgia,serif;
+    overflow:hidden; 
+    display:flex; flex-direction:column;
+}}
 .main-content{{display:flex;width:100%;flex-grow:1;flex-direction:row;}}
-.left-pane{{width:50%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
+.left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
 .left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
-.right-pane{{width:50%;padding:25px;display:flex;flex-direction:column;}}
+.right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
 .date-header{{font-size:{t_header_size};font-weight:bold;margin-bottom:5px;display:block;}}
 .body-text{{font-size:{t_body_size};line-height:1.2;margin:0 0 15px 0;}}
+.outlook-section{{flex-grow:1;overflow:hidden;}}
 
-/* Responsive Media Query for Portrait/Narrow Screens */
-@media screen and (max-width: 750px), screen and (orientation: portrait) {{
-    body {{ height: auto; overflow: auto; }}
+/* KINDLE / MOBILE ESCAPE HATCH (Triggered under 799px width or portrait mode) */
+@media screen and (max-width: 799px), screen and (orientation: portrait) {{
+    body {{ 
+        width: auto; height: auto; min-height: 100vh;
+        overflow: auto; /* Allows vertical scrolling */
+    }}
     .main-content {{ flex-direction: column; }}
     .left-pane {{ width: 100%; height: auto; padding: 15px 15px 5px 15px; }}
     .right-pane {{ width: 100%; height: auto; padding: 5px 15px 15px 15px; }}
+    .outlook-section {{ overflow: visible; }}
 }}
 </style></head><body><div class="main-content">
 <div class="left-pane">{trmnl_img}</div>
