@@ -129,8 +129,10 @@ body{{
         margin-top: 16px;
         font-size: 16pt; /* Static size to match body text */
     }}
+    .mobile-links summary {{ cursor: pointer; font-weight: bold; margin-bottom: 8px; }}
     .mobile-links ul {{ margin: 0; padding-left: 20px; }}
     .mobile-links li {{ margin-bottom: 8px; }}
+    .mobile-links details {{ margin-bottom: 12px; }}
 }}
 </style></head><body><div class="main-content">
 <div class="left-pane">{trmnl_img}</div>
@@ -143,17 +145,16 @@ body{{
         <p class="body-text"><strong>Outlook:</strong> {planning_outlook}</p>
         
         <div class="mobile-links">
-            <ul>
-              <details open>
+            <details open>
                 <summary>MWIS forecasts</summary>
-                  <ul>
+                <ul>
                     <li><a href="https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text">SE Highlands</a></li>
                     <li><a href="https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text">Cairngorms</a></li>
                     <li><a href="https://www.mwis.org.uk/forecasts/scottish/west-highlands/text">West Highlands</a></li>
                     <li><a href="https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text">NW Highlands</a></li>
                     <li><a href="https://www.mwis.org.uk/">MWIS home</a></li>
-                   </ul>
-              </details>
+                </ul>
+            </details>
 
             <details>
                 <summary>SAIS forecasts</summary>
@@ -161,13 +162,12 @@ body{{
                     <li><a href="https://www.sais.gov.uk/southern-cairngorms/">S Cairngorms</a></li>
                     <li><a href="https://www.sais.gov.uk/northern-cairngorms/">N Cairngorms</a></li>
                     <li><a href="https://www.sais.gov.uk/glencoe/">Glen Coe</a></li>
-                      <li><a href="https://www.sais.gov.uk/lochaber/">Lochaber</a></li>
-                      <li><a href="https://www.sais.gov.uk/creag-meagaidh/">Creag Meagaidh</a></li>
-                      <li><a href="https://www.sais.gov.uk/torridon/">Torridon</a></li>
-                      <li><a href="https://www.sais.gov.uk/">SAIS home</a></li>
-                    </ul>
-                </details>
-                </ul>   
+                    <li><a href="https://www.sais.gov.uk/lochaber/">Lochaber</a></li>
+                    <li><a href="https://www.sais.gov.uk/creag-meagaidh/">Creag Meagaidh</a></li>
+                    <li><a href="https://www.sais.gov.uk/torridon/">Torridon</a></li>
+                    <li><a href="https://www.sais.gov.uk/">SAIS home</a></li>
+                </ul>
+            </details>
         </div>
     </div>
 </div>
