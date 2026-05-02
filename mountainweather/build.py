@@ -144,8 +144,8 @@ body{{
         
         <div class="mobile-links">
             <ul>
-              <details>
-                <summary>MWIS</summary>
+              <details open>
+                <summary>MWIS forecasts</summary>
                   <ul>
                     <li><a href="https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text">SE Highlands</a></li>
                     <li><a href="https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text">Cairngorms</a></li>
@@ -154,10 +154,25 @@ body{{
                     <li><a href="https://www.mwis.org.uk/">MWIS home</a></li>
                    </ul>
               </details>
+
+            <details>
+                    <summary>SAIS forecasts</summary>
+                      <ul>
+
+                      	<li><a href="https://www.sais.gov.uk/southern-cairngorms/">S Cairngorms</a></li>
+                        <li><a href="https://www.sais.gov.uk/northern-cairngorms/">N Cairngorms</a></li>
+                        <li><a href="https://www.sais.gov.uk/glencoe/">Glen Coe</a></li>
+                      	<li><a href="https://www.sais.gov.uk/lochaber/">Lochaber</a></li>
+                      	<li><a href="https://www.sais.gov.uk/creag-meagaidh/">Creag Meagaidh</a></li>
+                      	<li><a href="https://www.sais.gov.uk/torridon/">Torridon</a></li>
+                      	<li><a href="https://www.sais.gov.uk/">SAIS home</a></li>
+                       </ul>
+                  </details>
+
+              
             </ul>
 
-          
-
+            
 
             
         </div>
