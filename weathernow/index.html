@@ -118,31 +118,35 @@ function formatSunTime(isoStr) {
 
 function getCondString(code, isNight, wind, prob, format) {
   if (format === 'hourly') {
+    if (code >= 95) return "Thunder";
+    if (prob >= 40) return (code >= 71 && code <= 86) ? "Snow" : "Showers"; // Prioritized
     if (code === 0) return isNight ? "Clear" : "Sunny";
     if (code === 1) return isNight ? "Mostly clear" : "Mostly sunny";
     if (code === 2) return "Partly cloudy";
     if (code === 3) return "Cloudy";
-    if (code >= 95) return "Thunder";
     if (code >= 71 && code <= 86) return "Snow";
     if (code >= 61 && code <= 67) return "Rain";
     if (code >= 80 && code <= 82) return "Showers";
     if (code >= 51 && code <= 57) return "Drizzle";
     if (wind > 20) return "Windy";
     if (code === 45 || code === 48) return "Fog";
-    if (prob >= 40) return "Showers";
     return "Cloudy";
   } else if (format === 'summary') {
+    if (code >= 95) return "Thunder. ";
+    if (prob >= 40) return (code >= 71 && code <= 86) ? "Snowy. " : "Rainy. "; // Prioritized
     if (code === 0) return isNight ? "Clear sky. " : "Sunny. ";
     if (code === 1) return isNight ? "Mostly clear. " : "Mostly sunny. ";
     if (code === 2) return "Partly cloudy. ";
     if (code === 45 || code === 48) return "Foggy. ";
     return "Cloudy. ";
   } else {
+    // Big condition logic
+    if (code >= 95) return "Thunder";
+    if (prob >= 40) return (code >= 71 && code <= 86) ? "Snow" : "Rain"; // Prioritized
     if (code === 0) return isNight ? "Clear sky" : "Sunny";
     if (code === 1) return isNight ? "Mostly clear" : "Mostly sunny";
     if (code === 2) return "Partly cloudy";
     if (code === 3) return "Cloudy";
-    if (code >= 95) return "Thunder";
     if (code >= 71 && code <= 86) return "Snow";
     if (code === 77) return "Snow";
     if (code >= 61 && code <= 67) return "Rain";
@@ -150,7 +154,6 @@ function getCondString(code, isNight, wind, prob, format) {
     if (code >= 51 && code <= 57) return "Drizzle";
     if (code === 45 || code === 48) return "Fog";
     if (wind > 20) return "Windy";
-    if (prob >= 40) return "Rain";
     return "Cloudy";
   }
 }
