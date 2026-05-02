@@ -120,14 +120,14 @@ body{{
     .outlook-section {{ overflow: visible; }}
     
     /* OVERRIDE DYNAMIC SCALING - Lock to static reading sizes for mobile */
-    .date-header {{ font-size: 17pt; }}
-    .body-text {{ font-size: 12pt; }}
+    .date-header {{ font-size: 18pt; }}
+    .body-text {{ font-size: 14pt; }}
     
     /* REVEAL MOBILE LINKS */
     .mobile-links {{
         display: block;
         margin-top: 15px;
-        font-size: 12pt; /* Static size to match body text */
+        font-size: 14pt; /* Static size to match body text */
     }}
     .mobile-links ul {{ margin: 0; padding-left: 20px; }}
     .mobile-links li {{ margin-bottom: 8px; }}
