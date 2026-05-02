@@ -3,7 +3,7 @@
 <style>
 *{box-sizing:border-box;}
 
-/* TRMNL STRICT DEFAULTS (800x480) */
+/* TRMNL STRICT DEFAULTS (800x480) - Uses dynamic scaling */
 body{
     margin:0; padding:0;
     width:800px; height:480px; 
@@ -34,11 +34,15 @@ body{
     .right-pane { width: 100%; height: auto; padding: 5px 15px 15px 15px; }
     .outlook-section { overflow: visible; }
     
+    /* OVERRIDE DYNAMIC SCALING - Lock to static reading sizes for mobile */
+    .date-header { font-size: 17pt; }
+    .body-text { font-size: 12pt; }
+    
     /* REVEAL MOBILE LINKS */
     .mobile-links {
         display: block;
         margin-top: 15px;
-        font-size: 10pt;
+        font-size: 12pt; /* Static size to match body text */
     }
     .mobile-links ul { margin: 0; padding-left: 20px; }
     .mobile-links li { margin-bottom: 8px; }
