@@ -63,7 +63,7 @@ except Exception as e:
     area_summary = f"Error fetching text data: {e}"
     planning_outlook = "Check connection."
 
-# 4. Generate TRMNL Layout with updated scaling rules
+# 4. Generate Responsive Layout
 trmnl_img = f'<img src="{chart_src}" />' if chart_src else "<p>No synoptic chart available.</p>"
 
 total_chars = len(area_summary) + len(planning_outlook)
@@ -83,16 +83,25 @@ elif total_chars > 680:
     t_body_size = "11pt"
     t_header_size = "16pt"
 
-trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
 *{{box-sizing:border-box;}}
-body{{margin:0;padding:0;width:800px;height:480px;background:#fff;color:#000;font-family:Georgia,serif;overflow:hidden;display:flex;flex-direction:column;}}
-.main-content{{display:flex;width:100%;flex-grow:1;overflow:hidden;}}
-.left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
+body{{margin:0;padding:0;width:100vw;min-height:100vh;background:#fff;color:#000;font-family:Georgia,serif;display:flex;flex-direction:column;}}
+.main-content{{display:flex;width:100%;flex-grow:1;flex-direction:row;}}
+.left-pane{{width:50%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
 .left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
-.right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
+.right-pane{{width:50%;padding:25px;display:flex;flex-direction:column;}}
 .date-header{{font-size:{t_header_size};font-weight:bold;margin-bottom:5px;display:block;}}
 .body-text{{font-size:{t_body_size};line-height:1.2;margin:0 0 15px 0;}}
-.outlook-section{{flex-grow:1;overflow:hidden;}}
+
+/* Responsive Media Query for Portrait/Narrow Screens */
+@media screen and (max-width: 750px), screen and (orientation: portrait) {{
+    body {{ height: auto; overflow: auto; }}
+    .main-content {{ flex-direction: column; }}
+    .left-pane {{ width: 100%; height: auto; padding: 15px 15px 5px 15px; }}
+    .right-pane {{ width: 100%; height: auto; padding: 5px 15px 15px 15px; }}
+}}
 </style></head><body><div class="main-content">
 <div class="left-pane">{trmnl_img}</div>
 <div class="right-pane">
