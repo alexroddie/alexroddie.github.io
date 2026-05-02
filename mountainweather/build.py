@@ -161,10 +161,10 @@ body{{
 <div class="right-pane">
     <div class="summary-section">
         <span class="date-header">{trmnl_se_date}</span>
-        <p class="body-text"><strong>Summary:</strong> {area_summary}</p>
+        <p class="body-text">{area_summary}</p>
     </div>
     <div class="outlook-section">
-        <p class="body-text"><strong>Outlook:</strong> {planning_outlook}</p>
+        <p class="body-text">{planning_outlook}</p>
         
         <div class="mobile-links">
             <details open>
