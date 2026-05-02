@@ -64,16 +64,15 @@ except Exception as e:
     planning_outlook = "Check connection."
 
 # 4. Generate Layout (TRMNL Default + Kindle Media Query)
-# Updated to wrap the image in a hyperlink
 trmnl_img = f'<a href="{synoptic_url}"><img src="{chart_src}" /></a>' if chart_src else "<p>No synoptic chart available.</p>"
 
 total_chars = len(area_summary) + len(planning_outlook)
 
-# Default base sizing (under 680 chars)
+# Default base sizing (under 680 chars) for TRMNL
 t_body_size = "12pt"
 t_header_size = "17pt"
 
-# Cascading adjustments based on character thresholds
+# Cascading adjustments based on character thresholds for TRMNL
 if total_chars > 1200:
     t_body_size = "9pt"
     t_header_size = "15pt"
@@ -89,7 +88,7 @@ trmnl_tmpl = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
 <style>
 *{{box-sizing:border-box;}}
 
-/* TRMNL STRICT DEFAULTS (800x480) */
+/* TRMNL STRICT DEFAULTS (800x480) - Uses dynamic scaling */
 body{{
     margin:0; padding:0;
     width:800px; height:480px; 
@@ -120,11 +119,15 @@ body{{
     .right-pane {{ width: 100%; height: auto; padding: 5px 15px 15px 15px; }}
     .outlook-section {{ overflow: visible; }}
     
+    /* OVERRIDE DYNAMIC SCALING - Lock to static reading sizes for mobile */
+    .date-header {{ font-size: 17pt; }}
+    .body-text {{ font-size: 12pt; }}
+    
     /* REVEAL MOBILE LINKS */
     .mobile-links {{
         display: block;
         margin-top: 15px;
-        font-size: {t_body_size};
+        font-size: 12pt; /* Static size to match body text */
     }}
     .mobile-links ul {{ margin: 0; padding-left: 20px; }}
     .mobile-links li {{ margin-bottom: 8px; }}
