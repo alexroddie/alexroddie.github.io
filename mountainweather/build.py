@@ -98,9 +98,9 @@ body{{
     display:flex; flex-direction:column;
 }}
 .main-content{{display:flex;width:100%;flex-grow:1;flex-direction:row;}}
-.left-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
+.left-pane{{width:50%;height:100%;padding:25px 12px 25px 25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
 .left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
-.right-pane{{width:50%;height:100%;padding:25px;display:flex;flex-direction:column;}}
+.right-pane{{width:50%;height:100%;padding:25px 25px 25px 13px;display:flex;flex-direction:column;}}
 .date-header{{font-size:{t_header_size};font-weight:bold;margin-bottom:5px;display:block;}}
 .body-text{{font-size:{t_body_size};line-height:1.2;margin:0 0 15px 0;}}
 .outlook-section{{flex-grow:1;overflow:hidden;}}
