@@ -64,7 +64,8 @@ except Exception as e:
     planning_outlook = "Check connection."
 
 # 4. Generate Layout (TRMNL Default + Kindle Media Query)
-trmnl_img = f'<img src="{chart_src}" />' if chart_src else "<p>No synoptic chart available.</p>"
+# Updated to wrap the image in a hyperlink
+trmnl_img = f'<a href="{synoptic_url}"><img src="{chart_src}" /></a>' if chart_src else "<p>No synoptic chart available.</p>"
 
 total_chars = len(area_summary) + len(planning_outlook)
 
@@ -105,16 +106,28 @@ body{{
 .body-text{{font-size:{t_body_size};line-height:1.2;margin:0 0 15px 0;}}
 .outlook-section{{flex-grow:1;overflow:hidden;}}
 
+/* HIDDEN BY DEFAULT FOR TRMNL */
+.mobile-links {{ display: none; }}
+
 /* KINDLE / MOBILE ESCAPE HATCH (Triggered under 799px width or portrait mode) */
 @media screen and (max-width: 799px), screen and (orientation: portrait) {{
     body {{ 
         width: auto; height: auto; min-height: 100vh;
-        overflow: auto; /* Allows vertical scrolling */
+        overflow: auto; 
     }}
     .main-content {{ flex-direction: column; }}
     .left-pane {{ width: 100%; height: auto; padding: 15px 15px 5px 15px; }}
     .right-pane {{ width: 100%; height: auto; padding: 5px 15px 15px 15px; }}
     .outlook-section {{ overflow: visible; }}
+    
+    /* REVEAL MOBILE LINKS */
+    .mobile-links {{
+        display: block;
+        margin-top: 15px;
+        font-size: {t_body_size};
+    }}
+    .mobile-links ul {{ margin: 0; padding-left: 20px; }}
+    .mobile-links li {{ margin-bottom: 8px; }}
 }}
 </style></head><body><div class="main-content">
 <div class="left-pane">{trmnl_img}</div>
@@ -125,6 +138,16 @@ body{{
     </div>
     <div class="outlook-section">
         <p class="body-text"><strong>Outlook:</strong> {planning_outlook}</p>
+        
+        <div class="mobile-links">
+            <ul>
+                <li><a href="https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text">SE Highlands</a></li>
+                <li><a href="https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text">Cairngorms</a></li>
+                <li><a href="https://www.mwis.org.uk/forecasts/scottish/west-highlands/text">West Highlands</a></li>
+                <li><a href="https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text">NW Highlands</a></li>
+                <li><a href="https://www.mwis.org.uk/">MWIS home</a></li>
+            </ul>
+        </div>
     </div>
 </div>
 </div></body></html>"""
