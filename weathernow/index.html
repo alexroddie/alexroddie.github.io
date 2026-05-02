@@ -247,23 +247,27 @@ function renderDashboard(data) {
     const tempDisplay = (r_fMax >= r_tMax) ? `${r_tMax}°/${Math.round(uLow)}°` : `${Math.round(uLow)}°`;
 
     let lmp = 0, lc = 99, lwm = 0, lgm = 0;
+    let lphRes = -1, lphCode = 0;
+    
     for (let j = scanStart; j <= endOfDayIdx; j++) {
-      if (d.hourly.precipitation_probability[j] > lmp) lmp = d.hourly.precipitation_probability[j];
+      let p = d.hourly.precipitation_probability[j];
+      if (p > lmp) lmp = p;
+      if (p >= 40 && lphRes === -1) {
+        lphRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]);
+        lphCode = d.hourly.weather_code[j];
+      }
       if (d.hourly.weather_code[j] < lc) lc = d.hourly.weather_code[j];
       if (d.hourly.wind_speed_10m[j] > lwm) lwm = d.hourly.wind_speed_10m[j];
       if (d.hourly.wind_gusts_10m[j] > lgm) lgm = d.hourly.wind_gusts_10m[j];
     }
 
     let laterSum = getCondString(lc, true, lwm, lmp, 'summary');
-    if (lmp >= 40) {
-      let lpp = 0, lphRes = 0;
-      for (let j = scanStart; j <= endOfDayIdx; j++) {
-        if (d.hourly.precipitation_probability[j] > lpp) {
-          lpp = d.hourly.precipitation_probability[j];
-          lphRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]);
-        }
-      }
-      laterSum += `Rain at ${formatAmPm(lphRes)} (${lmp}%). `;
+    if (lphRes !== -1) {
+      let type = "Rain";
+      if (lphCode >= 71 && lphCode <= 86) type = "Snow";
+      else if (lphCode >= 51 && lphCode <= 57) type = "Drizzle";
+      else if (lphCode >= 80 && lphCode <= 82) type = "Showers";
+      laterSum += `${type} at ${formatAmPm(lphRes)}. `;
     } else {
       laterSum += `Likely dry. `;
     }
@@ -276,7 +280,8 @@ function renderDashboard(data) {
     `;
   }
 
-  let nLow = 100, nWi = 0, nGu = 0, nMp = 0, nPhRes = 0;
+  let nLow = 100, nWi = 0, nGu = 0, nMp = 0;
+  let nPhRes = -1, nPhCode = 0;
   const nightStartIdx = endOfDayIdx - 1; 
   const nightEndIdx = endOfDayIdx + 7;   
   
@@ -285,9 +290,12 @@ function renderDashboard(data) {
       if (d.hourly.temperature_2m[j] < nLow) nLow = d.hourly.temperature_2m[j];
       if (d.hourly.wind_speed_10m[j] > nWi) nWi = d.hourly.wind_speed_10m[j];
       if (d.hourly.wind_gusts_10m[j] > nGu) nGu = d.hourly.wind_gusts_10m[j];
-      if (d.hourly.precipitation_probability[j] > nMp) {
-        nMp = d.hourly.precipitation_probability[j];
+      
+      let p = d.hourly.precipitation_probability[j];
+      if (p > nMp) nMp = p;
+      if (p >= 40 && nPhRes === -1) {
         nPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]);
+        nPhCode = d.hourly.weather_code[j];
       }
     }
   }
@@ -295,52 +303,61 @@ function renderDashboard(data) {
   const midnightIdx = endOfDayIdx + 1;
   const nightC = d.hourly.weather_code[midnightIdx];
   let nightCond = "cloudy";
-  if (nightC === 0) nightCond = "clear";
+  if (nMp >= 40) nightCond = (nPhCode >= 71 && nPhCode <= 86) ? "snowy" : "rainy";
+  else if (nightC === 0) nightCond = "clear";
   else if (nightC === 1) nightCond = "mostly clear";
   else if (nightC === 2) nightCond = "partly cloudy";
   else if (nightC === 45 || nightC === 48) nightCond = "foggy";
 
   let overHTML = `Likely ${nightCond}. Lows of ${Math.round(nLow)}°. `;
-  if (nMp >= 40) {
-    overHTML += `Rain at ${formatAmPm(nPhRes)} (${nMp}%). `;
+  
+  if (nPhRes !== -1) {
+    let type = "Rain";
+    if (nPhCode >= 71 && nPhCode <= 86) type = "Snow";
+    else if (nPhCode >= 51 && nPhCode <= 57) type = "Drizzle";
+    else if (nPhCode >= 80 && nPhCode <= 82) type = "Showers";
+    overHTML += `${type} at ${formatAmPm(nPhRes)}. `;
   } else {
     overHTML += `Likely dry. `;
   }
   overHTML += nGu < 10 ? `Probably calm.` : `Winds ${Math.round(nWi)}/${Math.round(nGu)}mph.`;
 
   const tomIdx = day_now + 1;
-  const tomMp = d.daily.precipitation_probability_max[tomIdx];
   const tomTc = d.daily.weather_code[tomIdx];
   const tomGu = d.daily.wind_gusts_10m_max[tomIdx];
   const tomWi = d.daily.wind_speed_10m_max[tomIdx];
   const tMax = Math.round(d.daily.temperature_2m_max[tomIdx]);
   const tMin = Math.round(d.daily.temperature_2m_min[tomIdx]);
 
+  let tomPp = 0, tomPhRes = -1, tomPhCode = 0;
+  const tomStartIdx = endOfDayIdx + 7;  // Start exactly at 6:00 AM tomorrow
+  const tomEndIdx = endOfDayIdx + 24;   // End at 11:00 PM tomorrow
+  
+  for (let j = tomStartIdx; j <= tomEndIdx; j++) {
+    let p = d.hourly.precipitation_probability[j];
+    if (p > tomPp) tomPp = p;
+    if (p >= 40 && tomPhRes === -1) {
+      tomPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]);
+      tomPhCode = d.hourly.weather_code[j];
+    }
+  }
+
   let tomCond = "Cloudy.";
-  if (tomTc === 0) tomCond = "Sunny.";
+  if (tomTc >= 95) tomCond = "Thunder.";
+  else if (tomPp >= 40) tomCond = (tomPhCode >= 71 && tomPhCode <= 86) ? "Snowy." : "Rainy.";
+  else if (tomTc === 0) tomCond = "Sunny.";
   else if (tomTc === 1) tomCond = "Mostly sunny.";
   else if (tomTc === 2) tomCond = "Partly cloudy.";
   else if (tomTc === 45 || tomTc === 48) tomCond = "Foggy.";
-  else if (tomTc >= 95) tomCond = "Thunder.";
-  else if (tomTc >= 71 && tomTc <= 86) tomCond = "Snowy.";
 
   let tomStr = `${tomCond} Highs of ${tMax}°, lows of ${tMin}°. `;
-  if (tomMp >= 40) {
-    let tomPp = 0, tomPhRes = 0;
-    const tomStartIdx = endOfDayIdx + 1;  
-    const tomEndIdx = endOfDayIdx + 24;   
-    
-    for (let j = tomStartIdx; j <= tomEndIdx; j++) {
-      if (d.hourly.precipitation_probability[j] > tomPp) {
-        tomPp = d.hourly.precipitation_probability[j];
-        tomPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]);
-      }
-    }
+  
+  if (tomPhRes !== -1) {
     let type = "rain";
-    if (tomTc >= 71 && tomTc <= 86) type = "snow";
-    else if (tomTc >= 51 && tomTc <= 57) type = "drizzle";
-    else if (tomTc >= 80 && tomTc <= 82) type = "showers";
-    tomStr += `Expect ${type} at about ${formatAmPm(tomPhRes)} (${tomMp}%). `;
+    if (tomPhCode >= 71 && tomPhCode <= 86) type = "snow";
+    else if (tomPhCode >= 51 && tomPhCode <= 57) type = "drizzle";
+    else if (tomPhCode >= 80 && tomPhCode <= 82) type = "showers";
+    tomStr += `Expect ${type} at about ${formatAmPm(tomPhRes)}. `;
   } else {
     tomStr += `Likely dry. `;
   }
