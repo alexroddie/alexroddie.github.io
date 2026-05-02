@@ -144,12 +144,22 @@ body{{
         
         <div class="mobile-links">
             <ul>
-                <li><a href="https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text">SE Highlands</a></li>
-                <li><a href="https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text">Cairngorms</a></li>
-                <li><a href="https://www.mwis.org.uk/forecasts/scottish/west-highlands/text">West Highlands</a></li>
-                <li><a href="https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text">NW Highlands</a></li>
-                <li><a href="https://www.mwis.org.uk/">MWIS home</a></li>
+              <details>
+                <summary>MWIS</summary>
+                  <ul>
+                    <li><a href="https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text">SE Highlands</a></li>
+                    <li><a href="https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text">Cairngorms</a></li>
+                    <li><a href="https://www.mwis.org.uk/forecasts/scottish/west-highlands/text">West Highlands</a></li>
+                    <li><a href="https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text">NW Highlands</a></li>
+                    <li><a href="https://www.mwis.org.uk/">MWIS home</a></li>
+                   </ul>
+              </details>
             </ul>
+
+          
+
+
+            
         </div>
     </div>
 </div>
