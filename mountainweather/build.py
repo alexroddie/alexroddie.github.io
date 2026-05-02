@@ -129,7 +129,28 @@ body{{
         margin-top: 16px;
         font-size: 16pt; /* Static size to match body text */
     }}
-    .mobile-links summary {{ cursor: pointer; font-weight: bold; margin-bottom: 8px; }}
+    
+    /* FORCE CLEAN BLACK LINKS */
+    .mobile-links a {{ color: #000; }}
+    
+    /* FORCE CLEAN BLACK ARROWS (Hides default browser arrow, injects text-only chevron) */
+    .mobile-links summary {{ 
+        cursor: pointer; 
+        font-weight: bold; 
+        margin-bottom: 8px; 
+        list-style: none; 
+    }}
+    .mobile-links summary::-webkit-details-marker {{ display: none; }}
+    .mobile-links summary::before {{
+        content: '\\25B6\\FE0E'; /* Right-pointing triangle + text-presentation modifier */
+        display: inline-block;
+        margin-right: 8px;
+        color: #000;
+    }}
+    .mobile-links details[open] summary::before {{
+        content: '\\25BC\\FE0E'; /* Down-pointing triangle + text-presentation modifier */
+    }}
+    
     .mobile-links ul {{ margin: 0; padding-left: 20px; }}
     .mobile-links li {{ margin-bottom: 8px; }}
     .mobile-links details {{ margin-bottom: 12px; }}
