@@ -20,19 +20,31 @@ body{
 .body-text{font-size:12pt;line-height:1.2;margin:0 0 15px 0;}
 .outlook-section{flex-grow:1;overflow:hidden;}
 
+/* HIDDEN BY DEFAULT FOR TRMNL */
+.mobile-links { display: none; }
+
 /* KINDLE / MOBILE ESCAPE HATCH (Triggered under 799px width or portrait mode) */
 @media screen and (max-width: 799px), screen and (orientation: portrait) {
     body { 
         width: auto; height: auto; min-height: 100vh;
-        overflow: auto; /* Allows vertical scrolling */
+        overflow: auto; 
     }
     .main-content { flex-direction: column; }
     .left-pane { width: 100%; height: auto; padding: 15px 15px 5px 15px; }
     .right-pane { width: 100%; height: auto; padding: 5px 15px 15px 15px; }
     .outlook-section { overflow: visible; }
+    
+    /* REVEAL MOBILE LINKS */
+    .mobile-links {
+        display: block;
+        margin-top: 15px;
+        font-size: 12pt;
+    }
+    .mobile-links ul { margin: 0; padding-left: 20px; }
+    .mobile-links li { margin-bottom: 8px; }
 }
 </style></head><body><div class="main-content">
-<div class="left-pane"><img src="https://www.mwis.org.uk/forecast-chart-images/MWI-WM14468.jpg" /></div>
+<div class="left-pane"><a href="https://www.mwis.org.uk/forecasts/synoptic-charts"><img src="https://www.mwis.org.uk/forecast-chart-images/MWI-WM14468.jpg" /></a></div>
 <div class="right-pane">
     <div class="summary-section">
         <span class="date-header">Saturday 2nd May 2026</span>
@@ -40,6 +52,16 @@ body{
     </div>
     <div class="outlook-section">
         <p class="body-text"><strong>Outlook:</strong> Lower than normal temperatures on the mountains most or all next week, particularly across the Scottish highlands where fresh snow in some areas and freezing level sometimes below 750m. Generally though, although the weather mixed, total rainfall will be fairly small and winds often light (at least until toward the weekend). Cloud will frequently be above mountain summits.</p>
+        
+        <div class="mobile-links">
+            <ul>
+                <li><a href="https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text">SE Highlands</a></li>
+                <li><a href="https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text">Cairngorms</a></li>
+                <li><a href="https://www.mwis.org.uk/forecasts/scottish/west-highlands/text">West Highlands</a></li>
+                <li><a href="https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text">NW Highlands</a></li>
+                <li><a href="https://www.mwis.org.uk/">MWIS home</a></li>
+            </ul>
+        </div>
     </div>
 </div>
 </div></body></html>
