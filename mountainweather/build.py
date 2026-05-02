@@ -151,7 +151,7 @@ body{{
         content: '\\25BC\\FE0E'; /* Down-pointing triangle + text-presentation modifier */
     }}
     
-    .mobile-links ul {{ margin: 0; padding-left: 20px; }}
+    .mobile-links ul {{ margin: 0; padding-left: 32px; }}
     .mobile-links li {{ margin-bottom: 8px; }}
     .mobile-links details {{ margin-bottom: 12px; }}
 }}
