@@ -73,7 +73,7 @@ t_body_size = "12pt"
 t_header_size = "17pt"
 
 # Cascading adjustments based on character thresholds for TRMNL
-if total_chars > 1200:
+if total_chars > 1150:
     t_body_size = "9pt"
     t_header_size = "15pt"
 elif total_chars > 830:
@@ -101,7 +101,7 @@ body{{
 .left-pane{{width:50%;height:100%;padding:25px 12px 25px 25px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}}
 .left-pane img{{max-width:100%;max-height:100%;object-fit:contain;}}
 .right-pane{{width:50%;height:100%;padding:25px 25px 25px 13px;display:flex;flex-direction:column;}}
-.date-header{{font-size:{t_header_size};font-weight:bold;margin-bottom:5px;display:block;}}
+.date-header{{font-size:{t_header_size};font-weight:bold;margin-top:-5px;margin-bottom:5px;display:block;}}
 .body-text{{font-size:{t_body_size};line-height:1.2;margin:0 0 15px 0;}}
 .outlook-section{{flex-grow:1;overflow:hidden;}}
 
@@ -120,7 +120,7 @@ body{{
     .outlook-section {{ overflow: visible; }}
     
     /* OVERRIDE DYNAMIC SCALING - Lock to static reading sizes for mobile */
-    .date-header {{ font-size: 20pt; }}
+    .date-header {{ font-size: 20pt; margin-top: 0; }}
     .body-text {{ font-size: 16pt; }}
     
     /* REVEAL MOBILE LINKS */
