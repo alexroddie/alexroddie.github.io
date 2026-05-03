@@ -329,22 +329,33 @@ function renderDashboard(data) {
   const tMax = Math.round(d.daily.temperature_2m_max[tomIdx]);
   const tMin = Math.round(d.daily.temperature_2m_min[tomIdx]);
 
-  let tomPp = 0, tomPhRes = -1, tomPhCode = 0;
-  const tomStartIdx = endOfDayIdx + 7;  // Start exactly at 6:00 AM tomorrow
-  const tomEndIdx = endOfDayIdx + 24;   // End at 11:00 PM tomorrow
+  let tomPhRes = -1, tomPhCode = 0;
+  let daylightRainCount = 0, daylightSnowCount = 0;
+  
+  const tomStartIdx = endOfDayIdx + 7;   // Start at 6:00 AM tomorrow
+  const tomEndIdx = endOfDayIdx + 24;    // End at 11:00 PM tomorrow
+  const daylightEndIdx = endOfDayIdx + 19; // 6:00 PM tomorrow
   
   for (let j = tomStartIdx; j <= tomEndIdx; j++) {
     let p = d.hourly.precipitation_probability[j];
-    if (p > tomPp) tomPp = p;
+    
+    // Alert Track: Capture the very first hour of rain for the whole day
     if (p >= 40 && tomPhRes === -1) {
       tomPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]);
       tomPhCode = d.hourly.weather_code[j];
+    }
+    
+    // Vibe Track: Count sustained rain strictly between 6am and 6pm
+    if (j <= daylightEndIdx && p >= 40) {
+      daylightRainCount++;
+      let hc = d.hourly.weather_code[j];
+      if (hc >= 71 && hc <= 86) daylightSnowCount++;
     }
   }
 
   let tomCond = "Cloudy.";
   if (tomTc >= 95) tomCond = "Thunder.";
-  else if (tomPp >= 40) tomCond = (tomPhCode >= 71 && tomPhCode <= 86) ? "Snowy." : "Rainy.";
+  else if (daylightRainCount >= 3) tomCond = (daylightSnowCount > 0) ? "Snowy." : "Rainy.";
   else if (tomTc === 0) tomCond = "Sunny.";
   else if (tomTc === 1) tomCond = "Mostly sunny.";
   else if (tomTc === 2) tomCond = "Partly cloudy.";
