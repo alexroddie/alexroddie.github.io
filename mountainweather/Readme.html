@@ -133,10 +133,9 @@
         <p>The core logic performs the following tasks:</p>
         <ul>
             <li><strong>Data Retrieval:</strong> Uses the <code>requests</code> library to fetch HTML from MWIS and SAIS.</li>
-            <li><strong>Parsing:</strong> Uses <code>BeautifulSoup4</code> to extract specific forecast fields (Wind, Precipitation, Cloud, Temperature, and Freezing Level).</li>
+            <li><strong>Parsing:</strong> Uses <code>BeautifulSoup4</code> to extract the overarching Area Summary and Planning Outlook, implementing dynamic character-count thresholds to automatically scale text sizes to fit hardware boundaries.</li>
             <li><strong>Synoptic Chart Extraction:</strong> Identifies and downloads the current synoptic weather chart URL.</li>
-            <li><strong>Kindle Optimization:</strong> Generates an <code>index.html</code> file using <code>&lt;details&gt;</code> and <code>&lt;summary&gt;</code> tags. To fix a known Kindle rendering bug, heading styles are applied directly to the summary element.</li>
-            <li><strong>TRMNL Optimization:</strong> Generates a <code>trmnl.html</code> file with a fixed 800x480 resolution, featuring a two-pane layout.</li>
+            <li><strong>Unified Layout Generation:</strong> Generates a single <code>trmnl.html</code> file that serves both TRMNL and mobile devices. It sets a strict, fixed 800x480 two-pane layout for the TRMNL device by default. It also embeds a CSS <code>@media</code> query "escape hatch" that automatically triggers on narrower screens (like Kindles or smartphones) to stack the content vertically, enlarge reading fonts, and reveal native HTML accordion menus for additional regional forecast links.</li>
             <li><strong>Timezone Handling:</strong> Uses <code>zoneinfo</code> (Europe/London) to ensure timestamps are accurate to the UK mountain environment.</li>
         </ul>
 
@@ -162,8 +161,7 @@
 │       └── update.yml      # The automation logic
 └── mountainweather/
     ├── build.py            # The scraping logic
-    ├── index.html          # (Auto-generated Kindle dashboard)
-    └── trmnl.html          # (Auto-generated TRMNL dashboard)</code></pre>
+    └── trmnl.html          # (Auto-generated unified dashboard)</code></pre>
 
         <h3>3.2 GitHub Secrets</h3>
         <p>To ensure automation remains active, configure a Personal Access Token:</p>
@@ -186,12 +184,12 @@
         <h2>4. Device Configuration</h2>
 
         <div class="device-box">
-            <h3>4.1 Kindle E-Reader</h3>
-            <p>Point the Kindle's "Experimental Browser" to your <code>index.html</code> URL.</p>
+            <h3>4.1 Kindle & Mobile Browsers</h3>
+            <p>Point the Kindle's "Experimental Browser" (or your smartphone) to your <code>trmnl.html</code> URL.</p>
             <ul>
-                <li><strong>Layout:</strong> Uses a 94% width with 3% margins for optimal readability.</li>
-                <li><strong>Interaction:</strong> Tapping the black headers will expand or collapse the sections.</li>
-                <li><strong>Visuals:</strong> Headings appear as single-height black bars with white text.</li>
+                <li><strong>Layout:</strong> Content automatically restructures into a single vertical column, constrained to 95% of the screen width for comfortable reading margins.</li>
+                <li><strong>Interaction:</strong> Tapping the "MWIS forecasts" or "SAIS forecasts" headers will expand or collapse a full menu of regional links.</li>
+                <li><strong>Visuals:</strong> Dynamic scaling is overridden, locking text to highly legible static sizes (20pt headers, 16pt body text) tailored for e-ink and mobile screens.</li>
             </ul>
         </div>
 
@@ -200,7 +198,7 @@
             <p>Configure your TRMNL device to pull from your <code>trmnl.html</code> URL.</p>
             <ul>
                 <li><strong>Refresh Rate:</strong> Match the rate to the update schedule (e.g., every 1-2 hours).</li>
-                <li><strong>Scaling:</strong> The 800x480 fixed layout ensures no scrolling is required.</li>
+                <li><strong>Scaling:</strong> The 800x480 fixed layout ensures perfect rendering without vertical clipping or horizontal scrolling, adapting text size automatically based on word count.</li>
             </ul>
         </div>
     </section>
