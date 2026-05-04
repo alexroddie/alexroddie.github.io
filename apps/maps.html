@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
     <title>Maps</title>
 
@@ -21,12 +21,17 @@
         }
 
         /* 
-         * UNIVERSAL MOBILE RESETS 
-         * Kills blue tap highlights and encourages browsers to disable double-tap zoom
+         * CLEAN MOBILE RESETS
+         * 1. Kills the blue tap highlight on iOS/Android
+         * 2. Forces UI text to be black, not blue links
          */
         * {
             -webkit-tap-highlight-color: transparent !important;
-            touch-action: manipulation;
+        }
+        
+        a, button {
+            color: #000000 !important;
+            text-decoration: none;
         }
 
         html, body {
@@ -41,15 +46,6 @@
             background-color: #ffffff;
             font-family: "Geneva", "Verdana", sans-serif;
             box-sizing: border-box;
-        }
-
-        /* FORCE CONTROLS TO PURE BLACK */
-        a, button, input {
-            color: #000000 !important;
-            -webkit-appearance: none;
-            appearance: none;
-            border-radius: 0;
-            text-decoration: none;
         }
 
         .title-bar { display: none; }
@@ -98,6 +94,10 @@
             width: 260px;
         }
 
+        /* 
+         * FIXING THE MOBILE ZOOM GLITCH 
+         * Font size must be 16px to stop iOS from forcibly zooming in.
+         */
         input[type="text"] { 
             width: 100%; 
             padding: 6px; 
@@ -106,6 +106,7 @@
             margin-bottom: 5px; 
             font-family: inherit; 
             font-size: 16px !important; 
+            color: #000000;
         }
 
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box;}
@@ -236,26 +237,6 @@
 
     <script>
         // ---------------------------------------------------------
-        // 0. MOBILE ANTI-ZOOM INJECTION (Nuclear Option)
-        // ---------------------------------------------------------
-        // Prevent double-tap to zoom
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            let now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, { passive: false });
-
-        // Prevent pinch to zoom
-        document.addEventListener('touchmove', function (event) {
-            if (event.touches.length > 1) {
-                event.preventDefault();
-            }
-        }, { passive: false });
-
-        // ---------------------------------------------------------
         // 1. VARIABLE DECLARATIONS
         // ---------------------------------------------------------
         let map = null;
@@ -340,6 +321,7 @@
                     zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
                     fadeDuration: 0,
+                    // Natively disable all standard pinch/scroll behaviors
                     scrollZoom: false,
                     boxZoom: false,
                     doubleClickZoom: false,
@@ -365,6 +347,7 @@
                 zoomAnimation: false, 
                 fadeAnimation: false,
                 markerZoomAnimation: false,
+                // Natively disable all standard pinch/scroll behaviors
                 touchZoom: false,
                 scrollWheelZoom: false,
                 doubleClickZoom: false,
@@ -382,39 +365,25 @@
         }
 
         // ---------------------------------------------------------
-        // 4. THREE-PASS SEARCH LOGIC
+        // 4. CLEAN SEARCH LOGIC
         // ---------------------------------------------------------
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
             
             try {
-                const bounds = map.getBounds();
-                const minLat = bounds.getSouth();
-                const maxLat = bounds.getNorth();
-                const minLon = bounds.getWest();
-                const maxLon = bounds.getEast();
-
+                // Get current center to gently bias the search
                 const center = map.getCenter();
                 const currentLat = center.lat;
                 const currentLon = center.lng;
 
-                const strictUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.rect.min_lat=${minLat}&boundary.rect.min_lon=${minLon}&boundary.rect.max_lat=${maxLat}&boundary.rect.max_lon=${maxLon}&api_key=${STADIA_API_KEY}`;
+                // Simple, single API call.
+                const url = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&focus.point.lat=${currentLat}&focus.point.lon=${currentLon}&api_key=${STADIA_API_KEY}`;
                 
-                let res = await fetch(strictUrl);
-                let data = await res.json();
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`API error: ${res.status}`);
                 
-                if (!data.features || data.features.length === 0) {
-                    const regionalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.circle.lat=${currentLat}&boundary.circle.lon=${currentLon}&boundary.circle.radius=1000&api_key=${STADIA_API_KEY}`;
-                    res = await fetch(regionalUrl);
-                    data = await res.json();
-                }
-
-                if (!data.features || data.features.length === 0) {
-                    const globalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&focus.point.lat=${currentLat}&focus.point.lon=${currentLon}&api_key=${STADIA_API_KEY}`;
-                    res = await fetch(globalUrl);
-                    data = await res.json();
-                }
+                const data = await res.json();
                 
                 if (data.features && data.features.length > 0) {
                     const lon = data.features[0].geometry.coordinates[0];
