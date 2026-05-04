@@ -20,7 +20,15 @@
             --vh: 1vh;
         }
 
-        /* Clean Viewport Lock */
+        /* 
+         * UNIVERSAL MOBILE RESETS 
+         * Kills blue tap highlights and encourages browsers to disable double-tap zoom
+         */
+        * {
+            -webkit-tap-highlight-color: transparent !important;
+            touch-action: manipulation;
+        }
+
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -35,14 +43,13 @@
             box-sizing: border-box;
         }
 
-        /* FORCE CONTROLS TO BLACK & DISABLE MOBILE ZOOM GLITCHES */
+        /* FORCE CONTROLS TO PURE BLACK */
         a, button, input {
             color: #000000 !important;
             -webkit-appearance: none;
             appearance: none;
             border-radius: 0;
             text-decoration: none;
-            touch-action: manipulation;
         }
 
         .title-bar { display: none; }
@@ -91,7 +98,6 @@
             width: 260px;
         }
 
-        /* 16px FONT PREVENTS IOS FROM AUTO-ZOOMING THE PAGE */
         input[type="text"] { 
             width: 100%; 
             padding: 6px; 
@@ -230,6 +236,26 @@
 
     <script>
         // ---------------------------------------------------------
+        // 0. MOBILE ANTI-ZOOM INJECTION (Nuclear Option)
+        // ---------------------------------------------------------
+        // Prevent double-tap to zoom
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            let now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+
+        // Prevent pinch to zoom
+        document.addEventListener('touchmove', function (event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        // ---------------------------------------------------------
         // 1. VARIABLE DECLARATIONS
         // ---------------------------------------------------------
         let map = null;
@@ -314,7 +340,6 @@
                     zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
                     fadeDuration: 0,
-                    // MapLibre: Disable pinch/scroll zooming
                     scrollZoom: false,
                     boxZoom: false,
                     doubleClickZoom: false,
@@ -340,7 +365,6 @@
                 zoomAnimation: false, 
                 fadeAnimation: false,
                 markerZoomAnimation: false,
-                // Leaflet: Disable pinch/scroll zooming
                 touchZoom: false,
                 scrollWheelZoom: false,
                 doubleClickZoom: false,
@@ -358,7 +382,7 @@
         }
 
         // ---------------------------------------------------------
-        // 4. THREE-PASS "ANTI-AUSTRALIA" SEARCH LOGIC
+        // 4. THREE-PASS SEARCH LOGIC
         // ---------------------------------------------------------
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
@@ -375,21 +399,17 @@
                 const currentLat = center.lat;
                 const currentLon = center.lng;
 
-                // TIER 1: Strict Screen View. Searches ONLY what you are currently looking at.
                 const strictUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.rect.min_lat=${minLat}&boundary.rect.min_lon=${minLon}&boundary.rect.max_lat=${maxLat}&boundary.rect.max_lon=${maxLon}&api_key=${STADIA_API_KEY}`;
                 
                 let res = await fetch(strictUrl);
                 let data = await res.json();
                 
-                // TIER 2: Regional Net. If it wasn't on screen, search within a 1,000km radius.
-                // (This catches Perth Scotland if you are anywhere in Europe, but excludes Australia).
                 if (!data.features || data.features.length === 0) {
                     const regionalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.circle.lat=${currentLat}&boundary.circle.lon=${currentLon}&boundary.circle.radius=1000&api_key=${STADIA_API_KEY}`;
                     res = await fetch(regionalUrl);
                     data = await res.json();
                 }
 
-                // TIER 3: Global Fallback. If it still found nothing, search the entire world.
                 if (!data.features || data.features.length === 0) {
                     const globalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&focus.point.lat=${currentLat}&focus.point.lon=${currentLon}&api_key=${STADIA_API_KEY}`;
                     res = await fetch(globalUrl);
