@@ -19,11 +19,6 @@
             --text-color: #000000;
         }
 
-        /* 
-         * THE NUCLEAR FULLSCREEN FIX: 
-         * -webkit-fill-available prevents the browser from subtracting its own UI chrome 
-         * from the 100vh calculation.
-         */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -58,7 +53,6 @@
             z-index: 1;
         }
 
-        /* Force the internal map canvases to stretch, ignoring library calculations */
         .maplibregl-canvas, .leaflet-container {
             width: 100% !important;
             height: 100% !important;
@@ -254,15 +248,49 @@
 
         let map;
         let mapType = 'gl';
+        
         const defaultCenterLat = 51.5072;
         const defaultCenterLon = -0.1276;
-        let lastSearchedLoc = { lat: defaultCenterLat, lon: defaultCenterLon };
+        const defaultZoom = 13;
+
+        // --- LOCAL STORAGE LOGIC ---
+        function getSavedState(key, fallback) {
+            try {
+                const saved = localStorage.getItem(key);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed && typeof parsed.lat === 'number' && typeof parsed.lon === 'number') {
+                        return parsed;
+                    }
+                }
+            } catch (e) {}
+            return fallback;
+        }
+
+        function saveMapState() {
+            if (!map) return;
+            let center, zoom;
+            if (mapType === 'gl') {
+                center = map.getCenter();
+                zoom = map.getZoom();
+            } else {
+                const leafletCenter = map.getCenter();
+                center = { lng: leafletCenter.lng, lat: leafletCenter.lat };
+                zoom = map.getZoom();
+            }
+            try {
+                localStorage.setItem('rekindle_maps_view', JSON.stringify({ lat: center.lat, lon: center.lng, zoom: zoom }));
+            } catch (e) {}
+        }
+
+        // Initialize state variables from storage
+        let initialView = getSavedState('rekindle_maps_view', { lat: defaultCenterLat, lon: defaultCenterLon, zoom: defaultZoom });
+        let lastSearchedLoc = getSavedState('rekindle_maps_search', { lat: defaultCenterLat, lon: defaultCenterLon });
 
         window.onload = () => {
             initMap();
         };
 
-        // NEW: Force the map to resize whenever the browser window shifts
         window.addEventListener('resize', () => {
             if (!map) return;
             if (mapType === 'gl') map.resize();
@@ -275,18 +303,21 @@
                 map = new maplibregl.Map({
                     container: 'map',
                     style: 'https://openmaptiles.geo.data.gouv.fr/styles/maptiler-toner/style.json',
-                    center: [defaultCenterLon, defaultCenterLat], 
-                    zoom: 13,
+                    center: [initialView.lon, initialView.lat], 
+                    zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
                     fadeDuration: 0 
                 });
+
+                // Attach save events
+                map.on('moveend', saveMapState);
+                map.on('zoomend', saveMapState);
+
             } else {
                 mapType = 'leaflet';
                 initLeafletMap();
             }
 
-            // Fire multiple resize events to ensure the canvas stretches 
-            // after the browser has finished its DOM paint cycle.
             setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 100);
             setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 500);
         }
@@ -298,13 +329,17 @@
                 zoomAnimation: false, 
                 fadeAnimation: false,
                 markerZoomAnimation: false
-            }).setView([defaultCenterLat, defaultCenterLon], 13);
+            }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
             L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=d03c70b5-65ef-4dcf-ae08-a5bfa5c52010', {
                 minZoom: 0,
                 maxZoom: 20,
                 attribution: '&copy; Stadia/Stamen'
             }).addTo(map);
+
+            // Attach save events
+            map.on('moveend', saveMapState);
+            map.on('zoomend', saveMapState);
         }
 
         async function searchLocation() {
@@ -320,6 +355,7 @@
                     const lon = parseFloat(data[0].lon);
                     
                     lastSearchedLoc = { lat: lat, lon: lon };
+                    try { localStorage.setItem('rekindle_maps_search', JSON.stringify(lastSearchedLoc)); } catch(e) {}
 
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
                     else map.setView([lat, lon], 15);
