@@ -3,13 +3,13 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <meta charset="UTF-8">
-    <title>Maps (Standalone)</title>
+    <title>Maps (Standalone Full-Screen)</title>
 
-    <!-- MapLibre GL JS (v2 for Kindle compatibility) -->
+    <!-- MapLibre GL JS (Vector map for Desktop) -->
     <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
     <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
 
-    <!-- Leaflet (Fallback for Kindle/No-WebGL) -->
+    <!-- Leaflet (Raster fallback for Kindle) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -17,13 +17,12 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #000000;
-            --border: 2px solid #000000;
         }
 
         body {
             font-family: "Geneva", "Verdana", sans-serif;
             margin: 0;
-            padding: 0 !important; /* Full screen - remove 20px gutter */
+            padding: 0 !important; /* Removes the 20px gutter for full screen */
             height: 100vh;
             overflow: hidden;
             background-color: #ffffff;
@@ -38,7 +37,7 @@
         .window {
             width: 100vw;
             height: 100vh;
-            border: none; /* Remove retro border */
+            border: none; /* Strip the vintage window border */
             max-width: none;
             display: flex;
             flex-direction: column;
@@ -48,10 +47,19 @@
             flex-grow: 1;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            background: #ffffff;
+            /* E-ink optimizations for crisp lines[cite: 1] */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
 
-        /* UI PANELS */
+        .leaflet-tile-container {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        /* UI CONTROLS OVERLAY */
         .overlay-panel {
             position: absolute;
             background: white;
@@ -62,12 +70,12 @@
         }
 
         .panel-top-left {
-            top: 10px; /* Adjusted since title bar is gone[cite: 1] */
+            top: 10px; /* Moved up since title bar is hidden[cite: 1] */
             left: 10px;
             width: 260px;
         }
 
-        /* MINIMALIST HOME BUTTON */
+        /* HOME BUTTON (Since window 'X' is gone)[cite: 1] */
         .home-btn {
             background: white;
             border: 2px solid black;
@@ -79,9 +87,9 @@
             text-decoration: none;
             color: black;
             font-size: 0.8rem;
+            text-align: center;
         }
 
-        /* Standard ReKindle button styles kept for search[cite: 1] */
         .tab-row { display: flex; border-bottom: 2px solid black; margin-bottom: 10px; }
         .tab-btn { flex: 1; padding: 5px; cursor: pointer; background: #eee; border: none; font-weight: bold; }
         .tab-btn.active { background: black; color: white; }
@@ -89,9 +97,10 @@
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; }
         
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; gap: 10px; }
-        .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; }
+        .zoom-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: 900; font-size: 1.2rem; cursor: pointer; }
     </style>
 
+    <!-- Dependencies from your repo[cite: 1] -->
     <script src="js/i18n.js"></script>
     <script src="theme.js"></script>
 </head>
@@ -99,9 +108,9 @@
 <body>
 
     <div class="window">
+        <!-- Control Panel[cite: 1] -->
         <div class="overlay-panel panel-top-left">
-            <!-- Back to your main bookmarks page[cite: 1] -->
-            <a href="https://alexroddie.github.io/" class="home-btn">← HOME</a>
+            <a href="https://alexroddie.github.io/" class="home-btn">← BACK TO BOOKMARKS</a>
             
             <div class="tab-row">
                 <button class="tab-btn active" id="tab-find" onclick="setMode('find')">Find</button>
@@ -110,7 +119,7 @@
 
             <div id="mode-find-content">
                 <input type="text" id="search-input" placeholder="Search location..." onkeypress="if(event.key==='Enter') searchLocation()">
-                <button class="sys-btn" onclick="searchLocation()">Go</button>
+                <button class="sys-btn" onclick="searchLocation()">Search</button>
             </div>
 
             <div id="mode-route-content" style="display:none;">
@@ -120,6 +129,7 @@
             </div>
         </div>
 
+        <!-- Zoom Controls[cite: 1] -->
         <div class="panel-bottom-right">
             <button class="zoom-btn" onclick="map.zoomIn()">+</button>
             <button class="zoom-btn" onclick="map.zoomOut()">-</button>
@@ -129,10 +139,9 @@
     </div>
 
     <script>
-        // --- DIRECT FETCH LOGIC (NO PROXY)[cite: 1] ---
+        // --- DIRECT FETCH (No Proxy Required)[cite: 1] ---
         async function fetchWithProxyFallback(targetUrl, options = {}) {
             try {
-                // Fetch directly from the map provider instead of a proxy[cite: 1]
                 const res = await fetch(targetUrl, {
                     ...options,
                     headers: { 'Accept-Language': 'en' }
@@ -145,30 +154,49 @@
             }
         }
 
-        // --- MAP INITIALIZATION ---
         let map;
-        let markers = [];
         let mapType = 'gl';
 
         window.onload = () => {
+            if (window.rekindleApplyWallpaper) window.rekindleApplyWallpaper();
             initMap();
         };
 
         async function initMap() {
+            // Check for WebGL support (Desktop)[cite: 1]
             if (typeof maplibregl !== 'undefined' && maplibregl.supported && maplibregl.supported()) {
                 mapType = 'gl';
                 map = new maplibregl.Map({
                     container: 'map',
                     style: 'https://openmaptiles.geo.data.gouv.fr/styles/maptiler-toner/style.json',
-                    center: [-74.0060, 40.7128],
+                    center: [-0.1276, 51.5072], // Default London center
                     zoom: 13,
-                    attributionControl: false
+                    attributionControl: false,
+                    fadeDuration: 0 // E-ink Optimization[cite: 1]
                 });
             } else {
+                // Kindle Fallback (Leaflet + Toner)[cite: 1]
                 mapType = 'leaflet';
-                map = L.map('map', { zoomControl: false }).setView([40.7128, -74.0060], 13);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                initLeafletMap();
             }
+        }
+
+        function initLeafletMap() {
+            // Disable animations to prevent Kindle screen flashing[cite: 1]
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: false,
+                zoomAnimation: false, 
+                fadeAnimation: false,
+                markerZoomAnimation: false
+            }).setView([51.5072, -0.1276], 13);
+
+            // High-contrast B&W tiles optimized for E-ink[cite: 1]
+            L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=d03c70b5-65ef-4dcf-ae08-a5bfa5c52010', {
+                minZoom: 0,
+                maxZoom: 20,
+                attribution: '&copy; Stadia/Stamen'
+            }).addTo(map);
         }
 
         function setMode(mode) {
@@ -181,7 +209,28 @@
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
             try {
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+                const res = await fetchWithProxyFallback(url);
+                const data = await res.json();
+                if (data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
+                    else map.setView([lat, lon], 15);
+                } else {
+                    alert("Location not found.");
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function calcRoute() {
+            const end = document.getElementById('route-end').value.trim();
+            if (!end) return;
+            try {
+                // Simple version: geocode destination and jump there[cite: 1]
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(end)}&limit=1`;
                 const res = await fetchWithProxyFallback(url);
                 const data = await res.json();
                 if (data.length > 0) {
@@ -190,7 +239,7 @@
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
                     else map.setView([lat, lon], 15);
                 }
-            } catch (e) { alert("Search failed: " + e.message); }
+            } catch (e) { console.error(e); }
         }
     </script>
 </body>
