@@ -87,22 +87,6 @@
             width: 260px;
         }
 
-        .home-btn {
-            background: white;
-            border: 2px solid black;
-            font-weight: bold;
-            padding: 2px 8px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            display: inline-block;
-            text-decoration: none;
-            color: black;
-            font-size: 0.8rem;
-            text-align: center;
-            width: calc(100% - 20px);
-            box-sizing: border-box;
-        }
-
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box;}
         button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
@@ -192,8 +176,6 @@
 
     <div class="window">
         <div class="overlay-panel panel-top-left">
-            <a href="https://alexroddie.github.io/" class="home-btn">← BACK TO BOOKMARKS</a>
-            
             <div>
                 <input type="text" id="search-input" placeholder="Search location..." onkeypress="if(event.key==='Enter') searchLocation()">
                 <button class="sys-btn" onclick="searchLocation()">Search</button>
