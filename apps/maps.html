@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <meta charset="UTF-8">
-    <title>Maps (Standalone Full-Screen)</title>
+    <title>Maps</title>
 
     <!-- MapLibre GL JS (Vector map for Desktop) -->
     <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
@@ -19,10 +19,6 @@
             --text-color: #000000;
         }
 
-        /* 
-         * IRONCLAD FULLSCREEN: 
-         * No flexbox. Hard lock to viewport.
-         */
         html, body {
             margin: 0;
             padding: 0;
@@ -43,11 +39,6 @@
             background-color: #ffffff;
         }
 
-        /* 
-         * FIX FOR WHITE BAR: 
-         * Force absolute positioning to all 4 edges. 
-         * Map libraries calculate size accurately this way.
-         */
         #map {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -65,7 +56,6 @@
             image-rendering: crisp-edges;
         }
 
-        /* UI PANELS */
         .overlay-panel {
             position: absolute;
             background: white;
@@ -96,7 +86,6 @@
             width: calc(100% - 20px);
         }
 
-        /* Search Inputs */
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black;}
         button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
@@ -127,12 +116,11 @@
         .zoom-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: 900; font-size: 1.2rem; cursor: pointer; }
         .zoom-btn:active { background: black; color: white; }
 
-        /* NAVIGATION GRID */
         .d-pad {
             display: grid;
             grid-template-columns: 35px 35px 35px;
             grid-template-rows: 35px 35px 35px;
-            gap: 4px; /* Grid gap is Kindle-safe */
+            gap: 4px; 
             background: white;
             border: 2px solid black;
             padding: 4px;
@@ -157,7 +145,6 @@
         .d-btn:active { background: black; color: white; }
         .d-btn.center { font-size: 0.7rem; background: #eee; }
 
-        /* CUSTOM MODAL FOR ALERTS */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -186,7 +173,6 @@
 <body>
 
     <div class="window">
-        <!-- Top Left Search Panel -->
         <div class="overlay-panel panel-top-left">
             <a href="https://alexroddie.github.io/" class="home-btn">← BACK TO BOOKMARKS</a>
             
@@ -196,7 +182,6 @@
             </div>
         </div>
 
-        <!-- Bottom Right Navigation Panel -->
         <div class="panel-bottom-right">
             <div class="zoom-controls">
                 <button class="zoom-btn" onclick="map.zoomIn()">+</button>
@@ -221,7 +206,6 @@
         <div id="map"></div>
     </div>
 
-    <!-- Error/Status Modal -->
     <div id="status-modal" class="modal-overlay">
         <div class="modal-box">
             <h3 id="status-title" style="margin-top:0;">Status</h3>
@@ -255,6 +239,9 @@
         let mapType = 'gl';
         const defaultCenterLat = 51.5072;
         const defaultCenterLon = -0.1276;
+        
+        // NEW: Variable to track the most recently searched location
+        let lastSearchedLoc = { lat: defaultCenterLat, lon: defaultCenterLon };
 
         window.onload = () => {
             initMap();
@@ -276,7 +263,6 @@
                 initLeafletMap();
             }
 
-            // Force recalculation of map size just to be absolutely sure
             setTimeout(() => {
                 if (mapType === 'gl') map.resize();
                 else map.invalidateSize();
@@ -306,9 +292,14 @@
                 const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
                 const res = await fetchWithProxyFallback(url);
                 const data = await res.json();
+                
                 if (data.length > 0) {
                     const lat = parseFloat(data[0].lat);
                     const lon = parseFloat(data[0].lon);
+                    
+                    // NEW: Save the successful coordinates to our tracking variable
+                    lastSearchedLoc = { lat: lat, lon: lon };
+
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
                     else map.setView([lat, lon], 15);
                 } else {
@@ -325,10 +316,11 @@
         }
 
         function resetView() {
+            // NEW: Use lastSearchedLoc instead of the default London coordinates
             if (mapType === 'leaflet') {
-                map.setView([defaultCenterLat, defaultCenterLon], 13);
+                map.setView([lastSearchedLoc.lat, lastSearchedLoc.lon], 13);
             } else {
-                map.jumpTo({ center: [defaultCenterLon, defaultCenterLat], zoom: 13 });
+                map.jumpTo({ center: [lastSearchedLoc.lon, lastSearchedLoc.lat], zoom: 13 });
             }
         }
     </script>
