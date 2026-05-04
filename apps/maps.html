@@ -5,11 +5,7 @@
     <meta charset="UTF-8">
     <title>Maps</title>
 
-    <!-- MapLibre GL JS (Vector map for Desktop) -->
-    <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
-    <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
-
-    <!-- Leaflet (Raster fallback for Kindle) -->
+    <!-- Leaflet ONLY (Bulletproof raster map, no fragile WebGL) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -17,18 +13,15 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #000000;
-            --vh: 1vh;
         }
 
-        /* Viewport fix for the white bar */
+        /* Ironclad Fullscreen */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
-            width: 100%;
-            height: 100vh; 
-            height: calc(var(--vh, 1vh) * 100) !important;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
             overflow: hidden !important;
-            position: fixed; 
             background-color: #ffffff;
             font-family: "Geneva", "Verdana", sans-serif;
             box-sizing: border-box;
@@ -47,11 +40,15 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: #ffffff;
-            /* Original E-ink rendering rules[cite: 1] */
             image-rendering: -webkit-optimize-contrast;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
             z-index: 1;
+        }
+
+        /* Standard OpenStreetMap, converted to B&W for E-ink */
+        .leaflet-layer {
+            filter: grayscale(100%);
         }
 
         .leaflet-tile-container {
@@ -73,22 +70,6 @@
             top: 10px;
             left: 10px;
             width: 260px;
-        }
-
-        .home-btn {
-            background: white;
-            border: 2px solid black;
-            font-weight: bold;
-            padding: 2px 8px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            display: inline-block;
-            text-decoration: none;
-            color: black;
-            font-size: 0.8rem;
-            text-align: center;
-            width: calc(100% - 20px);
-            box-sizing: border-box;
         }
 
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
@@ -180,8 +161,6 @@
 
     <div class="window">
         <div class="overlay-panel panel-top-left">
-            <a href="https://alexroddie.github.io/" class="home-btn">← BACK TO BOOKMARKS</a>
-            
             <div>
                 <input type="text" id="search-input" placeholder="Search location..." onkeypress="if(event.key==='Enter') searchLocation()">
                 <button class="sys-btn" onclick="searchLocation()">Search</button>
@@ -221,19 +200,6 @@
     </div>
 
     <script>
-        function fixViewportHeight() {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-            if (map) {
-                if (mapType === 'gl') map.resize();
-                else map.invalidateSize();
-            }
-        }
-
-        fixViewportHeight();
-        window.addEventListener('resize', fixViewportHeight);
-        window.addEventListener('orientationchange', () => { setTimeout(fixViewportHeight, 100); });
-
         function showStatus(title, msg) {
             document.getElementById('status-title').innerText = title;
             document.getElementById('status-message').innerText = msg;
@@ -255,8 +221,6 @@
         }
 
         let map;
-        let mapType = 'gl';
-        
         const defaultCenterLat = 51.5072;
         const defaultCenterLon = -0.1276;
         const defaultZoom = 13;
@@ -276,15 +240,8 @@
 
         function saveMapState() {
             if (!map) return;
-            let center, zoom;
-            if (mapType === 'gl') {
-                center = map.getCenter();
-                zoom = map.getZoom();
-            } else {
-                const leafletCenter = map.getCenter();
-                center = { lng: leafletCenter.lng, lat: leafletCenter.lat };
-                zoom = map.getZoom();
-            }
+            const center = map.getCenter();
+            const zoom = map.getZoom();
             try {
                 localStorage.setItem('rekindle_maps_view', JSON.stringify({ lat: center.lat, lon: center.lng, zoom: zoom }));
             } catch (e) {}
@@ -297,30 +254,11 @@
             initMap();
         };
 
-        async function initMap() {
-            if (typeof maplibregl !== 'undefined' && maplibregl.supported && maplibregl.supported()) {
-                mapType = 'gl';
-                map = new maplibregl.Map({
-                    container: 'map',
-                    // Restored original ReKindle WebGL Map style[cite: 1]
-                    style: 'https://openmaptiles.geo.data.gouv.fr/styles/maptiler-toner/style.json',
-                    center: [initialView.lon, initialView.lat], 
-                    zoom: initialView.zoom || defaultZoom,
-                    attributionControl: false,
-                    fadeDuration: 0 
-                });
+        window.addEventListener('resize', () => {
+            if (map) map.invalidateSize();
+        });
 
-                map.on('moveend', saveMapState);
-                map.on('zoomend', saveMapState);
-            } else {
-                mapType = 'leaflet';
-                initLeafletMap();
-            }
-            
-            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 200);
-        }
-
-        function initLeafletMap() {
+        function initMap() {
             map = L.map('map', {
                 zoomControl: false,
                 attributionControl: false,
@@ -329,15 +267,18 @@
                 markerZoomAnimation: false
             }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
-            // Restored original ReKindle Stadia/Stamen Toner API[cite: 1]
-            L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=d03c70b5-65ef-4dcf-ae08-a5bfa5c52010', {
+            // Public, free OpenStreetMap tiles (NO API KEY REQUIRED)
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 minZoom: 0,
-                maxZoom: 20,
-                attribution: '&copy; Stadia/Stamen'
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap'
             }).addTo(map);
 
             map.on('moveend', saveMapState);
             map.on('zoomend', saveMapState);
+            
+            // Force rendering refresh
+            setTimeout(() => { map.invalidateSize(); }, 200);
         }
 
         async function searchLocation() {
@@ -355,8 +296,7 @@
                     lastSearchedLoc = { lat: lat, lon: lon };
                     try { localStorage.setItem('rekindle_maps_search', JSON.stringify(lastSearchedLoc)); } catch(e) {}
 
-                    if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
-                    else map.setView([lat, lon], 15);
+                    map.setView([lat, lon], 15);
                 } else {
                     showStatus("Not Found", "No results found for your query.");
                 }
@@ -371,11 +311,7 @@
         }
 
         function resetView() {
-            if (mapType === 'leaflet') {
-                map.setView([lastSearchedLoc.lat, lastSearchedLoc.lon], 13);
-            } else {
-                map.jumpTo({ center: [lastSearchedLoc.lon, lastSearchedLoc.lat], zoom: 13 });
-            }
+            map.setView([lastSearchedLoc.lat, lastSearchedLoc.lon], 13);
         }
     </script>
 </body>
