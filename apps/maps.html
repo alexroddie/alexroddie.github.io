@@ -42,7 +42,7 @@
             appearance: none;
             border-radius: 0;
             text-decoration: none;
-            touch-action: manipulation; /* Prevents double-tap zooming */
+            touch-action: manipulation;
         }
 
         .title-bar { display: none; }
@@ -314,7 +314,7 @@
                     zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
                     fadeDuration: 0,
-                    // Disabled pinch/scroll zooming
+                    // MapLibre: Disable pinch/scroll zooming
                     scrollZoom: false,
                     boxZoom: false,
                     doubleClickZoom: false,
@@ -340,7 +340,7 @@
                 zoomAnimation: false, 
                 fadeAnimation: false,
                 markerZoomAnimation: false,
-                // Disabled pinch/scroll zooming
+                // Leaflet: Disable pinch/scroll zooming
                 touchZoom: false,
                 scrollWheelZoom: false,
                 doubleClickZoom: false,
@@ -358,14 +358,13 @@
         }
 
         // ---------------------------------------------------------
-        // 4. TWO-PASS CONTEXTUAL SEARCH
+        // 4. THREE-PASS "ANTI-AUSTRALIA" SEARCH LOGIC
         // ---------------------------------------------------------
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
             
             try {
-                // Get exact bounds of the current screen
                 const bounds = map.getBounds();
                 const minLat = bounds.getSouth();
                 const maxLat = bounds.getNorth();
@@ -376,13 +375,21 @@
                 const currentLat = center.lat;
                 const currentLon = center.lng;
 
-                // PASS 1: Search ONLY within the exact area currently visible on screen
+                // TIER 1: Strict Screen View. Searches ONLY what you are currently looking at.
                 const strictUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.rect.min_lat=${minLat}&boundary.rect.min_lon=${minLon}&boundary.rect.max_lat=${maxLat}&boundary.rect.max_lon=${maxLon}&api_key=${STADIA_API_KEY}`;
                 
                 let res = await fetch(strictUrl);
                 let data = await res.json();
                 
-                // PASS 2: If nothing was found locally, fallback to a global search
+                // TIER 2: Regional Net. If it wasn't on screen, search within a 1,000km radius.
+                // (This catches Perth Scotland if you are anywhere in Europe, but excludes Australia).
+                if (!data.features || data.features.length === 0) {
+                    const regionalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.circle.lat=${currentLat}&boundary.circle.lon=${currentLon}&boundary.circle.radius=1000&api_key=${STADIA_API_KEY}`;
+                    res = await fetch(regionalUrl);
+                    data = await res.json();
+                }
+
+                // TIER 3: Global Fallback. If it still found nothing, search the entire world.
                 if (!data.features || data.features.length === 0) {
                     const globalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&focus.point.lat=${currentLat}&focus.point.lon=${currentLon}&api_key=${STADIA_API_KEY}`;
                     res = await fetch(globalUrl);
