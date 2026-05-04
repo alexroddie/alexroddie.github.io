@@ -20,14 +20,14 @@
         }
 
         html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            height: -webkit-fill-available !important; 
+            overflow: hidden !important;
             background-color: #ffffff;
             font-family: "Geneva", "Verdana", sans-serif;
-            box-sizing: border-box;
         }
 
         .title-bar { display: none; }
@@ -35,6 +35,8 @@
         .window {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%;
+            height: 100%;
             border: none;
             background-color: #ffffff;
         }
@@ -42,8 +44,8 @@
         #map {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%;
-            height: 100%;
+            width: 100% !important;
+            height: 100% !important;
             background: #ffffff;
             image-rendering: -webkit-optimize-contrast;
             image-rendering: pixelated;
@@ -51,11 +53,18 @@
             z-index: 1;
         }
 
+        .maplibregl-canvas, .leaflet-container {
+            width: 100% !important;
+            height: 100% !important;
+            outline: none;
+        }
+
         .leaflet-tile-container {
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
         }
 
+        /* UI PANELS */
         .overlay-panel {
             position: absolute;
             background: white;
@@ -84,10 +93,11 @@
             font-size: 0.8rem;
             text-align: center;
             width: calc(100% - 20px);
+            box-sizing: border-box;
         }
 
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
-        button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black;}
+        button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box;}
         button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
         
         .panel-bottom-right { 
@@ -163,6 +173,7 @@
             max-width: 300px;
             text-align: center;
             box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
         }
     </style>
 
@@ -237,15 +248,54 @@
 
         let map;
         let mapType = 'gl';
+        
         const defaultCenterLat = 51.5072;
         const defaultCenterLon = -0.1276;
-        
-        // NEW: Variable to track the most recently searched location
-        let lastSearchedLoc = { lat: defaultCenterLat, lon: defaultCenterLon };
+        const defaultZoom = 13;
+
+        // --- LOCAL STORAGE LOGIC ---
+        function getSavedState(key, fallback) {
+            try {
+                const saved = localStorage.getItem(key);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed && typeof parsed.lat === 'number' && typeof parsed.lon === 'number') {
+                        return parsed;
+                    }
+                }
+            } catch (e) {}
+            return fallback;
+        }
+
+        function saveMapState() {
+            if (!map) return;
+            let center, zoom;
+            if (mapType === 'gl') {
+                center = map.getCenter();
+                zoom = map.getZoom();
+            } else {
+                const leafletCenter = map.getCenter();
+                center = { lng: leafletCenter.lng, lat: leafletCenter.lat };
+                zoom = map.getZoom();
+            }
+            try {
+                localStorage.setItem('rekindle_maps_view', JSON.stringify({ lat: center.lat, lon: center.lng, zoom: zoom }));
+            } catch (e) {}
+        }
+
+        // Initialize state variables from storage
+        let initialView = getSavedState('rekindle_maps_view', { lat: defaultCenterLat, lon: defaultCenterLon, zoom: defaultZoom });
+        let lastSearchedLoc = getSavedState('rekindle_maps_search', { lat: defaultCenterLat, lon: defaultCenterLon });
 
         window.onload = () => {
             initMap();
         };
+
+        window.addEventListener('resize', () => {
+            if (!map) return;
+            if (mapType === 'gl') map.resize();
+            else map.invalidateSize();
+        });
 
         async function initMap() {
             if (typeof maplibregl !== 'undefined' && maplibregl.supported && maplibregl.supported()) {
@@ -253,20 +303,23 @@
                 map = new maplibregl.Map({
                     container: 'map',
                     style: 'https://openmaptiles.geo.data.gouv.fr/styles/maptiler-toner/style.json',
-                    center: [defaultCenterLon, defaultCenterLat], 
-                    zoom: 13,
+                    center: [initialView.lon, initialView.lat], 
+                    zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
                     fadeDuration: 0 
                 });
+
+                // Attach save events
+                map.on('moveend', saveMapState);
+                map.on('zoomend', saveMapState);
+
             } else {
                 mapType = 'leaflet';
                 initLeafletMap();
             }
 
-            setTimeout(() => {
-                if (mapType === 'gl') map.resize();
-                else map.invalidateSize();
-            }, 150);
+            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 100);
+            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 500);
         }
 
         function initLeafletMap() {
@@ -276,13 +329,17 @@
                 zoomAnimation: false, 
                 fadeAnimation: false,
                 markerZoomAnimation: false
-            }).setView([defaultCenterLat, defaultCenterLon], 13);
+            }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
             L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=d03c70b5-65ef-4dcf-ae08-a5bfa5c52010', {
                 minZoom: 0,
                 maxZoom: 20,
                 attribution: '&copy; Stadia/Stamen'
             }).addTo(map);
+
+            // Attach save events
+            map.on('moveend', saveMapState);
+            map.on('zoomend', saveMapState);
         }
 
         async function searchLocation() {
@@ -297,8 +354,8 @@
                     const lat = parseFloat(data[0].lat);
                     const lon = parseFloat(data[0].lon);
                     
-                    // NEW: Save the successful coordinates to our tracking variable
                     lastSearchedLoc = { lat: lat, lon: lon };
+                    try { localStorage.setItem('rekindle_maps_search', JSON.stringify(lastSearchedLoc)); } catch(e) {}
 
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
                     else map.setView([lat, lon], 15);
@@ -316,7 +373,6 @@
         }
 
         function resetView() {
-            // NEW: Use lastSearchedLoc instead of the default London coordinates
             if (mapType === 'leaflet') {
                 map.setView([lastSearchedLoc.lat, lastSearchedLoc.lon], 13);
             } else {
