@@ -35,13 +35,14 @@
             box-sizing: border-box;
         }
 
-        /* FORCE ALL CONTROLS TO BLACK (Override iOS/Android defaults) */
+        /* FORCE CONTROLS TO BLACK & DISABLE MOBILE ZOOM GLITCHES */
         a, button, input {
             color: #000000 !important;
             -webkit-appearance: none;
             appearance: none;
             border-radius: 0;
             text-decoration: none;
+            touch-action: manipulation; /* Prevents double-tap zooming */
         }
 
         .title-bar { display: none; }
@@ -90,7 +91,17 @@
             width: 260px;
         }
 
-        input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
+        /* 16px FONT PREVENTS IOS FROM AUTO-ZOOMING THE PAGE */
+        input[type="text"] { 
+            width: 100%; 
+            padding: 6px; 
+            border: 2px solid black; 
+            box-sizing: border-box; 
+            margin-bottom: 5px; 
+            font-family: inherit; 
+            font-size: 16px !important; 
+        }
+
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box;}
         button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
         
@@ -303,7 +314,7 @@
                     zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
                     fadeDuration: 0,
-                    // MapLibre: Disable pinch/scroll zooming
+                    // Disabled pinch/scroll zooming
                     scrollZoom: false,
                     boxZoom: false,
                     doubleClickZoom: false,
@@ -329,7 +340,7 @@
                 zoomAnimation: false, 
                 fadeAnimation: false,
                 markerZoomAnimation: false,
-                // Leaflet: Disable pinch/scroll zooming
+                // Disabled pinch/scroll zooming
                 touchZoom: false,
                 scrollWheelZoom: false,
                 doubleClickZoom: false,
@@ -346,30 +357,37 @@
             map.on('zoomend', saveMapState);
         }
 
+        // ---------------------------------------------------------
+        // 4. TWO-PASS CONTEXTUAL SEARCH
+        // ---------------------------------------------------------
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
             
             try {
-                // Determine current center to bias search results
-                let currentLat, currentLon;
-                if (mapType === 'gl') {
-                    const center = map.getCenter();
-                    currentLat = center.lat;
-                    currentLon = center.lng;
-                } else {
-                    const center = map.getCenter();
-                    currentLat = center.lat;
-                    currentLon = center.lng;
-                }
+                // Get exact bounds of the current screen
+                const bounds = map.getBounds();
+                const minLat = bounds.getSouth();
+                const maxLat = bounds.getNorth();
+                const minLon = bounds.getWest();
+                const maxLon = bounds.getEast();
 
-                // Add focus.point to the API URL
-                const url = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&focus.point.lat=${currentLat}&focus.point.lon=${currentLon}&api_key=${STADIA_API_KEY}`;
+                const center = map.getCenter();
+                const currentLat = center.lat;
+                const currentLon = center.lng;
+
+                // PASS 1: Search ONLY within the exact area currently visible on screen
+                const strictUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.rect.min_lat=${minLat}&boundary.rect.min_lon=${minLon}&boundary.rect.max_lat=${maxLat}&boundary.rect.max_lon=${maxLon}&api_key=${STADIA_API_KEY}`;
                 
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`API error: ${res.status}`);
+                let res = await fetch(strictUrl);
+                let data = await res.json();
                 
-                const data = await res.json();
+                // PASS 2: If nothing was found locally, fallback to a global search
+                if (!data.features || data.features.length === 0) {
+                    const globalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&focus.point.lat=${currentLat}&focus.point.lon=${currentLon}&api_key=${STADIA_API_KEY}`;
+                    res = await fetch(globalUrl);
+                    data = await res.json();
+                }
                 
                 if (data.features && data.features.length > 0) {
                     const lon = data.features[0].geometry.coordinates[0];
