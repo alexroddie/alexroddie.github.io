@@ -17,15 +17,15 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #000000;
+            --vh: 1vh;
         }
 
-        /* 
-         * STRIPPED CSS CALCULATIONS:
-         * We now rely 100% on JavaScript to inject the exact pixel dimensions.
-         */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
+            width: 100%;
+            height: 100vh; 
+            height: calc(var(--vh, 1vh) * 100) !important;
             overflow: hidden !important;
             position: fixed; 
             top: 0; left: 0;
@@ -38,14 +38,14 @@
 
         .window {
             position: absolute;
-            top: 0; left: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             border: none;
             background-color: #ffffff;
         }
 
         #map {
             position: absolute;
-            top: 0; left: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: #ffffff;
             image-rendering: -webkit-optimize-contrast;
             image-rendering: pixelated;
@@ -167,7 +167,7 @@
 
 <body>
 
-    <div class="window" id="main-window">
+    <div class="window">
         <div class="overlay-panel panel-top-left">
             <div>
                 <input type="text" id="search-input" placeholder="Search location..." onkeypress="if(event.key==='Enter') searchLocation()">
@@ -209,7 +209,7 @@
 
     <script>
         // ---------------------------------------------------------
-        // 1. VARIABLE DECLARATIONS
+        // 1. VARIABLE DECLARATIONS (Must be at the very top!)
         // ---------------------------------------------------------
         let map = null;
         let mapType = 'gl';
@@ -235,48 +235,25 @@
         let lastSearchedLoc = getSavedState('rekindle_maps_search', { lat: defaultCenterLat, lon: defaultCenterLon });
 
         // ---------------------------------------------------------
-        // 2. BRUTE FORCE PIXEL INJECTION (The Anti-White-Bar Weapon)
+        // 2. LAYOUT & VIEWPORT FIXES
         // ---------------------------------------------------------
-        function enforceStrictPixels() {
-            // Get the exact, physical pixel dimensions of the screen right now
-            var h = window.innerHeight + 'px';
-            var w = window.innerWidth + 'px';
-            
-            // Forcibly inject these pixels into every layer of the DOM
-            document.documentElement.style.height = h;
-            document.documentElement.style.width = w;
-            document.body.style.height = h;
-            document.body.style.width = w;
-            
-            var mainWindow = document.getElementById('main-window');
-            if (mainWindow) {
-                mainWindow.style.height = h;
-                mainWindow.style.width = w;
-            }
-            
-            var mapEl = document.getElementById('map');
-            if (mapEl) {
-                mapEl.style.height = h;
-                mapEl.style.width = w;
-            }
-
-            // Kick the map engine to recognize the new hardcoded pixels
+        function forceMapResize() {
             if (map) {
                 if (mapType === 'gl') map.resize();
                 else map.invalidateSize();
             }
         }
 
-        // Run immediately, on resize, and on device rotation
-        enforceStrictPixels();
-        window.addEventListener('resize', enforceStrictPixels);
-        window.addEventListener('orientationchange', function() { setTimeout(enforceStrictPixels, 200); });
+        function fixViewportHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            forceMapResize();
+        }
 
-        // Aggressively poll the screen size twice a second for the first 5 seconds 
-        // to catch the Kindle browser if it slowly shifts its own UI bars.
-        var resizeInterval = setInterval(enforceStrictPixels, 500);
-        setTimeout(function() { clearInterval(resizeInterval); }, 5000);
-
+        // Now safe to run immediately because 'map' exists!
+        fixViewportHeight();
+        window.addEventListener('resize', fixViewportHeight);
+        window.addEventListener('orientationchange', () => { setTimeout(fixViewportHeight, 100); });
 
         // ---------------------------------------------------------
         // 3. CORE MAP LOGIC
@@ -326,9 +303,8 @@
                 initLeafletMap();
             }
             
-            // Final guarantee kicks
-            setTimeout(enforceStrictPixels, 100);
-            setTimeout(enforceStrictPixels, 500);
+            setTimeout(forceMapResize, 100);
+            setTimeout(forceMapResize, 500);
         }
 
         function initLeafletMap() {
