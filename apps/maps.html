@@ -316,6 +316,7 @@
                 mapType = 'gl';
                 map = new maplibregl.Map({
                     container: 'map',
+                    // Using your Stadia key for the map tiles
                     style: `https://tiles.stadiamaps.com/styles/stamen_toner.json?api_key=${STADIA_API_KEY}`,
                     center: [initialView.lon, initialView.lat], 
                     zoom: initialView.zoom || defaultZoom,
@@ -354,6 +355,7 @@
                 boxZoom: false
             }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
+            // Using your Stadia key for the map tiles
             L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`, {
                 minZoom: 0,
                 maxZoom: 20,
@@ -365,29 +367,31 @@
         }
 
         // ---------------------------------------------------------
-        // 4. CLEAN SEARCH LOGIC
+        // 4. OPENSTREETMAP NATIVE SEARCH (Nominatim)
         // ---------------------------------------------------------
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
             
             try {
-                // Get current center to gently bias the search
-                const center = map.getCenter();
-                const currentLat = center.lat;
-                const currentLon = center.lng;
+                // Get the exact coordinates of your current screen view
+                const bounds = map.getBounds();
+                const minLon = bounds.getWest();
+                const minLat = bounds.getSouth();
+                const maxLon = bounds.getEast();
+                const maxLat = bounds.getNorth();
 
-                // Simple, single API call.
-                const url = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&focus.point.lat=${currentLat}&focus.point.lon=${currentLon}&api_key=${STADIA_API_KEY}`;
+                // Use native OpenStreetMap (Nominatim). It respects your viewbox over population.
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${minLon},${maxLat},${maxLon},${minLat}&limit=1`;
                 
                 const res = await fetch(url);
                 if (!res.ok) throw new Error(`API error: ${res.status}`);
                 
                 const data = await res.json();
                 
-                if (data.features && data.features.length > 0) {
-                    const lon = data.features[0].geometry.coordinates[0];
-                    const lat = data.features[0].geometry.coordinates[1];
+                if (data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
                     
                     lastSearchedLoc = { lat: lat, lon: lon };
                     try { localStorage.setItem('rekindle_maps_search', JSON.stringify(lastSearchedLoc)); } catch(e) {}
@@ -399,7 +403,7 @@
                 }
             } catch (e) {
                 console.error(e);
-                showStatus("Error", "Search failed. Check your connection or API key whitelist.");
+                showStatus("Error", "Search failed. Check your connection.");
             }
         }
 
