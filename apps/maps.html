@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
     <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
 
-    <!-- Leaflet (Raster fallback for Kindle) -->
+    <!-- Leaflet (Raster fallback for Kindle/Mobile) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -20,6 +20,7 @@
             --vh: 1vh;
         }
 
+        /* Clean Viewport Lock */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -32,6 +33,15 @@
             background-color: #ffffff;
             font-family: "Geneva", "Verdana", sans-serif;
             box-sizing: border-box;
+        }
+
+        /* FORCE ALL CONTROLS TO BLACK (Override iOS/Android defaults) */
+        a, button, input {
+            color: #000000 !important;
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 0;
+            text-decoration: none;
         }
 
         .title-bar { display: none; }
@@ -209,7 +219,7 @@
 
     <script>
         // ---------------------------------------------------------
-        // 1. VARIABLE DECLARATIONS (Must be at the very top!)
+        // 1. VARIABLE DECLARATIONS
         // ---------------------------------------------------------
         let map = null;
         let mapType = 'gl';
@@ -235,7 +245,7 @@
         let lastSearchedLoc = getSavedState('rekindle_maps_search', { lat: defaultCenterLat, lon: defaultCenterLon });
 
         // ---------------------------------------------------------
-        // 2. LAYOUT & VIEWPORT FIXES
+        // 2. CLEAN VIEWPORT FIX
         // ---------------------------------------------------------
         function forceMapResize() {
             if (map) {
@@ -250,7 +260,6 @@
             forceMapResize();
         }
 
-        // Now safe to run immediately because 'map' exists!
         fixViewportHeight();
         window.addEventListener('resize', fixViewportHeight);
         window.addEventListener('orientationchange', () => { setTimeout(fixViewportHeight, 100); });
@@ -293,7 +302,13 @@
                     center: [initialView.lon, initialView.lat], 
                     zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
-                    fadeDuration: 0 
+                    fadeDuration: 0,
+                    // MapLibre: Disable pinch/scroll zooming
+                    scrollZoom: false,
+                    boxZoom: false,
+                    doubleClickZoom: false,
+                    touchZoomRotate: false,
+                    keyboard: false
                 });
 
                 map.on('moveend', saveMapState);
@@ -313,7 +328,12 @@
                 attributionControl: false,
                 zoomAnimation: false, 
                 fadeAnimation: false,
-                markerZoomAnimation: false
+                markerZoomAnimation: false,
+                // Leaflet: Disable pinch/scroll zooming
+                touchZoom: false,
+                scrollWheelZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false
             }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
             L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`, {
@@ -331,7 +351,21 @@
             if (!query) return;
             
             try {
-                const url = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}`;
+                // Determine current center to bias search results
+                let currentLat, currentLon;
+                if (mapType === 'gl') {
+                    const center = map.getCenter();
+                    currentLat = center.lat;
+                    currentLon = center.lng;
+                } else {
+                    const center = map.getCenter();
+                    currentLat = center.lat;
+                    currentLon = center.lng;
+                }
+
+                // Add focus.point to the API URL
+                const url = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&focus.point.lat=${currentLat}&focus.point.lon=${currentLon}&api_key=${STADIA_API_KEY}`;
+                
                 const res = await fetch(url);
                 if (!res.ok) throw new Error(`API error: ${res.status}`);
                 
