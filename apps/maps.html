@@ -19,28 +19,34 @@
             --text-color: #000000;
         }
 
-        body {
-            font-family: "Geneva", "Verdana", sans-serif;
+        /* 
+         * FIX FOR GREY BAR: 
+         * Force html and body to exactly 100% height, disable scrolling,
+         * and explicitly set the background to white to hide any bleeding #e5e5e5. 
+         */
+        html, body {
+            height: 100%;
+            width: 100%;
             margin: 0;
-            padding: 0 !important; /* Removes the 20px gutter for full screen */
-            height: 100vh;
+            padding: 0;
+            background-color: #ffffff !important;
             overflow: hidden;
-            background-color: #ffffff;
+            font-family: "Geneva", "Verdana", sans-serif;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
         }
 
-        /* HIDE THE WINDOW CHROME */
         .title-bar { display: none; }
 
         .window {
-            width: 100vw;
-            height: 100vh;
-            border: none; /* Strip the vintage window border */
-            max-width: none;
+            width: 100%;
+            height: 100%;
+            flex-grow: 1;
+            border: none;
             display: flex;
             flex-direction: column;
+            background-color: #ffffff;
         }
 
         #map {
@@ -48,10 +54,10 @@
             width: 100%;
             height: 100%;
             background: #ffffff;
-            /* E-ink optimizations for crisp lines[cite: 1] */
             image-rendering: -webkit-optimize-contrast;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+            z-index: 1;
         }
 
         .leaflet-tile-container {
@@ -59,7 +65,7 @@
             image-rendering: crisp-edges;
         }
 
-        /* UI CONTROLS OVERLAY */
+        /* UI PANELS */
         .overlay-panel {
             position: absolute;
             background: white;
@@ -70,12 +76,11 @@
         }
 
         .panel-top-left {
-            top: 10px; /* Moved up since title bar is hidden[cite: 1] */
+            top: 10px;
             left: 10px;
             width: 260px;
         }
 
-        /* HOME BUTTON (Since window 'X' is gone)[cite: 1] */
         .home-btn {
             background: white;
             border: 2px solid black;
@@ -91,16 +96,74 @@
         }
 
         .tab-row { display: flex; border-bottom: 2px solid black; margin-bottom: 10px; }
-        .tab-btn { flex: 1; padding: 5px; cursor: pointer; background: #eee; border: none; font-weight: bold; }
+        .tab-btn { flex: 1; padding: 5px; cursor: pointer; background: #eee; border: none; font-weight: bold; margin: 0; }
         .tab-btn.active { background: black; color: white; }
-        input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; }
+        input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; }
         
-        .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; gap: 10px; }
+        .panel-bottom-right { 
+            position: absolute; 
+            bottom: 20px; 
+            right: 20px; 
+            z-index: 500; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+        }
+
+        .panel-bottom-right > * + * {
+            margin-top: 10px; /* Kindle-safe flex spacing */
+        }
+
+        .zoom-controls {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border: 2px solid black;
+            padding: 4px;
+            box-shadow: 4px 4px 0 black;
+        }
+
+        .zoom-controls > * + * {
+            margin-top: 4px; /* Kindle-safe flex spacing */
+        }
+
         .zoom-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: 900; font-size: 1.2rem; cursor: pointer; }
+
+        /* RESTORED D-PAD (Using Grid, so gap is legal per guidelines) */
+        .d-pad {
+            display: grid;
+            grid-template-columns: 35px 35px 35px;
+            grid-template-rows: 35px 35px 35px;
+            gap: 4px;
+            background: white;
+            border: 2px solid black;
+            padding: 4px;
+            box-shadow: 4px 4px 0 black;
+        }
+
+        .d-btn {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .d-btn.center {
+            font-size: 0.7rem;
+            background: #eee;
+        }
+
     </style>
 
-    <!-- Dependencies from your repo[cite: 1] -->
     <script src="js/i18n.js"></script>
     <script src="theme.js"></script>
 </head>
@@ -108,7 +171,7 @@
 <body>
 
     <div class="window">
-        <!-- Control Panel[cite: 1] -->
+        <!-- Top Left Search Panel -->
         <div class="overlay-panel panel-top-left">
             <a href="https://alexroddie.github.io/" class="home-btn">← BACK TO BOOKMARKS</a>
             
@@ -129,17 +192,32 @@
             </div>
         </div>
 
-        <!-- Zoom Controls[cite: 1] -->
+        <!-- Bottom Right Navigation Panel (Restored) -->
         <div class="panel-bottom-right">
-            <button class="zoom-btn" onclick="map.zoomIn()">+</button>
-            <button class="zoom-btn" onclick="map.zoomOut()">-</button>
+            <div class="zoom-controls">
+                <button class="zoom-btn" onclick="map.zoomIn()">+</button>
+                <button class="zoom-btn" onclick="map.zoomOut()">-</button>
+            </div>
+
+            <div class="d-pad">
+                <div></div>
+                <button class="d-btn" onclick="panMap(0, -1)">▲</button>
+                <div></div>
+
+                <button class="d-btn" onclick="panMap(-1, 0)">◀</button>
+                <button class="d-btn center" onclick="resetView()">●</button>
+                <button class="d-btn" onclick="panMap(1, 0)">▶</button>
+
+                <div></div>
+                <button class="d-btn" onclick="panMap(0, 1)">▼</button>
+                <div></div>
+            </div>
         </div>
 
         <div id="map"></div>
     </div>
 
     <script>
-        // --- DIRECT FETCH (No Proxy Required)[cite: 1] ---
         async function fetchWithProxyFallback(targetUrl, options = {}) {
             try {
                 const res = await fetch(targetUrl, {
@@ -156,42 +234,39 @@
 
         let map;
         let mapType = 'gl';
+        const defaultCenterLat = 51.5072;
+        const defaultCenterLon = -0.1276;
 
         window.onload = () => {
-            if (window.rekindleApplyWallpaper) window.rekindleApplyWallpaper();
             initMap();
         };
 
         async function initMap() {
-            // Check for WebGL support (Desktop)[cite: 1]
             if (typeof maplibregl !== 'undefined' && maplibregl.supported && maplibregl.supported()) {
                 mapType = 'gl';
                 map = new maplibregl.Map({
                     container: 'map',
                     style: 'https://openmaptiles.geo.data.gouv.fr/styles/maptiler-toner/style.json',
-                    center: [-0.1276, 51.5072], // Default London center
+                    center: [defaultCenterLon, defaultCenterLat], 
                     zoom: 13,
                     attributionControl: false,
-                    fadeDuration: 0 // E-ink Optimization[cite: 1]
+                    fadeDuration: 0 
                 });
             } else {
-                // Kindle Fallback (Leaflet + Toner)[cite: 1]
                 mapType = 'leaflet';
                 initLeafletMap();
             }
         }
 
         function initLeafletMap() {
-            // Disable animations to prevent Kindle screen flashing[cite: 1]
             map = L.map('map', {
                 zoomControl: false,
                 attributionControl: false,
                 zoomAnimation: false, 
                 fadeAnimation: false,
                 markerZoomAnimation: false
-            }).setView([51.5072, -0.1276], 13);
+            }).setView([defaultCenterLat, defaultCenterLon], 13);
 
-            // High-contrast B&W tiles optimized for E-ink[cite: 1]
             L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=d03c70b5-65ef-4dcf-ae08-a5bfa5c52010', {
                 minZoom: 0,
                 maxZoom: 20,
@@ -229,7 +304,6 @@
             const end = document.getElementById('route-end').value.trim();
             if (!end) return;
             try {
-                // Simple version: geocode destination and jump there[cite: 1]
                 const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(end)}&limit=1`;
                 const res = await fetchWithProxyFallback(url);
                 const data = await res.json();
@@ -240,6 +314,20 @@
                     else map.setView([lat, lon], 15);
                 }
             } catch (e) { console.error(e); }
+        }
+
+        // --- RESTORED NAVIGATION LOGIC ---
+        function panMap(dx, dy) {
+            // map.panBy takes pixel coordinates. 100px increments are safe for E-ink.
+            map.panBy([dx * 100, dy * 100], { duration: 0, animate: false });
+        }
+
+        function resetView() {
+            if (mapType === 'leaflet') {
+                map.setView([defaultCenterLat, defaultCenterLon], 13);
+            } else {
+                map.jumpTo({ center: [defaultCenterLon, defaultCenterLat], zoom: 13 });
+            }
         }
     </script>
 </body>
