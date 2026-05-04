@@ -5,7 +5,11 @@
     <meta charset="UTF-8">
     <title>Maps</title>
 
-    <!-- Leaflet ONLY (Bulletproof raster map, no fragile WebGL) -->
+    <!-- MapLibre GL JS (Vector map for Desktop) -->
+    <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
+
+    <!-- Leaflet (Raster fallback for Kindle) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -13,15 +17,18 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #000000;
+            --vh: 1vh;
         }
 
-        /* Ironclad Fullscreen */
+        /* Viewport fix for the white bar */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%;
+            height: 100vh; 
+            height: calc(var(--vh, 1vh) * 100) !important;
             overflow: hidden !important;
+            position: fixed; 
             background-color: #ffffff;
             font-family: "Geneva", "Verdana", sans-serif;
             box-sizing: border-box;
@@ -44,11 +51,6 @@
             image-rendering: pixelated;
             image-rendering: crisp-edges;
             z-index: 1;
-        }
-
-        /* Standard OpenStreetMap, converted to B&W for E-ink */
-        .leaflet-layer {
-            filter: grayscale(100%);
         }
 
         .leaflet-tile-container {
@@ -200,6 +202,19 @@
     </div>
 
     <script>
+        function fixViewportHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            if (map) {
+                if (mapType === 'gl') map.resize();
+                else map.invalidateSize();
+            }
+        }
+
+        fixViewportHeight();
+        window.addEventListener('resize', fixViewportHeight);
+        window.addEventListener('orientationchange', () => { setTimeout(fixViewportHeight, 100); });
+
         function showStatus(title, msg) {
             document.getElementById('status-title').innerText = title;
             document.getElementById('status-message').innerText = msg;
@@ -221,6 +236,8 @@
         }
 
         let map;
+        let mapType = 'gl';
+        
         const defaultCenterLat = 51.5072;
         const defaultCenterLon = -0.1276;
         const defaultZoom = 13;
@@ -240,8 +257,15 @@
 
         function saveMapState() {
             if (!map) return;
-            const center = map.getCenter();
-            const zoom = map.getZoom();
+            let center, zoom;
+            if (mapType === 'gl') {
+                center = map.getCenter();
+                zoom = map.getZoom();
+            } else {
+                const leafletCenter = map.getCenter();
+                center = { lng: leafletCenter.lng, lat: leafletCenter.lat };
+                zoom = map.getZoom();
+            }
             try {
                 localStorage.setItem('rekindle_maps_view', JSON.stringify({ lat: center.lat, lon: center.lng, zoom: zoom }));
             } catch (e) {}
@@ -254,11 +278,29 @@
             initMap();
         };
 
-        window.addEventListener('resize', () => {
-            if (map) map.invalidateSize();
-        });
+        async function initMap() {
+            if (typeof maplibregl !== 'undefined' && maplibregl.supported && maplibregl.supported()) {
+                mapType = 'gl';
+                map = new maplibregl.Map({
+                    container: 'map',
+                    style: 'https://openmaptiles.geo.data.gouv.fr/styles/maptiler-toner/style.json',
+                    center: [initialView.lon, initialView.lat], 
+                    zoom: initialView.zoom || defaultZoom,
+                    attributionControl: false,
+                    fadeDuration: 0 
+                });
 
-        function initMap() {
+                map.on('moveend', saveMapState);
+                map.on('zoomend', saveMapState);
+            } else {
+                mapType = 'leaflet';
+                initLeafletMap();
+            }
+            
+            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 200);
+        }
+
+        function initLeafletMap() {
             map = L.map('map', {
                 zoomControl: false,
                 attributionControl: false,
@@ -267,18 +309,15 @@
                 markerZoomAnimation: false
             }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
-            // Public, free OpenStreetMap tiles (NO API KEY REQUIRED)
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            // YOUR STADIA API KEY IS INTEGRATED HERE
+            L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=292f4474-40a3-4335-aebb-aa57f6b11d09', {
                 minZoom: 0,
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap'
+                maxZoom: 20,
+                attribution: '&copy; Stadia/Stamen'
             }).addTo(map);
 
             map.on('moveend', saveMapState);
             map.on('zoomend', saveMapState);
-            
-            // Force rendering refresh
-            setTimeout(() => { map.invalidateSize(); }, 200);
         }
 
         async function searchLocation() {
@@ -296,7 +335,8 @@
                     lastSearchedLoc = { lat: lat, lon: lon };
                     try { localStorage.setItem('rekindle_maps_search', JSON.stringify(lastSearchedLoc)); } catch(e) {}
 
-                    map.setView([lat, lon], 15);
+                    if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
+                    else map.setView([lat, lon], 15);
                 } else {
                     showStatus("Not Found", "No results found for your query.");
                 }
@@ -311,7 +351,11 @@
         }
 
         function resetView() {
-            map.setView([lastSearchedLoc.lat, lastSearchedLoc.lon], 13);
+            if (mapType === 'leaflet') {
+                map.setView([lastSearchedLoc.lat, lastSearchedLoc.lon], 13);
+            } else {
+                map.jumpTo({ center: [lastSearchedLoc.lon, lastSearchedLoc.lat], zoom: 13 });
+            }
         }
     </script>
 </body>
