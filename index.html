@@ -1,384 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <meta charset="UTF-8">
-    <title>Maps</title>
-
-    <!-- MapLibre GL JS (Vector map for Desktop) -->
-    <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
-    <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
-
-    <!-- Leaflet (Raster fallback for Kindle) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #000000;
-        }
+      body,p {
+       	font-size: 20px;
+        font-family: "Merriweather";
+        line-height: 1.8;
+      }
+       h1 {
+         font-size: 36px;
+       }
 
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            height: -webkit-fill-available !important; 
-            overflow: hidden !important;
-            background-color: #ffffff;
-            font-family: "Geneva", "Verdana", sans-serif;
-        }
+       h2 {
 
-        .title-bar { display: none; }
-
-        .window {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            background-color: #ffffff;
-        }
-
-        #map {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            width: 100% !important;
-            height: 100% !important;
-            background: #ffffff;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            z-index: 1;
-        }
-
-        .maplibregl-canvas, .leaflet-container {
-            width: 100% !important;
-            height: 100% !important;
-            outline: none;
-        }
-
-        .leaflet-tile-container {
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-        }
-
-        /* UI PANELS */
-        .overlay-panel {
-            position: absolute;
-            background: white;
-            border: 2px solid black;
-            padding: 10px;
-            z-index: 500;
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
-        }
-
-        .panel-top-left {
-            top: 10px;
-            left: 10px;
-            width: 260px;
-        }
-
-        .home-btn {
-            background: white;
-            border: 2px solid black;
-            font-weight: bold;
-            padding: 2px 8px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            display: inline-block;
-            text-decoration: none;
-            color: black;
-            font-size: 0.8rem;
-            text-align: center;
-            width: calc(100% - 20px);
-            box-sizing: border-box;
-        }
-
-        input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
-        button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box;}
-        button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
-        
-        .panel-bottom-right { 
-            position: absolute; 
-            bottom: 20px; 
-            right: 20px; 
-            z-index: 500; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-        }
-
-        .panel-bottom-right > * + * { margin-top: 10px; }
-
-        .zoom-controls {
-            display: flex;
-            flex-direction: column;
-            background: white;
-            border: 2px solid black;
-            padding: 4px;
-            box-shadow: 4px 4px 0 black;
-        }
-
-        .zoom-controls > * + * { margin-top: 4px; }
-
-        .zoom-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: 900; font-size: 1.2rem; cursor: pointer; }
-        .zoom-btn:active { background: black; color: white; }
-
-        .d-pad {
-            display: grid;
-            grid-template-columns: 35px 35px 35px;
-            grid-template-rows: 35px 35px 35px;
-            gap: 4px; 
-            background: white;
-            border: 2px solid black;
-            padding: 4px;
-            box-shadow: 4px 4px 0 black;
-        }
-
-        .d-btn {
-            width: 100%;
-            height: 100%;
-            background: white;
-            border: 2px solid black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin: 0;
-            padding: 0;
-        }
-
-        .d-btn:active { background: black; color: white; }
-        .d-btn.center { font-size: 0.7rem; background: #eee; }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            z-index: 10000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-box {
-            background: white;
-            border: 4px double black;
-            padding: 20px;
-            width: 80%;
-            max-width: 300px;
-            text-align: center;
-            box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
-            box-sizing: border-box;
-        }
+         font-size: 16px;
+       }
+       h3 {
+         font-weight:normal;
+         font-size: 12px;
+       }
+       div {
+         padding-left: 20px;
+         padding-right: 20px;
+       }
+      hr {
+       		border: none;
+      		border-top: 3px double #333;
+      		color: #333;
+       		overflow: visible;
+       		text-align: center;
+       		height: 5px;
+      }
+      a {
+          color: #000;
+          text-decoration: none
+      }
+      ul {
+        margin-top: 0;
+        margin-bottom: 0;
+        list-style-type:none;
+      }
+      summary {
+        list-style: none;
+      }
     </style>
-
-    <script src="js/i18n.js"></script>
-    <script src="theme.js"></script>
-</head>
-
-<body>
-
-    <div class="window">
-        <div class="overlay-panel panel-top-left">
-            <a href="https://alexroddie.github.io/" class="home-btn">← BACK TO BOOKMARKS</a>
+  </head>
+  <body>
+    <div>
+      <h1>Bookmarks</h1>
+      <summary>Basics</summary>
+      <ul>
+        <li><a href="https://alexroddie.github.io/weathernow/index.html">Weather Now</a></li>
+        <li><a href="https://alexroddie.github.io/mountainweather/trmnl.html">Mountain Dashboard</a></li>
+        <li><a href="https://bustimes.org/">Buses</a></li>
+        <li><a href="https://www.lightningmaps.org/">Lightning</a></li>
+      </ul>
+      <details>
+        <Summary>Apps</Summary>
+          <ul>
+            <li><a href="https://alexroddie.github.io/apps/maps.html">Maps</a></li>
             
-            <div>
-                <input type="text" id="search-input" placeholder="Search location..." onkeypress="if(event.key==='Enter') searchLocation()">
-                <button class="sys-btn" onclick="searchLocation()">Search</button>
-            </div>
-        </div>
-
-        <div class="panel-bottom-right">
-            <div class="zoom-controls">
-                <button class="zoom-btn" onclick="map.zoomIn()">+</button>
-                <button class="zoom-btn" onclick="map.zoomOut()">-</button>
-            </div>
-
-            <div class="d-pad">
-                <div></div>
-                <button class="d-btn" onclick="panMap(0, -1)">▲</button>
-                <div></div>
-
-                <button class="d-btn" onclick="panMap(-1, 0)">◀</button>
-                <button class="d-btn center" onclick="resetView()">●</button>
-                <button class="d-btn" onclick="panMap(1, 0)">▶</button>
-
-                <div></div>
-                <button class="d-btn" onclick="panMap(0, 1)">▼</button>
-                <div></div>
-            </div>
-        </div>
-
-        <div id="map"></div>
+          </ul>
+      </details>
+      
+      <details>
+        <summary>Travel</summary>
+        <ul>
+          <li><a href="https://www.ember.to">Ember buses</a></li>
+          <li><a href="https://traintimes.org.uk/">Trains</a></li>
+          	<li><a href="https://www.nextbuses.mobi/">Nextbuses</a></li>
+          <li><a href="https://www.opentouchmap.org/">OpenTouchMap</a></li>
+        	<li><a href="https://www.stagecoachbus.com/">Stagecoach buses</a></li>
+          <li><a href="https://trntxt.uk/">Trntxt (direct only)</a></li>
+        	<li><a href="https://gdir.telae.net/">Google directions (text)</a></li>
+         </ul>
+      </details>
+      <details>
+        <summary>Weather</summary>
+          <ul>
+        	  <li><a href="https://weather.metoffice.gov.uk/forecast/gfjcbj64x#?nearestTo=Eassie%20(Angus)&date=2026-04-24">Met Office</a></li>
+            <li><a href="https://weather.metoffice.gov.uk/specialist-forecasts/mountain">Met Office mountain weather</a></li>
+            <li><a href="https://weather.com/en-GB/weather/today/l/537aad4a003b8ca0678a5a16a4ba25fb4e875194efde1bf61a163687f197fb8a">Weather.com</a></li>
+           </ul>
+      </details>
+      <details>
+        <summary>MWIS</summary>
+          <ul>
+            <li><a href="https://www.mwis.org.uk/forecasts/scottish/southeastern-highlands/text">SE Highlands</a></li>
+            <li><a href="https://www.mwis.org.uk/forecasts/scottish/cairngorms-np-and-monadhliath/text">Cairngorms</a></li>
+            <li><a href="https://www.mwis.org.uk/forecasts/scottish/west-highlands/text">West Highlands</a></li>
+            <li><a href="https://www.mwis.org.uk/forecasts/scottish/the-northwest-highlands/text">NW Highlands</a></li>
+            <details>
+              <summary>Other areas</summary>
+                <ul>
+                	<li><a href="https://www.mwis.org.uk/forecasts/scottish/southern-uplands/text">Southern Uplands</a></li>
+                	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/lake-district/text">Lake District</a></li>
+                	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/yorkshire-dales-and-north-pennines/text">Yorkshire Dales</a></li>
+                	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/peak-district/text">Peak District</a></li>
+                	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/snowdonia-national-park/text">Snowdonia</a></li>
+                	<li><a href="https://www.mwis.org.uk/forecasts/english-and-welsh/brecon-beacons/text">Brecon Beacons</a></li>
+                </ul>
+            </details>
+          	<li><a href="https://www.mwis.org.uk">MWIS home</a></li>
+           </ul>
+      </details>
+      <details>
+        <summary>SAIS</summary>
+          <ul>
+           	<li><a href="https://www.sais.gov.uk/southern-cairngorms/">S Cairngorms</a></li>
+            <li><a href="https://www.sais.gov.uk/northern-cairngorms/">N Cairngorms</a></li>
+            <li><a href="https://www.sais.gov.uk/glencoe/">Glen Coe</a></li>
+           	<li><a href="https://www.sais.gov.uk/lochaber/">Lochaber</a></li>
+           	<li><a href="https://www.sais.gov.uk/creag-meagaidh/">Creag Meagaidh</a></li>
+           	<li><a href="https://www.sais.gov.uk/torridon/">Torridon</a></li>
+           	<li><a href="https://www.sais.gov.uk/">SAIS home</a></li>
+           </ul>
+      </details>
+      <details>
+        <summary>Utilities</summary>
+          <ul>
+            <li><a href="https://www.wikipedia.org">Wikipedia</a></li>
+          	<li><a href="https://duckduckgo.com">DuckDuckGo</a></li>
+            <li><a href="https://www.textise.net/">Textise websites</a></li>
+          	<li><a href="https://www.gutenberg.org/">Project Gutenberg</a></li>
+          </ul>
+      </details>
+      
+<p></p>
+      <h3>Hosted on Github. <a href="https://alexroddie.github.io/Readme.html">Documentation here.</a> Maintained by Alex Roddie.</h3>
+      
     </div>
-
-    <div id="status-modal" class="modal-overlay">
-        <div class="modal-box">
-            <h3 id="status-title" style="margin-top:0;">Status</h3>
-            <p id="status-message" style="font-size:0.9rem; margin-bottom:15px; font-weight:bold;"></p>
-            <button class="sys-btn" onclick="document.getElementById('status-modal').style.display='none'">OK</button>
-        </div>
-    </div>
-
-    <script>
-        function showStatus(title, msg) {
-            document.getElementById('status-title').innerText = title;
-            document.getElementById('status-message').innerText = msg;
-            document.getElementById('status-modal').style.display = 'flex';
-        }
-
-        async function fetchWithProxyFallback(targetUrl, options = {}) {
-            try {
-                const res = await fetch(targetUrl, {
-                    ...options,
-                    headers: { 'Accept-Language': 'en' }
-                });
-                if (!res.ok) throw new Error(`API error: ${res.status}`);
-                return res;
-            } catch (e) {
-                console.error("Direct fetch failed:", e);
-                throw e;
-            }
-        }
-
-        let map;
-        let mapType = 'gl';
-        
-        const defaultCenterLat = 51.5072;
-        const defaultCenterLon = -0.1276;
-        const defaultZoom = 13;
-
-        // --- LOCAL STORAGE LOGIC ---
-        function getSavedState(key, fallback) {
-            try {
-                const saved = localStorage.getItem(key);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (parsed && typeof parsed.lat === 'number' && typeof parsed.lon === 'number') {
-                        return parsed;
-                    }
-                }
-            } catch (e) {}
-            return fallback;
-        }
-
-        function saveMapState() {
-            if (!map) return;
-            let center, zoom;
-            if (mapType === 'gl') {
-                center = map.getCenter();
-                zoom = map.getZoom();
-            } else {
-                const leafletCenter = map.getCenter();
-                center = { lng: leafletCenter.lng, lat: leafletCenter.lat };
-                zoom = map.getZoom();
-            }
-            try {
-                localStorage.setItem('rekindle_maps_view', JSON.stringify({ lat: center.lat, lon: center.lng, zoom: zoom }));
-            } catch (e) {}
-        }
-
-        // Initialize state variables from storage
-        let initialView = getSavedState('rekindle_maps_view', { lat: defaultCenterLat, lon: defaultCenterLon, zoom: defaultZoom });
-        let lastSearchedLoc = getSavedState('rekindle_maps_search', { lat: defaultCenterLat, lon: defaultCenterLon });
-
-        window.onload = () => {
-            initMap();
-        };
-
-        window.addEventListener('resize', () => {
-            if (!map) return;
-            if (mapType === 'gl') map.resize();
-            else map.invalidateSize();
-        });
-
-        async function initMap() {
-            if (typeof maplibregl !== 'undefined' && maplibregl.supported && maplibregl.supported()) {
-                mapType = 'gl';
-                map = new maplibregl.Map({
-                    container: 'map',
-                    style: 'https://openmaptiles.geo.data.gouv.fr/styles/maptiler-toner/style.json',
-                    center: [initialView.lon, initialView.lat], 
-                    zoom: initialView.zoom || defaultZoom,
-                    attributionControl: false,
-                    fadeDuration: 0 
-                });
-
-                // Attach save events
-                map.on('moveend', saveMapState);
-                map.on('zoomend', saveMapState);
-
-            } else {
-                mapType = 'leaflet';
-                initLeafletMap();
-            }
-
-            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 100);
-            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 500);
-        }
-
-        function initLeafletMap() {
-            map = L.map('map', {
-                zoomControl: false,
-                attributionControl: false,
-                zoomAnimation: false, 
-                fadeAnimation: false,
-                markerZoomAnimation: false
-            }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
-
-            L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=d03c70b5-65ef-4dcf-ae08-a5bfa5c52010', {
-                minZoom: 0,
-                maxZoom: 20,
-                attribution: '&copy; Stadia/Stamen'
-            }).addTo(map);
-
-            // Attach save events
-            map.on('moveend', saveMapState);
-            map.on('zoomend', saveMapState);
-        }
-
-        async function searchLocation() {
-            const query = document.getElementById('search-input').value.trim();
-            if (!query) return;
-            try {
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
-                const res = await fetchWithProxyFallback(url);
-                const data = await res.json();
-                
-                if (data.length > 0) {
-                    const lat = parseFloat(data[0].lat);
-                    const lon = parseFloat(data[0].lon);
-                    
-                    lastSearchedLoc = { lat: lat, lon: lon };
-                    try { localStorage.setItem('rekindle_maps_search', JSON.stringify(lastSearchedLoc)); } catch(e) {}
-
-                    if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
-                    else map.setView([lat, lon], 15);
-                } else {
-                    showStatus("Not Found", "No results found for your query.");
-                }
-            } catch (e) {
-                console.error(e);
-                showStatus("Error", "Search failed. Check your connection.");
-            }
-        }
-
-        function panMap(dx, dy) {
-            map.panBy([dx * 100, dy * 100], { duration: 0, animate: false });
-        }
-
-        function resetView() {
-            if (mapType === 'leaflet') {
-                map.setView([lastSearchedLoc.lat, lastSearchedLoc.lon], 13);
-            } else {
-                map.jumpTo({ center: [lastSearchedLoc.lon, lastSearchedLoc.lat], zoom: 13 });
-            }
-        }
-    </script>
-</body>
+  </body>
 </html>
