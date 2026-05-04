@@ -20,7 +20,6 @@
             --vh: 1vh;
         }
 
-        /* Ironclad Viewport Lock */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -79,22 +78,6 @@
             top: 10px;
             left: 10px;
             width: 260px;
-        }
-
-        .home-btn {
-            background: white;
-            border: 2px solid black;
-            font-weight: bold;
-            padding: 2px 8px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            display: inline-block;
-            text-decoration: none;
-            color: black;
-            font-size: 0.8rem;
-            text-align: center;
-            width: calc(100% - 20px);
-            box-sizing: border-box;
         }
 
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
@@ -225,34 +208,12 @@
     </div>
 
     <script>
-        // Centralized API Key
-        const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
-
-        function fixViewportHeight() {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-            forceMapResize();
-        }
-
-        function forceMapResize() {
-            if (map) {
-                if (mapType === 'gl') map.resize();
-                else map.invalidateSize();
-            }
-        }
-
-        fixViewportHeight();
-        window.addEventListener('resize', fixViewportHeight);
-        window.addEventListener('orientationchange', () => { setTimeout(fixViewportHeight, 100); });
-
-        function showStatus(title, msg) {
-            document.getElementById('status-title').innerText = title;
-            document.getElementById('status-message').innerText = msg;
-            document.getElementById('status-modal').style.display = 'flex';
-        }
-
-        let map;
+        // ---------------------------------------------------------
+        // 1. VARIABLE DECLARATIONS (Must be at the very top!)
+        // ---------------------------------------------------------
+        let map = null;
         let mapType = 'gl';
+        const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         const defaultCenterLat = 51.5072;
         const defaultCenterLon = -0.1276;
         const defaultZoom = 13;
@@ -268,6 +229,39 @@
                 }
             } catch (e) {}
             return fallback;
+        }
+
+        let initialView = getSavedState('rekindle_maps_view', { lat: defaultCenterLat, lon: defaultCenterLon, zoom: defaultZoom });
+        let lastSearchedLoc = getSavedState('rekindle_maps_search', { lat: defaultCenterLat, lon: defaultCenterLon });
+
+        // ---------------------------------------------------------
+        // 2. LAYOUT & VIEWPORT FIXES
+        // ---------------------------------------------------------
+        function forceMapResize() {
+            if (map) {
+                if (mapType === 'gl') map.resize();
+                else map.invalidateSize();
+            }
+        }
+
+        function fixViewportHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            forceMapResize();
+        }
+
+        // Now safe to run immediately because 'map' exists!
+        fixViewportHeight();
+        window.addEventListener('resize', fixViewportHeight);
+        window.addEventListener('orientationchange', () => { setTimeout(fixViewportHeight, 100); });
+
+        // ---------------------------------------------------------
+        // 3. CORE MAP LOGIC
+        // ---------------------------------------------------------
+        function showStatus(title, msg) {
+            document.getElementById('status-title').innerText = title;
+            document.getElementById('status-message').innerText = msg;
+            document.getElementById('status-modal').style.display = 'flex';
         }
 
         function saveMapState() {
@@ -286,9 +280,6 @@
             } catch (e) {}
         }
 
-        let initialView = getSavedState('rekindle_maps_view', { lat: defaultCenterLat, lon: defaultCenterLon, zoom: defaultZoom });
-        let lastSearchedLoc = getSavedState('rekindle_maps_search', { lat: defaultCenterLat, lon: defaultCenterLon });
-
         window.onload = () => {
             initMap();
         };
@@ -298,7 +289,6 @@
                 mapType = 'gl';
                 map = new maplibregl.Map({
                     container: 'map',
-                    // Desktop Vector Map using your Stadia Key
                     style: `https://tiles.stadiamaps.com/styles/stamen_toner.json?api_key=${STADIA_API_KEY}`,
                     center: [initialView.lon, initialView.lat], 
                     zoom: initialView.zoom || defaultZoom,
@@ -313,10 +303,8 @@
                 initLeafletMap();
             }
             
-            // Aggressively force layout recalculations to kill the white map bug
             setTimeout(forceMapResize, 100);
             setTimeout(forceMapResize, 500);
-            setTimeout(forceMapResize, 1500);
         }
 
         function initLeafletMap() {
@@ -328,7 +316,6 @@
                 markerZoomAnimation: false
             }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
-            // Kindle Raster Map using your Stadia Key
             L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`, {
                 minZoom: 0,
                 maxZoom: 20,
@@ -344,9 +331,7 @@
             if (!query) return;
             
             try {
-                // Direct Search using your Stadia Key (No Proxy Required)
                 const url = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}`;
-                
                 const res = await fetch(url);
                 if (!res.ok) throw new Error(`API error: ${res.status}`);
                 
