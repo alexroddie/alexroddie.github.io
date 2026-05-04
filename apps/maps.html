@@ -20,7 +20,7 @@
             --vh: 1vh;
         }
 
-        /* Viewport fix for the white bar */
+        /* Ironclad Viewport Lock */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -29,6 +29,7 @@
             height: calc(var(--vh, 1vh) * 100) !important;
             overflow: hidden !important;
             position: fixed; 
+            top: 0; left: 0;
             background-color: #ffffff;
             font-family: "Geneva", "Verdana", sans-serif;
             box-sizing: border-box;
@@ -53,6 +54,12 @@
             z-index: 1;
         }
 
+        .maplibregl-canvas, .leaflet-container {
+            width: 100% !important;
+            height: 100% !important;
+            outline: none;
+        }
+
         .leaflet-tile-container {
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
@@ -72,6 +79,22 @@
             top: 10px;
             left: 10px;
             width: 260px;
+        }
+
+        .home-btn {
+            background: white;
+            border: 2px solid black;
+            font-weight: bold;
+            padding: 2px 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: inline-block;
+            text-decoration: none;
+            color: black;
+            font-size: 0.8rem;
+            text-align: center;
+            width: calc(100% - 20px);
+            box-sizing: border-box;
         }
 
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
@@ -202,9 +225,16 @@
     </div>
 
     <script>
+        // Centralized API Key
+        const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
+
         function fixViewportHeight() {
             let vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
+            forceMapResize();
+        }
+
+        function forceMapResize() {
             if (map) {
                 if (mapType === 'gl') map.resize();
                 else map.invalidateSize();
@@ -221,23 +251,8 @@
             document.getElementById('status-modal').style.display = 'flex';
         }
 
-        async function fetchWithProxyFallback(targetUrl, options = {}) {
-            try {
-                const res = await fetch(targetUrl, {
-                    ...options,
-                    headers: { 'Accept-Language': 'en' }
-                });
-                if (!res.ok) throw new Error(`API error: ${res.status}`);
-                return res;
-            } catch (e) {
-                console.error("Direct fetch failed:", e);
-                throw e;
-            }
-        }
-
         let map;
         let mapType = 'gl';
-        
         const defaultCenterLat = 51.5072;
         const defaultCenterLon = -0.1276;
         const defaultZoom = 13;
@@ -283,7 +298,8 @@
                 mapType = 'gl';
                 map = new maplibregl.Map({
                     container: 'map',
-                    style: 'https://openmaptiles.geo.data.gouv.fr/styles/maptiler-toner/style.json',
+                    // Desktop Vector Map using your Stadia Key
+                    style: `https://tiles.stadiamaps.com/styles/stamen_toner.json?api_key=${STADIA_API_KEY}`,
                     center: [initialView.lon, initialView.lat], 
                     zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
@@ -297,7 +313,10 @@
                 initLeafletMap();
             }
             
-            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 200);
+            // Aggressively force layout recalculations to kill the white map bug
+            setTimeout(forceMapResize, 100);
+            setTimeout(forceMapResize, 500);
+            setTimeout(forceMapResize, 1500);
         }
 
         function initLeafletMap() {
@@ -309,8 +328,8 @@
                 markerZoomAnimation: false
             }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
-            // YOUR STADIA API KEY IS INTEGRATED HERE
-            L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=292f4474-40a3-4335-aebb-aa57f6b11d09', {
+            // Kindle Raster Map using your Stadia Key
+            L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`, {
                 minZoom: 0,
                 maxZoom: 20,
                 attribution: '&copy; Stadia/Stamen'
@@ -323,14 +342,19 @@
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
+            
             try {
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
-                const res = await fetchWithProxyFallback(url);
+                // Direct Search using your Stadia Key (No Proxy Required)
+                const url = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}`;
+                
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`API error: ${res.status}`);
+                
                 const data = await res.json();
                 
-                if (data.length > 0) {
-                    const lat = parseFloat(data[0].lat);
-                    const lon = parseFloat(data[0].lon);
+                if (data.features && data.features.length > 0) {
+                    const lon = data.features[0].geometry.coordinates[0];
+                    const lat = data.features[0].geometry.coordinates[1];
                     
                     lastSearchedLoc = { lat: lat, lon: lon };
                     try { localStorage.setItem('rekindle_maps_search', JSON.stringify(lastSearchedLoc)); } catch(e) {}
@@ -342,7 +366,7 @@
                 }
             } catch (e) {
                 console.error(e);
-                showStatus("Error", "Search failed. Check your connection.");
+                showStatus("Error", "Search failed. Check your connection or API key whitelist.");
             }
         }
 
