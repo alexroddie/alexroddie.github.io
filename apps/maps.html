@@ -17,14 +17,18 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #000000;
+            --vh: 1vh;
         }
 
+        /* Viewport fix for the white bar */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%;
+            height: 100vh; 
+            height: calc(var(--vh, 1vh) * 100) !important;
             overflow: hidden !important;
+            position: fixed; 
             background-color: #ffffff;
             font-family: "Geneva", "Verdana", sans-serif;
             box-sizing: border-box;
@@ -43,21 +47,11 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: #ffffff;
+            /* Original E-ink rendering rules[cite: 1] */
             image-rendering: -webkit-optimize-contrast;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
             z-index: 1;
-        }
-
-        /* 
-         * THE E-INK PHOTOCOPY FILTER:
-         * 1. grayscale(100%): Strips all color.
-         * 2. contrast(250%): Forces light greys to pure white, and dark colors to pure black.
-         * 3. brightness(85%): Slightly darkens the mid-tones to ensure roads stay thick.
-         */
-        .leaflet-layer, .maplibregl-canvas {
-            filter: grayscale(100%) contrast(250%) brightness(85%);
-            outline: none;
         }
 
         .leaflet-tile-container {
@@ -79,6 +73,22 @@
             top: 10px;
             left: 10px;
             width: 260px;
+        }
+
+        .home-btn {
+            background: white;
+            border: 2px solid black;
+            font-weight: bold;
+            padding: 2px 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: inline-block;
+            text-decoration: none;
+            color: black;
+            font-size: 0.8rem;
+            text-align: center;
+            width: calc(100% - 20px);
+            box-sizing: border-box;
         }
 
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; }
@@ -170,6 +180,8 @@
 
     <div class="window">
         <div class="overlay-panel panel-top-left">
+            <a href="https://alexroddie.github.io/" class="home-btn">← BACK TO BOOKMARKS</a>
+            
             <div>
                 <input type="text" id="search-input" placeholder="Search location..." onkeypress="if(event.key==='Enter') searchLocation()">
                 <button class="sys-btn" onclick="searchLocation()">Search</button>
@@ -209,6 +221,19 @@
     </div>
 
     <script>
+        function fixViewportHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            if (map) {
+                if (mapType === 'gl') map.resize();
+                else map.invalidateSize();
+            }
+        }
+
+        fixViewportHeight();
+        window.addEventListener('resize', fixViewportHeight);
+        window.addEventListener('orientationchange', () => { setTimeout(fixViewportHeight, 100); });
+
         function showStatus(title, msg) {
             document.getElementById('status-title').innerText = title;
             document.getElementById('status-message').innerText = msg;
@@ -272,19 +297,13 @@
             initMap();
         };
 
-        window.addEventListener('resize', () => {
-            if (!map) return;
-            if (mapType === 'gl') map.resize();
-            else map.invalidateSize();
-        });
-
         async function initMap() {
             if (typeof maplibregl !== 'undefined' && maplibregl.supported && maplibregl.supported()) {
                 mapType = 'gl';
                 map = new maplibregl.Map({
                     container: 'map',
-                    // Switched from "Positron" (light) to "Voyager" (high contrast)
-                    style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+                    // Restored original ReKindle WebGL Map style[cite: 1]
+                    style: 'https://openmaptiles.geo.data.gouv.fr/styles/maptiler-toner/style.json',
                     center: [initialView.lon, initialView.lat], 
                     zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
@@ -310,11 +329,11 @@
                 markerZoomAnimation: false
             }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
-            // Switched to Standard OpenStreetMap tiles (heavy bold lines)
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            // Restored original ReKindle Stadia/Stamen Toner API[cite: 1]
+            L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=d03c70b5-65ef-4dcf-ae08-a5bfa5c52010', {
                 minZoom: 0,
                 maxZoom: 20,
-                attribution: '&copy; OpenStreetMap'
+                attribution: '&copy; Stadia/Stamen'
             }).addTo(map);
 
             map.on('moveend', saveMapState);
