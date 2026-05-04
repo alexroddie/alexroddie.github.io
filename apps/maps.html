@@ -19,11 +19,6 @@
             --text-color: #000000;
         }
 
-        /* 
-         * ROCK-SOLID POSITIONING:
-         * Using position: fixed with absolute zero coordinates guarantees 
-         * the container fills the screen perfectly without math hacks.
-         */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -54,9 +49,14 @@
             z-index: 1;
         }
 
-        /* Boost contrast on the map tiles for E-ink clarity */
+        /* 
+         * THE E-INK PHOTOCOPY FILTER:
+         * 1. grayscale(100%): Strips all color.
+         * 2. contrast(250%): Forces light greys to pure white, and dark colors to pure black.
+         * 3. brightness(85%): Slightly darkens the mid-tones to ensure roads stay thick.
+         */
         .leaflet-layer, .maplibregl-canvas {
-            filter: grayscale(100%) contrast(1.2);
+            filter: grayscale(100%) contrast(250%) brightness(85%);
             outline: none;
         }
 
@@ -283,8 +283,8 @@
                 mapType = 'gl';
                 map = new maplibregl.Map({
                     container: 'map',
-                    // NEW: Highly reliable API-free vector style from CARTO
-                    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+                    // Switched from "Positron" (light) to "Voyager" (high contrast)
+                    style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
                     center: [initialView.lon, initialView.lat], 
                     zoom: initialView.zoom || defaultZoom,
                     attributionControl: false,
@@ -310,11 +310,11 @@
                 markerZoomAnimation: false
             }).setView([initialView.lat, initialView.lon], initialView.zoom || defaultZoom);
 
-            // NEW: Highly reliable API-free raster tiles from CARTO
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            // Switched to Standard OpenStreetMap tiles (heavy bold lines)
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 minZoom: 0,
                 maxZoom: 20,
-                attribution: '&copy; OpenStreetMap &copy; CARTO'
+                attribution: '&copy; OpenStreetMap'
             }).addTo(map);
 
             map.on('moveend', saveMapState);
