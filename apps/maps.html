@@ -174,9 +174,8 @@
             lastPinCoords = {lat: lat, lon: lon};
             currentMarker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
             
-            // Bind popup but do not call .openPopup() automatically[cite: 1]
             var popupContent = '<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold; font-family: Georgia, serif;">Remove Pin</div>';
-            currentMarker.bindPopup(popupContent);[cite: 1]
+            currentMarker.bindPopup(popupContent);
         }
 
         function clearMarker() { 
