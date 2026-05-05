@@ -13,7 +13,7 @@
     <style>
         :root { --vh: 1vh; }
         
-        /* 1. THE CRITICAL RESET: Ensures heights include borders */
+        /* THE RESET: Forces absolute control over dimensions */
         * { 
             -webkit-tap-highlight-color: transparent !important; 
             touch-action: manipulation; 
@@ -26,6 +26,7 @@
             -webkit-appearance: none; appearance: none; 
             border-radius: 0; 
             font-family: inherit;
+            outline: none;
         }
 
         html, body {
@@ -36,53 +37,56 @@
 
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
 
-        /* Unified Cluster Shadow (4px black offset) */
-        .overlay-panel, .zoom-wrapper, .d-pad { 
-            position: absolute; background: white; border: 2px solid black; 
+        /* UNIFIED SHADOW: 4px black offset used everywhere */
+        .shadow-panel { 
+            background: white; border: 2px solid black; 
             z-index: 500; box-shadow: 4px 4px 0 black; 
         }
 
-        /* --- SEARCH CLUSTER (Fixed Alignment) --- */
-        .panel-top-left { top: 10px; left: 10px; width: 260px; padding: 10px; }
+        /* --- SEARCH CLUSTER (Fixed Heights & Gaps) --- */
+        .panel-top-left { 
+            position: absolute; top: 10px; left: 10px; width: 260px; padding: 10px; 
+        }
         
         input[type="text"] { 
             width: 100%; height: 36px; padding: 0 8px; border: 2px solid black; 
-            font-size: 16px !important; margin-bottom: 8px; display: block;
+            font-size: 16px !important; margin-bottom: 10px; display: block;
         }
         
-        /* Flex ensures buttons stay same height and perfectly leveled */
-        .button-row { display: flex; width: 100%; height: 36px; gap: 8px; }
+        /* Table ensures the two buttons stay perfectly level and share height */
+        .search-table { display: table; width: 100%; border-collapse: separate; border-spacing: 6px 0; margin-left: -6px; }
+        .search-cell { display: table-cell; vertical-align: top; }
         
         .sys-btn { 
             background: white; border: 2px solid black; font-weight: bold; 
             cursor: pointer; text-transform: uppercase; 
-            height: 100%; padding: 0; margin: 0;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: none; /* No internal shadows */
+            height: 36px; width: 100%; display: flex; align-items: center; justify-content: center;
         }
         .sys-btn:active { background: black; color: white !important; }
         
-        #search-button { flex: 3; } /* Takes 75% approx */
-        .clear-btn { flex: 1; font-size: 18px; }
+        #search-button { width: 100%; }
+        .clear-btn { font-size: 18px; width: 100%; }
 
-        /* --- NAVIGATION CLUSTERS --- */
-        .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; }
-
-        /* Zoom Cluster - Now with guaranteed gap */
-        .zoom-wrapper { 
-            position: relative; width: 47px; padding: 4px; 
-            margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px;
+        /* --- NAVIGATION CLUSTERS (Stacked & Centered) --- */
+        .nav-column { 
+            position: absolute; bottom: 20px; right: 20px; 
+            z-index: 500; display: flex; flex-direction: column; align-items: center; 
         }
-        
+
+        /* Zoom Panel - Stacked vertically above D-Pad */
+        .zoom-panel { 
+            padding: 6px; margin-bottom: 12px; display: block; 
+        }
         .zoom-btn { 
             width: 35px; height: 35px; background: white; 
             border: 2px solid black; font-weight: bold; font-size: 1.2rem; 
             display: flex; align-items: center; justify-content: center;
         }
+        .zoom-gap { height: 6px; } /* Explicit 6px gap for Kindle */
 
-        /* D-Pad Cluster */
-        .d-pad { position: relative; padding: 4px; }
-        .d-table { border-collapse: separate; border-spacing: 4px; }
+        /* D-Pad Panel */
+        .dpad-panel { padding: 6px; }
+        .dpad-table { border-collapse: separate; border-spacing: 6px; }
         
         .d-btn { 
             width: 35px; height: 35px; background: white; 
@@ -98,24 +102,29 @@
 </head>
 <body>
     <div class="window">
-        <!-- Search Cluster -->
-        <div class="overlay-panel panel-top-left">
+        <!-- Search -->
+        <div class="shadow-panel panel-top-left">
             <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
-            <div class="button-row">
-                <button class="sys-btn" id="search-button" onclick="searchLocation()">SEARCH</button>
-                <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
+            <div class="search-table">
+                <div class="search-cell" style="width: 75%;">
+                    <button class="sys-btn" id="search-button" onclick="searchLocation()">SEARCH</button>
+                </div>
+                <div class="search-cell" style="width: 25%;">
+                    <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
+                </div>
             </div>
         </div>
 
-        <!-- Navigation Clusters -->
-        <div class="panel-bottom-right">
-            <div class="zoom-wrapper">
+        <!-- Navigation Cluster -->
+        <div class="nav-column">
+            <div class="shadow-panel zoom-panel">
                 <button class="zoom-btn" onclick="map.zoomIn()">+</button>
+                <div class="zoom-gap"></div>
                 <button class="zoom-btn" onclick="map.zoomOut()">-</button>
             </div>
             
-            <div class="d-pad">
-                <table class="d-table">
+            <div class="shadow-panel dpad-panel">
+                <table class="dpad-table">
                     <tr>
                         <td></td><td><button class="d-btn" onclick="panMap(0, -1)">▲</button></td><td></td>
                     </tr>
@@ -145,8 +154,7 @@
             className: "", iconSize: [30, 42], iconAnchor: [15, 42]
         });
 
-        function forceMapResize() { if (map) { if (mapType === 'gl') map.resize(); else map.invalidateSize(); } }
-        function fixViewportHeight() { document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); forceMapResize(); }
+        function fixViewportHeight() { document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); if(map){ if(mapType==='gl') map.resize(); else map.invalidateSize(); } }
         window.addEventListener('resize', fixViewportHeight);
         fixViewportHeight();
 
@@ -174,7 +182,7 @@
 
         function addPin(lat, lon) {
             clearMarker();
-            lastPinCoords = {lat: lat, lon: lon};
+            lastPinCoords = {lat, lon};
             if (mapType === 'gl') {
                 const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
                 currentMarker = new maplibregl.Marker({ color: 'black' }).setLngLat([lon, lat]).setPopup(popup).addTo(map);
@@ -198,48 +206,31 @@
             clearMarker();
         }
 
-        function resetView() {
-            if (lastPinCoords) {
-                if (mapType === 'gl') map.jumpTo({ center: [lastPinCoords.lon, lastPinCoords.lat], zoom: 15 });
-                else map.setView([lastPinCoords.lat, lastPinCoords.lon], 15);
-            }
-        }
+        function resetView() { if (lastPinCoords) { if (mapType === 'gl') map.jumpTo({ center: [lastPinCoords.lon, lastPinCoords.lat], zoom: 15 }); else map.setView([lastPinCoords.lat, lastPinCoords.lon], 15); } }
+        function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
 
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
             const btn = document.getElementById('search-button');
-            const originalText = btn.innerText;
             btn.innerText = "...";
             try {
                 const isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States|France|Germany|Japan/i.test(query);
                 let lat, lon;
                 if (!isExplicit) {
                     const c = map.getCenter();
-                    const revUrl = `https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`;
-                    const revRes = await fetch(revUrl);
-                    const revData = await revRes.json();
-                    let countryCode = (revData.features && revData.features.length > 0) ? revData.features[0].properties.country_code : "";
-                    const localUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.country=${countryCode}&api_key=${STADIA_API_KEY}&size=1`;
-                    const localRes = await fetch(localUrl);
-                    const localData = await localRes.json();
-                    if (localData.features && localData.features.length > 0) [lon, lat] = localData.features[0].geometry.coordinates;
+                    const rev = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`)).json();
+                    const code = rev.features?.[0]?.properties?.country_code || "";
+                    const localRes = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.country=${code}&api_key=${STADIA_API_KEY}&size=1`)).json();
+                    if (localRes.features?.length > 0) [lon, lat] = localRes.features[0].geometry.coordinates;
                 }
-                if (!lat || !lon) {
-                    const globalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`;
-                    const globalRes = await fetch(globalUrl);
-                    const globalData = await globalRes.json();
-                    if (globalData.features && globalData.features.length > 0) [lon, lat] = globalData.features[0].geometry.coordinates;
+                if (!lat) {
+                    const globalRes = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`)).json();
+                    if (globalRes.features?.length > 0) [lon, lat] = globalRes.features[0].geometry.coordinates;
                 }
-                if (lat && lon) {
-                    addPin(lat, lon);
-                    if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
-                    else map.setView([lat, lon], 15);
-                }
-            } catch (e) { console.error(e); } finally { btn.innerText = originalText; }
+                if (lat) { addPin(lat, lon); resetView(); }
+            } catch (e) { console.error(e); } finally { btn.innerText = "SEARCH"; }
         }
-
-        function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
     </script>
 </body>
 </html>
