@@ -30,59 +30,52 @@
             image-rendering: -webkit-optimize-contrast;
         }
 
-        /* Unified Cluster Style (4px black offset) */
+        /* Standard Cluster Shadow */
         .overlay-panel, .zoom-wrapper, .d-pad { 
             position: absolute; background: white; border: 2px solid black; 
             z-index: 500; box-shadow: 4px 4px 0 black; 
         }
 
-        /* --- SEARCH CLUSTER --- */
+        /* --- SEARCH CLUSTER (Aligned) --- */
         .panel-top-left { top: 10px; left: 10px; width: 260px; padding: 10px; }
         
         input[type="text"] { 
-            width: 100%; height: 38px; padding: 0 8px; border: 2px solid black; 
+            width: 240px; height: 36px; padding: 0 8px; border: 2px solid black; 
             font-size: 16px !important; margin-bottom: 8px; display: block;
         }
         
-        /* Table layout is the most reliable for Kindle button alignment */
-        .button-row { display: table; width: 100%; border-spacing: 6px 0; margin-left: -6px; }
-        .btn-cell { display: table-cell; vertical-align: top; }
+        /* Using Floats for maximum Kindle compatibility */
+        .button-row { width: 240px; height: 36px; display: block; clear: both; }
         
         .sys-btn { 
-            width: 100%; height: 38px; background: white; border: 2px solid black; 
-            font-weight: bold; cursor: pointer; text-transform: uppercase; 
-            padding: 0; line-height: 34px; /* Centers text vertically */
-            box-shadow: none; display: block;
+            background: white; border: 2px solid black; font-weight: bold; 
+            cursor: pointer; text-transform: uppercase; 
+            padding: 0; margin: 0; 
+            height: 36px; line-height: 32px; /* Fixed height & Centered text */
+            float: left; display: block; text-align: center;
         }
         .sys-btn:active { background: black; color: white !important; }
         
-        /* 75/25 distribution */
-        .cell-search { width: 75%; }
-        .cell-x { width: 25%; }
-        .clear-btn { font-size: 18px; }
+        #search-button { width: 172px; }
+        .clear-btn { width: 60px; margin-left: 8px; font-size: 18px; }
 
         /* --- NAVIGATION CLUSTERS --- */
-        .panel-bottom-right { 
-            position: absolute; bottom: 20px; right: 20px; 
-            z-index: 500; display: block;
-        }
+        .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; }
 
-        /* Zoom Cluster */
         .zoom-wrapper { 
-            position: relative; padding: 4px; margin-bottom: 12px; 
-            right: 0; display: block; width: 47px; /* 35px + 8px padding + 4px border */
+            position: relative; width: 47px; padding: 4px; 
+            margin-bottom: 12px; right: 0;
         }
         
         .zoom-btn { 
             width: 35px; height: 35px; background: white; 
             border: 2px solid black; font-weight: bold; font-size: 1.2rem; 
-            display: block; line-height: 31px; padding: 0;
+            display: block; line-height: 31px; padding: 0; text-align: center;
         }
-        .zoom-sep { height: 4px; } /* Fixed 4px gap to match D-Pad */
+        .zoom-sep { height: 4px; display: block; }
 
-        /* D-Pad Cluster */
-        .d-pad { position: relative; padding: 4px; display: block; }
-        .d-table { border-collapse: separate; border-spacing: 4px; }
+        .d-pad { position: relative; width: 125px; padding: 4px; display: block; }
+        .d-table { border-collapse: separate; border-spacing: 4px; margin: -4px; }
         
         .d-btn { 
             width: 35px; height: 35px; background: white; 
@@ -90,10 +83,8 @@
             font-size: 1.2rem; display: block; line-height: 31px; 
             padding: 0; text-align: center;
         }
-        .zoom-btn:active, .d-btn:active { background: black; color: white !important; }
-        
-        /* Point button - Plain white */
         .d-btn.center { font-size: 0.7rem; background: white; }
+        .zoom-btn:active, .d-btn:active { background: black; color: white !important; }
     </style>
 </head>
 <body>
@@ -102,16 +93,12 @@
         <div class="overlay-panel panel-top-left">
             <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
             <div class="button-row">
-                <div class="btn-cell cell-search">
-                    <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
-                </div>
-                <div class="btn-cell cell-x">
-                    <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
-                </div>
+                <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
+                <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
             </div>
         </div>
 
-        <!-- Navigation Clusters -->
+        <!-- Navigation Cluster -->
         <div class="panel-bottom-right">
             <div class="zoom-wrapper">
                 <button class="zoom-btn" onclick="map.zoomIn()">+</button>
