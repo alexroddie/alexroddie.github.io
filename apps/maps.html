@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <meta charset="UTF-8">
     <title>Maps</title>
 
@@ -12,25 +12,41 @@
 
     <style>
         :root { --vh: 1vh; }
-        * { -webkit-tap-highlight-color: transparent !important; outline: none; }
+        
+        /* 1. Kills blue highlights and forces black UI */
+        * { 
+            -webkit-tap-highlight-color: transparent !important; 
+            touch-action: manipulation; /* This helps disable double-tap zoom natively */
+        }
         a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; border-radius: 0; }
+
         html, body {
             margin: 0; padding: 0; width: 100%;
             height: 100vh; height: calc(var(--vh, 1vh) * 100) !important;
             overflow: hidden; position: fixed;
             background-color: #ffffff; font-family: "Geneva", "Verdana", sans-serif;
         }
+
         .window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
+        
         .maplibregl-canvas, .leaflet-container { 
             width: 100% !important; height: 100% !important; 
             image-rendering: -webkit-optimize-contrast;
         }
+
+        /* UI PANELS */
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
         .panel-top-left { top: 10px; left: 10px; width: 260px; }
-        input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-size: 16px !important; }
+        
+        input[type="text"] { 
+            width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; 
+            margin-bottom: 5px; font-size: 16px !important; /* 16px stops iOS auto-zoom */
+        }
+        
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; }
         button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
+
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
         .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
         .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
@@ -50,7 +66,7 @@
             </div>
             <div class="d-pad">
                 <div></div><button class="d-btn" onclick="panMap(0, -1)">▲</button><div></div>
-                <button class="d-btn" onclick="panMap(-1, 0)">◀</button><button class="d-btn center" style="font-size:0.7rem">●</button><button class="d-btn" onclick="panMap(1, 0)">▶</button>
+                <button class="d-btn" onclick="panMap(-1, 0)">◀</button><button class="d-btn" style="font-size:0.7rem">●</button><button class="d-btn" onclick="panMap(1, 0)">▶</button>
                 <div></div><button class="d-btn" onclick="panMap(0, 1)">▼</button><div></div>
             </div>
         </div>
@@ -58,11 +74,13 @@
     </div>
 
     <script>
+        // --- 1. INITIALIZATION & LAYOUT ---
         let map = null;
         let mapType = 'gl';
         const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         
-        function fixViewportHeight() { document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); if (map) { if (mapType === 'gl') map.resize(); else map.invalidateSize(); } }
+        function forceMapResize() { if (map) { if (mapType === 'gl') map.resize(); else map.invalidateSize(); } }
+        function fixViewportHeight() { document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); forceMapResize(); }
         window.addEventListener('resize', fixViewportHeight);
         fixViewportHeight();
 
@@ -90,49 +108,63 @@
             });
         };
 
-        // THE LATERAL FIX: Reverse geocode to get country name, then append it.
+        // --- 2. THE LATERAL SEARCH ENGINE ---
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
 
             const btn = document.getElementById('search-button');
-            btn.innerText = "WAIT...";
+            const originalText = btn.innerText;
+            btn.innerText = "...";
 
             try {
-                // 1. Get current country name from center point
-                const c = map.getCenter();
-                const revUrl = `https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`;
-                const revRes = await fetch(revUrl);
-                const revData = await revRes.json();
+                // Determine if user is being explicit (contains comma or common country terms)
+                const isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States|France|Germany|Japan/i.test(query);
                 
-                let countryName = "";
-                if (revData.features && revData.features.length > 0) {
-                    countryName = revData.features[0].properties.country || "";
+                let lat, lon;
+
+                if (!isExplicit) {
+                    // STEP 1: Try Local Country Search
+                    // Identify the country at the current map center
+                    const c = map.getCenter();
+                    const revUrl = `https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`;
+                    const revRes = await fetch(revUrl);
+                    const revData = await revRes.json();
+                    
+                    let countryCode = "";
+                    if (revData.features && revData.features.length > 0) {
+                        countryCode = revData.features[0].properties.country_code;
+                    }
+
+                    // Perform search restricted to that country
+                    const localUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.country=${countryCode}&api_key=${STADIA_API_KEY}&size=1`;
+                    const localRes = await fetch(localUrl);
+                    const localData = await localRes.json();
+
+                    if (localData.features && localData.features.length > 0) {
+                        [lon, lat] = localData.features[0].geometry.coordinates;
+                    }
                 }
 
-                // 2. Search for "UserQuery + CountryName" (e.g. "Perth United Kingdom")
-                // Using Stadia search for fuzzy/typo tolerance
-                let searchUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query + " " + countryName)}&api_key=${STADIA_API_KEY}&size=1`;
-                
-                let res = await fetch(searchUrl);
-                let data = await res.json();
-
-                // 3. If nothing found with country suffix, try global fallback
-                if (!data.features || data.features.length === 0) {
-                    searchUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`;
-                    res = await fetch(searchUrl);
-                    data = await res.json();
+                // STEP 2: Global Fallback (runs if Step 1 failed OR if search was explicit)
+                if (!lat || !lon) {
+                    const globalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`;
+                    const globalRes = await fetch(globalUrl);
+                    const globalData = await globalRes.json();
+                    
+                    if (globalData.features && globalData.features.length > 0) {
+                        [lon, lat] = globalData.features[0].geometry.coordinates;
+                    }
                 }
 
-                if (data.features && data.features.length > 0) {
-                    const [lon, lat] = data.features[0].geometry.coordinates;
+                if (lat && lon) {
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
                     else map.setView([lat, lon], 15);
                 }
-            } catch (e) { 
-                console.error(e); 
+            } catch (e) {
+                console.error("Search error", e);
             } finally {
-                btn.innerText = "SEARCH";
+                btn.innerText = originalText;
             }
         }
 
