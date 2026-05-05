@@ -12,12 +12,7 @@
 
     <style>
         :root { --vh: 1vh; }
-        
-        /* 1. Kills blue highlights and forces black UI */
-        * { 
-            -webkit-tap-highlight-color: transparent !important; 
-            touch-action: manipulation; /* This helps disable double-tap zoom natively */
-        }
+        * { -webkit-tap-highlight-color: transparent !important; touch-action: manipulation; }
         a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; border-radius: 0; }
 
         html, body {
@@ -37,27 +32,40 @@
 
         /* UI PANELS */
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
-        .panel-top-left { top: 10px; left: 10px; width: 260px; }
+        .panel-top-left { top: 10px; left: 10px; width: 280px; }
         
+        .search-row { display: flex; gap: 5px; }
         input[type="text"] { 
-            width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; 
-            margin-bottom: 5px; font-size: 16px !important; /* 16px stops iOS auto-zoom */
+            flex-grow: 1; padding: 6px; border: 2px solid black; box-sizing: border-box; 
+            font-size: 16px !important; 
         }
         
-        button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; }
-        button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
+        .sys-btn { background: white; border: 2px solid black; font-weight: bold; padding: 5px 10px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; }
+        .sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
+        .clear-btn { width: 34px; padding: 0; font-size: 18px; }
 
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
         .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
         .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
         .d-pad { display: grid; grid-template-columns: repeat(3, 35px); gap: 4px; }
+
+        /* Popup styling */
+        .leaflet-popup-content-wrapper, .maplibregl-popup-content {
+            border: 2px solid black;
+            border-radius: 0;
+            font-weight: bold;
+            box-shadow: 4px 4px 0 black;
+        }
     </style>
 </head>
 <body>
     <div class="window">
         <div class="overlay-panel panel-top-left">
-            <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
-            <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
+            <div class="search-row">
+                <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
+                <button class="sys-btn" onclick="searchLocation()">Go</button>
+                <button class="sys-btn clear-btn" onclick="clearSearch()" title="Clear Pin">×</button>
+            </div>
         </div>
         <div class="panel-bottom-right">
             <div class="zoom-controls">
@@ -74,11 +82,19 @@
     </div>
 
     <script>
-        // --- 1. INITIALIZATION & LAYOUT ---
         let map = null;
         let mapType = 'gl';
+        let currentMarker = null;
         const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         
+        // Custom Black Pin Icon for Leaflet
+        const blackIcon = L.divIcon({
+            html: `<svg width="30" height="42" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1"><path d="M12 0C7.58 0 4 3.58 4 8c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>`,
+            className: "",
+            iconSize: [30, 42],
+            iconAnchor: [15, 42]
+        });
+
         function forceMapResize() { if (map) { if (mapType === 'gl') map.resize(); else map.invalidateSize(); } }
         function fixViewportHeight() { document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); forceMapResize(); }
         window.addEventListener('resize', fixViewportHeight);
@@ -108,64 +124,67 @@
             });
         };
 
-        // --- 2. THE LATERAL SEARCH ENGINE ---
+        function addPin(lat, lon, label) {
+            clearMarker();
+            if (mapType === 'gl') {
+                const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`<div onclick="clearMarker()" style="cursor:pointer">Remove Pin</div>`);
+                currentMarker = new maplibregl.Marker({ color: 'black' })
+                    .setLngLat([lon, lat])
+                    .setPopup(popup)
+                    .addTo(map);
+            } else {
+                currentMarker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
+                currentMarker.bindPopup(`<div onclick="clearMarker()" style="cursor:pointer">Remove Pin</div>`);
+            }
+        }
+
+        function clearMarker() {
+            if (currentMarker) {
+                if (mapType === 'gl') currentMarker.remove();
+                else map.removeLayer(currentMarker);
+                currentMarker = null;
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = "";
+            clearMarker();
+        }
+
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
 
-            const btn = document.getElementById('search-button');
-            const originalText = btn.innerText;
-            btn.innerText = "...";
-
             try {
-                // Determine if user is being explicit (contains comma or common country terms)
                 const isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States|France|Germany|Japan/i.test(query);
-                
                 let lat, lon;
 
                 if (!isExplicit) {
-                    // STEP 1: Try Local Country Search
-                    // Identify the country at the current map center
                     const c = map.getCenter();
                     const revUrl = `https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`;
                     const revRes = await fetch(revUrl);
                     const revData = await revRes.json();
-                    
-                    let countryCode = "";
-                    if (revData.features && revData.features.length > 0) {
-                        countryCode = revData.features[0].properties.country_code;
-                    }
+                    let countryCode = (revData.features && revData.features.length > 0) ? revData.features[0].properties.country_code : "";
 
-                    // Perform search restricted to that country
                     const localUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.country=${countryCode}&api_key=${STADIA_API_KEY}&size=1`;
                     const localRes = await fetch(localUrl);
                     const localData = await localRes.json();
-
-                    if (localData.features && localData.features.length > 0) {
-                        [lon, lat] = localData.features[0].geometry.coordinates;
-                    }
+                    if (localData.features && localData.features.length > 0) [lon, lat] = localData.features[0].geometry.coordinates;
                 }
 
-                // STEP 2: Global Fallback (runs if Step 1 failed OR if search was explicit)
                 if (!lat || !lon) {
                     const globalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`;
                     const globalRes = await fetch(globalUrl);
                     const globalData = await globalRes.json();
-                    
-                    if (globalData.features && globalData.features.length > 0) {
-                        [lon, lat] = globalData.features[0].geometry.coordinates;
-                    }
+                    if (globalData.features && globalData.features.length > 0) [lon, lat] = globalData.features[0].geometry.coordinates;
                 }
 
                 if (lat && lon) {
+                    addPin(lat, lon, query);
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
                     else map.setView([lat, lon], 15);
                 }
-            } catch (e) {
-                console.error("Search error", e);
-            } finally {
-                btn.innerText = originalText;
-            }
+            } catch (e) { console.error(e); }
         }
 
         function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
