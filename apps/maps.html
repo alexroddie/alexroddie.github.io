@@ -32,17 +32,18 @@
 
         /* UI PANELS */
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
-        .panel-top-left { top: 10px; left: 10px; width: 260px; }
+        .panel-top-left { top: 10px; left: 10px; width: 280px; }
         
         .search-container { display: flex; flex-direction: column; gap: 8px; }
         input[type="text"] { width: 100%; padding: 8px; border: 2px solid black; box-sizing: border-box; font-size: 16px !important; }
         
         .button-row { display: flex; gap: 8px; width: 100%; }
-        .sys-btn { background: white; border: 2px solid black; font-weight: bold; padding: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box; }
+        .sys-btn { background: white; border: 2px solid black; font-weight: bold; padding: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box; font-size: 0.8rem; }
         .sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
         
         #search-button { flex: 3; }
         .clear-btn { flex: 1; font-size: 18px; }
+        .gpx-btn { width: 100%; margin-top: 4px; }
 
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
         .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
@@ -60,6 +61,8 @@
                     <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
                     <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
                 </div>
+                <button class="sys-btn gpx-btn" onclick="document.getElementById('gpx-input').click()">Load GPX Waypoints</button>
+                <input type="file" id="gpx-input" accept=".gpx" style="display:none" onchange="loadGPX(this)">
             </div>
         </div>
         <div class="panel-bottom-right">
@@ -81,8 +84,8 @@
     <script>
         let map = null;
         let mapType = 'gl';
-        let currentMarker = null;
-        let lastPinCoords = null; // Store coordinates for the navigation center button
+        let waypoints = []; // Array to store multiple markers
+        let lastPinCoords = null; 
         const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         
         const blackIcon = L.divIcon({
@@ -117,33 +120,33 @@
             });
         };
 
-        function addPin(lat, lon) {
-            clearMarker();
-            lastPinCoords = {lat: lat, lon: lon}; // Update last searched coords
+        function addPin(lat, lon, isGPX = false) {
+            if (!isGPX) clearMarkers(); // Search results clear the map, GPX adds to it
+            
+            lastPinCoords = {lat: lat, lon: lon};
+            let marker;
+            
             if (mapType === 'gl') {
-                const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
-                currentMarker = new maplibregl.Marker({ color: 'black' })
-                    .setLngLat([lon, lat])
-                    .setPopup(popup)
-                    .addTo(map);
+                marker = new maplibregl.Marker({ color: 'black' }).setLngLat([lon, lat]).addTo(map);
             } else {
-                currentMarker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
-                currentMarker.bindPopup(`<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
+                marker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
             }
+            waypoints.push(marker);
         }
 
-        function clearMarker() {
-            if (currentMarker) {
-                if (mapType === 'gl') currentMarker.remove();
-                else map.removeLayer(currentMarker);
-                currentMarker = null;
-            }
+        function clearMarkers() {
+            waypoints.forEach(m => {
+                if (mapType === 'gl') m.remove();
+                else map.removeLayer(m);
+            });
+            waypoints = [];
             lastPinCoords = null;
         }
 
         function clearSearch() {
             document.getElementById('search-input').value = "";
-            clearMarker();
+            document.getElementById('gpx-input').value = "";
+            clearMarkers();
         }
 
         function resetView() {
@@ -151,6 +154,38 @@
                 if (mapType === 'gl') map.jumpTo({ center: [lastPinCoords.lon, lastPinCoords.lat], zoom: 15 });
                 else map.setView([lastPinCoords.lat, lastPinCoords.lon], 15);
             }
+        }
+
+        // --- GPX PROCESSING ---
+        function loadGPX(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(e.target.result, "text/xml");
+                const wpts = xml.getElementsByTagName("wpt");
+                
+                if (wpts.length === 0) return alert("No waypoints found in GPX.");
+
+                clearMarkers();
+                const bounds = mapType === 'gl' ? new maplibregl.LngLatBounds() : L.latLngBounds();
+
+                for (let i = 0; i < wpts.length; i++) {
+                    const lat = parseFloat(wpts[i].getAttribute("lat"));
+                    const lon = parseFloat(wpts[i].getAttribute("lon"));
+                    addPin(lat, lon, true);
+                    
+                    if (mapType === 'gl') bounds.extend([lon, lat]);
+                    else bounds.extend([lat, lon]);
+                }
+
+                // Center map on the loaded GPX data
+                if (mapType === 'gl') map.fitBounds(bounds, { padding: 50 });
+                else map.fitBounds(bounds, { padding: [50, 50] });
+            };
+            reader.readAsText(file);
         }
 
         async function searchLocation() {
