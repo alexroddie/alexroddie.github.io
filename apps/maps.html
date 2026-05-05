@@ -36,22 +36,20 @@
             z-index: 1000; 
             box-shadow: 4px 4px 0 #000000; 
             position: fixed; 
-            padding: 5px; /* Strict 5px outer border */
+            padding: 5px; 
         }
 
-        /* 3. Search Cluster (5px gaps) */
-        .panel-top-left { top: 15px; left: 15px; width: 260px; }
+        /* 3. ReKindle Style Search Cluster (Top Left) */
+        .panel-top-left { 
+            top: 15px; left: 15px; width: 220px; 
+        }
         
         #search-input { 
-            width: 250px; height: 36px; padding: 0 8px; 
+            width: 100%; height: 36px; padding: 0 8px; 
             font-size: 16px; border: 2px solid black; 
             margin-bottom: 5px; display: block; background: #fff;
         }
         
-        .search-table { width: 250px; border-collapse: collapse; table-layout: fixed; }
-        .search-table td { padding: 0; vertical-align: top; }
-        
-        /* Updated: Non-bold and removed text-transform */
         .sys-btn { 
             background: #ffffff; border: 2px solid black;
             font-weight: normal; cursor: pointer; 
@@ -60,8 +58,8 @@
         }
         .sys-btn:active { background: #000000; color: #ffffff !important; }
 
-        /* 4. Navigation Cluster (Centered & 5px standard) */
-        .nav-wrapper { 
+        /* 4. Navigation Column (Bottom Right) */
+        .nav-column { 
             position: fixed; 
             bottom: 25px; 
             right: 20px; 
@@ -70,18 +68,17 @@
             text-align: center;
         }
 
-        /* Zoom Cluster */
+        /* ReKindle Stacked Zoom Panel */
         .zoom-panel { 
             display: inline-block; width: 45px; margin-bottom: 10px; 
         }
         .zoom-sep { height: 5px; }
 
-        /* Panning Cluster */
+        /* ReKindle Grid Panning Panel */
         .dpad-panel { display: inline-block; width: 125px; }
         .dpad-table { border-collapse: separate; border-spacing: 5px; margin: -5px; }
         .dpad-table td { padding: 0; }
         
-        /* Nav Buttons */
         .ctrl-btn { 
             width: 35px; height: 35px; cursor: pointer; background: #fff;
             border: 2px solid black; display: block; position: relative;
@@ -100,30 +97,22 @@
 
     <div id="map"></div>
 
-    <!-- Search Cluster -->
+    <!-- Search Cluster: Vertical ReKindle Layout -->
     <div class="shadow-panel panel-top-left">
-        <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.keyCode==13)searchLocation()">
-        <table class="search-table">
-            <tr>
-                <td style="width: 185px;">
-                    <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
-                </td>
-                <td style="width: 5px;"></td> <!-- Strict 5px Internal Gap -->
-                <td style="width: 60px;">
-                    <button class="sys-btn" onclick="clearSearch()">X</button>
-                </td>
-            </tr>
-        </table>
+        <input type="text" id="search-input" placeholder="Search location..." onkeypress="if(event.keyCode==13)searchLocation()">
+        <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
     </div>
 
     <!-- Navigation Column -->
-    <div class="nav-wrapper">
+    <div class="nav-column">
+        <!-- Zoom -->
         <div class="shadow-panel zoom-panel" style="position: relative; left: auto; bottom: auto; right: auto;">
             <button class="ctrl-btn" onclick="map.zoomIn()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
             <div class="zoom-sep"></div>
             <button class="ctrl-btn" onclick="map.zoomOut()"><svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg></button>
         </div>
 
+        <!-- Panning -->
         <div class="shadow-panel dpad-panel" style="position: relative; left: auto; bottom: auto; right: auto;">
             <table class="dpad-table">
                 <tr>
@@ -147,7 +136,7 @@
 
     <script>
         var API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
-        var map, currentMarker, lastPin, countryCode = "";
+        var map, currentMarker, lastPinCoords, countryCode = "";
 
         var blackIcon = L.divIcon({
             html: '<svg width="30" height="42" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1"><path d="M12 0C7.58 0 4 3.58 4 8c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>',
@@ -176,14 +165,32 @@
         };
 
         function addPin(lat, lon) {
-            if (currentMarker) map.removeLayer(currentMarker);
-            lastPin = [lat, lon];
+            clearMarker();
+            lastPinCoords = {lat: lat, lon: lon};
             currentMarker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
+            
+            // Per request: Removing pin via tap on the pin itself
+            currentMarker.on('click', function() {
+                clearMarker();
+            });
         }
 
-        function clearSearch() { document.getElementById('search-input').value = ""; if(currentMarker) map.removeLayer(currentMarker); lastPin = null; }
-        function resetView() { if(lastPin) map.setView(lastPin, 15); }
-        function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
+        function clearMarker() { 
+            if (currentMarker) map.removeLayer(currentMarker); 
+            currentMarker = null; 
+            lastPinCoords = null; 
+        }
+
+        function resetView() { 
+            // Defaults to most recent search pin if available
+            if(lastPinCoords) {
+                map.setView([lastPinCoords.lat, lastPinCoords.lon], 15); 
+            }
+        }
+
+        function panMap(dx, dy) { 
+            map.panBy([dx * 100, dy * 100], { animate: false }); 
+        }
 
         function searchLocation() {
             var q = document.getElementById('search-input').value.trim();
