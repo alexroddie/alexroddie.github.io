@@ -1,4 +1,7 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 *{box-sizing:border-box;}
@@ -28,27 +31,28 @@ body{
     body { 
         width: auto; height: auto; min-height: 100vh;
         overflow: auto; 
+        font-family: "Merriweather", serif;
+        line-height: 1.8;
     }
     .main-content { flex-direction: column; width: 95%; margin: 0 auto; }
-    .left-pane { width: 100%; height: auto; padding: 15px 15px 5px 15px; }
-    .right-pane { width: 100%; height: auto; padding: 5px 15px 15px 15px; }
+    .left-pane { width: 100%; height: auto; padding: 15px 20px 5px 20px; }
+    .right-pane { width: 100%; height: auto; padding: 5px 20px 15px 20px; }
     .outlook-section { overflow: visible; }
     
-    /* OVERRIDE DYNAMIC SCALING - Lock to static reading sizes for mobile */
-    .date-header { font-size: 20pt; margin-top: 0; }
-    .body-text { font-size: 16pt; }
+    /* SYNCED WITH BOOKMARKS MENU STYLING */
+    .date-header { font-size: 36px; margin-top: 0; line-height: 1.8; }
+    .body-text { font-size: 20px; line-height: 1.8; margin-bottom: 20px; }
     
     /* REVEAL MOBILE LINKS */
     .mobile-links {
         display: block;
         margin-top: 16px;
-        font-size: 16pt; /* Static size to match body text */
+        font-size: 20px;
     }
     
-    /* FORCE CLEAN BLACK LINKS */
-    .mobile-links a { color: #000; }
+    .mobile-links a { color: #000; text-decoration: none; }
     
-    /* FORCE CLEAN BLACK ARROWS (Hides default browser arrow, injects text-only chevron) */
+    /* FORCE CLEAN BLACK ARROWS & NO BULLETS */
     .mobile-links summary { 
         cursor: pointer; 
         font-weight: bold; 
@@ -57,17 +61,20 @@ body{
     }
     .mobile-links summary::-webkit-details-marker { display: none; }
     .mobile-links summary::before {
-        content: '\25B6\FE0E'; /* Right-pointing triangle + text-presentation modifier */
+        content: '\25B6\FE0E';
         display: inline-block;
         margin-right: 8px;
         color: #000;
     }
     .mobile-links details[open] summary::before {
-        content: '\25BC\FE0E'; /* Down-pointing triangle + text-presentation modifier */
+        content: '\25BC\FE0E';
     }
     
-    /* INCREASED INDENTATION FOR LIST ITEMS */
-    .mobile-links ul { margin: 0; padding-left: 32px; }
+    .mobile-links ul { 
+        margin: 0; 
+        padding-left: 20px; 
+        list-style-type: none; 
+    }
     .mobile-links li { margin-bottom: 8px; }
     .mobile-links details { margin-bottom: 12px; }
 }
