@@ -139,8 +139,7 @@ body{{
     
     /* FORCE CLEAN BLACK ARROWS & NO BULLETS */
     .mobile-links summary {{ 
-        cursor: pointer; 
-        font-weight: bold; 
+        cursor: pointer;  
         margin-bottom: 8px; 
         list-style: none; 
     }}
