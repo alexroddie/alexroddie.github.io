@@ -25,18 +25,15 @@
         .maplibregl-canvas, .leaflet-container { 
             width: 100% !important; height: 100% !important; 
             image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
         }
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
         .panel-top-left { top: 10px; left: 10px; width: 260px; }
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-size: 16px !important; }
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; }
-        button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
         .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
         .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
         .d-pad { display: grid; grid-template-columns: repeat(3, 35px); gap: 4px; }
-        .d-btn.center { font-size: 0.7rem; background: #eee; }
     </style>
 </head>
 <body>
@@ -52,7 +49,7 @@
             </div>
             <div class="d-pad">
                 <div></div><button class="d-btn" onclick="panMap(0, -1)">▲</button><div></div>
-                <button class="d-btn" onclick="panMap(-1, 0)">◀</button><button class="d-btn center" onclick="resetView()">●</button><button class="d-btn" onclick="panMap(1, 0)">▶</button>
+                <button class="d-btn" onclick="panMap(-1, 0)">◀</button><button class="d-btn center" style="font-size:0.7rem">●</button><button class="d-btn" onclick="panMap(1, 0)">▶</button>
                 <div></div><button class="d-btn" onclick="panMap(0, 1)">▼</button><div></div>
             </div>
         </div>
@@ -62,15 +59,29 @@
     <script>
         let map = null;
         let mapType = 'gl';
+        let currentCountryCode = ""; // This is the secret to the Perth problem
         const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         
-        function forceMapResize() { if (map) { if (mapType === 'gl') map.resize(); else map.invalidateSize(); } }
-        function fixViewportHeight() { document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); forceMapResize(); }
+        function fixViewportHeight() { document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); if (map) { if (mapType === 'gl') map.resize(); else map.invalidateSize(); } }
         window.addEventListener('resize', fixViewportHeight);
         fixViewportHeight();
 
+        // 1. Silent lateral logic: Identify the country we are currently in
+        async function updateCountryContext() {
+            try {
+                const c = map.getCenter();
+                const url = `https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&layers=address&size=1`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.features && data.features.length > 0) {
+                    currentCountryCode = data.features[0].properties.country_code; // e.g., "GBR" or "GB"
+                }
+            } catch (e) { console.error("Context update failed", e); }
+        }
+
         window.onload = () => {
             const saved = JSON.parse(localStorage.getItem('rekindle_maps_view') || '{"lat":51.5072,"lon":-0.1276,"zoom":13}');
+            
             if (typeof maplibregl !== 'undefined' && maplibregl.supported()) {
                 mapType = 'gl';
                 map = new maplibregl.Map({
@@ -85,31 +96,49 @@
                     .setView([saved.lat, saved.lon], saved.zoom);
                 L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`).addTo(map);
             }
+
             map.on('moveend', () => {
                 const c = map.getCenter();
-                localStorage.setItem('rekindle_maps_view', JSON.stringify({lat: c.lat, lon: (mapType==='gl'?c.lng:c.lng), zoom: map.getZoom()}));
+                localStorage.setItem('rekindle_maps_view', JSON.stringify({lat: c.lat, lon: c.lng, zoom: map.getZoom()}));
+                updateCountryContext(); // Update context whenever map moves
             });
-            setTimeout(forceMapResize, 500);
+            
+            updateCountryContext(); // Initial run
         };
 
-        // THE "DIRECT" SEARCH: No bounding, no bias, just raw global search.
+        // 2. Simple but Contextual Search
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
+
+            // Logic: Search with a country filter if we have one, otherwise global.
+            // This allows for fuzzy search while keeping results "local" to your view.
+            let url = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`;
+            if (currentCountryCode) {
+                url += `&boundary.country=${currentCountryCode}`;
+            }
+
             try {
-                // We send a raw query to Nominatim and take result #1
-                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+                const res = await fetch(url);
                 const data = await res.json();
-                if (data.length > 0) {
-                    const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
+                if (data.features && data.features.length > 0) {
+                    const [lon, lat] = data.features[0].geometry.coordinates;
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
                     else map.setView([lat, lon], 15);
+                } else if (currentCountryCode) {
+                    // Fallback: If no results found in current country, try global
+                    const globalRes = await fetch(`https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`);
+                    const globalData = await globalRes.json();
+                    if (globalData.features.length > 0) {
+                        const [lon, lat] = globalData.features[0].geometry.coordinates;
+                        if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
+                        else map.setView([lat, lon], 15);
+                    }
                 }
             } catch (e) { console.error(e); }
         }
 
         function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
-        function resetView() { /* Implementation as needed */ }
     </script>
 </body>
 </html>
