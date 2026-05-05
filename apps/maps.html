@@ -12,78 +12,87 @@
 
     <style>
         :root { --vh: 1vh; }
-        * { -webkit-tap-highlight-color: transparent !important; touch-action: manipulation; box-sizing: border-box; }
-        a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; border-radius: 0; }
+        
+        /* 1. THE CRITICAL RESET: Ensures heights include borders */
+        * { 
+            -webkit-tap-highlight-color: transparent !important; 
+            touch-action: manipulation; 
+            box-sizing: border-box !important; 
+            margin: 0; padding: 0;
+        }
+
+        a, button, input { 
+            color: #000000 !important; 
+            -webkit-appearance: none; appearance: none; 
+            border-radius: 0; 
+            font-family: inherit;
+        }
 
         html, body {
-            margin: 0; padding: 0; width: 100%;
+            width: 100%; overflow: hidden; position: fixed;
             height: 100vh; height: calc(var(--vh, 1vh) * 100) !important;
-            overflow: hidden; position: fixed;
             background-color: #ffffff; font-family: "Geneva", "Verdana", sans-serif;
         }
 
-        .window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
-        
-        .maplibregl-canvas, .leaflet-container { 
-            width: 100% !important; height: 100% !important; 
-            image-rendering: -webkit-optimize-contrast;
-        }
 
-        /* Standard Cluster Shadow */
+        /* Unified Cluster Shadow (4px black offset) */
         .overlay-panel, .zoom-wrapper, .d-pad { 
             position: absolute; background: white; border: 2px solid black; 
             z-index: 500; box-shadow: 4px 4px 0 black; 
         }
 
-        /* --- SEARCH CLUSTER (Aligned) --- */
+        /* --- SEARCH CLUSTER (Fixed Alignment) --- */
         .panel-top-left { top: 10px; left: 10px; width: 260px; padding: 10px; }
         
         input[type="text"] { 
-            width: 240px; height: 36px; padding: 0 8px; border: 2px solid black; 
+            width: 100%; height: 36px; padding: 0 8px; border: 2px solid black; 
             font-size: 16px !important; margin-bottom: 8px; display: block;
         }
         
-        /* Using Floats for maximum Kindle compatibility */
-        .button-row { width: 240px; height: 36px; display: block; clear: both; }
+        /* Flex ensures buttons stay same height and perfectly leveled */
+        .button-row { display: flex; width: 100%; height: 36px; gap: 8px; }
         
         .sys-btn { 
             background: white; border: 2px solid black; font-weight: bold; 
             cursor: pointer; text-transform: uppercase; 
-            padding: 0; margin: 0; 
-            height: 36px; line-height: 32px; /* Fixed height & Centered text */
-            float: left; display: block; text-align: center;
+            height: 100%; padding: 0; margin: 0;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: none; /* No internal shadows */
         }
         .sys-btn:active { background: black; color: white !important; }
         
-        #search-button { width: 172px; }
-        .clear-btn { width: 60px; margin-left: 8px; font-size: 18px; }
+        #search-button { flex: 3; } /* Takes 75% approx */
+        .clear-btn { flex: 1; font-size: 18px; }
 
         /* --- NAVIGATION CLUSTERS --- */
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; }
 
+        /* Zoom Cluster - Now with guaranteed gap */
         .zoom-wrapper { 
             position: relative; width: 47px; padding: 4px; 
-            margin-bottom: 12px; right: 0;
+            margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px;
         }
         
         .zoom-btn { 
             width: 35px; height: 35px; background: white; 
             border: 2px solid black; font-weight: bold; font-size: 1.2rem; 
-            display: block; line-height: 31px; padding: 0; text-align: center;
+            display: flex; align-items: center; justify-content: center;
         }
-        .zoom-sep { height: 4px; display: block; }
 
-        .d-pad { position: relative; width: 125px; padding: 4px; display: block; }
-        .d-table { border-collapse: separate; border-spacing: 4px; margin: -4px; }
+        /* D-Pad Cluster */
+        .d-pad { position: relative; padding: 4px; }
+        .d-table { border-collapse: separate; border-spacing: 4px; }
         
         .d-btn { 
             width: 35px; height: 35px; background: white; 
             border: 2px solid black; font-weight: bold; 
-            font-size: 1.2rem; display: block; line-height: 31px; 
-            padding: 0; text-align: center;
+            font-size: 1.2rem; display: flex; align-items: center; 
+            justify-content: center;
         }
+        /* Point button - Pure White, No Grey */
         .d-btn.center { font-size: 0.7rem; background: white; }
+
         .zoom-btn:active, .d-btn:active { background: black; color: white !important; }
     </style>
 </head>
@@ -93,16 +102,15 @@
         <div class="overlay-panel panel-top-left">
             <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
             <div class="button-row">
-                <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
+                <button class="sys-btn" id="search-button" onclick="searchLocation()">SEARCH</button>
                 <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
             </div>
         </div>
 
-        <!-- Navigation Cluster -->
+        <!-- Navigation Clusters -->
         <div class="panel-bottom-right">
             <div class="zoom-wrapper">
                 <button class="zoom-btn" onclick="map.zoomIn()">+</button>
-                <div class="zoom-sep"></div>
                 <button class="zoom-btn" onclick="map.zoomOut()">-</button>
             </div>
             
