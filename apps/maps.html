@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <title>Maps</title>
 
-    <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
-    <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -20,83 +18,83 @@
             margin: 0; padding: 0;
         }
 
-        a, button, input { 
+        button, input { 
             color: #000000 !important; 
             -webkit-appearance: none; appearance: none; 
-            border-radius: 0; font-family: inherit;
+            border-radius: 0; font-family: "Geneva", "Verdana", sans-serif;
+            outline: none; background: white;
         }
 
         html, body {
-            width: 100%; overflow: hidden; position: fixed;
-            height: 100vh; height: calc(var(--vh, 1vh) * 100) !important;
-            background-color: #ffffff; font-family: "Geneva", "Verdana", sans-serif;
+            width: 100%; height: 100vh; height: calc(var(--vh, 1vh) * 100) !important;
+            overflow: hidden; position: fixed; background-color: #ffffff;
         }
 
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
 
-        /* Unified 4px Shadow Panel */
+        /* UNIFIED 4px SHADOW PANEL */
         .shadow-panel { 
             background: white; border: 2px solid black; 
             z-index: 500; box-shadow: 4px 4px 0 black; 
+            position: absolute;
         }
 
-        /* --- SEARCH CLUSTER: Pixel-Locked --- */
-        .panel-top-left { 
-            position: absolute; top: 10px; left: 10px; width: 260px; padding: 8px; 
-        }
+        /* --- SEARCH CLUSTER: Perfect Alignment --- */
+        .panel-top-left { top: 10px; left: 10px; width: 260px; padding: 8px; }
         
         input[type="text"] { 
             width: 240px; height: 36px; padding: 0 8px; border: 2px solid black; 
             font-size: 16px !important; margin-bottom: 8px; display: block;
         }
         
-        .button-row { width: 240px; height: 36px; display: block; clear: both; }
+        .button-row { width: 240px; height: 36px; display: block; }
         
         .sys-btn { 
-            background: white; border: 2px solid black; font-weight: bold; 
+            border: 2px solid black; font-weight: bold; 
             cursor: pointer; text-transform: uppercase; 
-            height: 36px; line-height: 32px; /* Fixed height for alignment */
-            float: left; text-align: center; display: block;
+            height: 36px; line-height: 32px; 
+            float: left; text-align: center;
         }
         .sys-btn:active { background: black; color: white !important; }
         
         #search-button { width: 172px; margin-right: 8px; }
         .clear-btn { width: 60px; font-size: 18px; }
 
-        /* --- NAVIGATION COLUMN: Stacked and Centered --- */
+        /* --- NAVIGATION: Centered and Tight --- */
         .nav-column { 
             position: absolute; bottom: 20px; right: 20px; 
-            z-index: 500; width: 131px; /* Width of D-Pad + shadow */
-            display: flex; flex-direction: column; align-items: center;
+            z-index: 500; display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Zoom Cluster: Tight box */
+        /* Zoom: Shrink-wrapped to button width */
         .zoom-panel { 
-            width: 47px; padding: 4px; margin-bottom: 12px; 
+            position: relative; width: 43px; padding: 2px; margin-bottom: 12px; 
         }
         .zoom-btn { 
-            width: 35px; height: 35px; background: white; 
-            border: 2px solid black; font-weight: bold; font-size: 1.2rem; 
-            display: block; line-height: 31px; text-align: center;
+            width: 35px; height: 35px; border: 2px solid black; 
+            font-weight: bold; font-size: 1.2rem; display: block; 
+            line-height: 31px; text-align: center;
         }
-        .zoom-sep { height: 4px; display: block; }
+        .zoom-sep { height: 4px; }
 
-        /* Panning Cluster: Tight box */
-        .dpad-panel { padding: 4px; display: block; }
+        /* Panning: Shrink-wrapped to table width */
+        .dpad-panel { position: relative; padding: 2px; }
         .dpad-table { border-collapse: separate; border-spacing: 4px; }
         
         .d-btn { 
-            width: 35px; height: 35px; background: white; 
-            border: 2px solid black; font-weight: bold; 
-            font-size: 1.2rem; display: block; line-height: 31px; text-align: center;
+            width: 35px; height: 35px; border: 2px solid black; 
+            font-weight: bold; font-size: 1.2rem; display: block; 
+            line-height: 31px; text-align: center;
         }
-        .d-btn.center { font-size: 0.7rem; background: white; }
+        .d-btn.center { font-size: 0.7rem; }
 
-        .zoom-btn:active, .d-btn:active { background: black; color: white !important; }
+        .sys-btn:active, .zoom-btn:active, .d-btn:active { background: black; color: white !important; }
     </style>
 </head>
 <body>
     <div class="window">
+        <div id="map"></div>
+
         <!-- Search -->
         <div class="shadow-panel panel-top-left">
             <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
@@ -106,16 +104,14 @@
             </div>
         </div>
 
-        <!-- Navigation Cluster -->
+        <!-- Nav -->
         <div class="nav-column">
-            <!-- Zoom Panel -->
             <div class="shadow-panel zoom-panel">
                 <button class="zoom-btn" onclick="map.zoomIn()">+</button>
                 <div class="zoom-sep"></div>
                 <button class="zoom-btn" onclick="map.zoomOut()">-</button>
             </div>
             
-            <!-- Panning Panel -->
             <div class="shadow-panel dpad-panel">
                 <table class="dpad-table">
                     <tr>
@@ -132,41 +128,40 @@
                 </table>
             </div>
         </div>
-        <div id="map"></div>
     </div>
 
     <script>
+        const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         let map = null;
-        let mapType = 'gl';
         let currentMarker = null;
         let lastPinCoords = null; 
-        const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
-        
+
         const blackIcon = L.divIcon({
             html: `<svg width="30" height="42" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1"><path d="M12 0C7.58 0 4 3.58 4 8c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>`,
             className: "", iconSize: [30, 42], iconAnchor: [15, 42]
         });
 
-        function fixViewportHeight() { document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); if(map){ if(mapType==='gl') map.resize(); else map.invalidateSize(); } }
+        function fixViewportHeight() { 
+            document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); 
+            if(map) map.invalidateSize(); 
+        }
         window.addEventListener('resize', fixViewportHeight);
         fixViewportHeight();
 
         window.onload = () => {
             const saved = JSON.parse(localStorage.getItem('rekindle_maps_view') || '{"lat":51.5072,"lon":-0.1276,"zoom":13}');
-            if (typeof maplibregl !== 'undefined' && maplibregl.supported()) {
-                mapType = 'gl';
-                map = new maplibregl.Map({
-                    container: 'map',
-                    style: `https://tiles.stadiamaps.com/styles/stamen_toner.json?api_key=${STADIA_API_KEY}`,
-                    center: [saved.lon, saved.lat], zoom: saved.zoom, attributionControl: false, fadeDuration: 0,
-                    scrollZoom: false, touchZoomRotate: false, doubleClickZoom: false
-                });
-            } else {
-                mapType = 'leaflet';
-                map = L.map('map', { zoomControl: false, attributionControl: false, touchZoom: false, scrollWheelZoom: false, doubleClickZoom: false })
-                    .setView([saved.lat, saved.lon], saved.zoom);
-                L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`).addTo(map);
-            }
+            
+            // Forced Leaflet for Kindle/Silk stability (prevents "white map" WebGL issues)
+            map = L.map('map', { 
+                zoomControl: false, 
+                attributionControl: false, 
+                touchZoom: false, 
+                scrollWheelZoom: false, 
+                doubleClickZoom: false 
+            }).setView([saved.lat, saved.lon], saved.zoom);
+
+            L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`).addTo(map);
+
             map.on('moveend', () => {
                 const c = map.getCenter();
                 localStorage.setItem('rekindle_maps_view', JSON.stringify({lat: c.lat, lon: c.lng, zoom: map.getZoom()}));
@@ -176,30 +171,21 @@
         function addPin(lat, lon) {
             clearMarker();
             lastPinCoords = {lat, lon};
-            if (mapType === 'gl') {
-                const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
-                currentMarker = new maplibregl.Marker({ color: 'black' }).setLngLat([lon, lat]).setPopup(popup).addTo(map);
-            } else {
-                currentMarker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
-                currentMarker.bindPopup(`<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
-            }
+            currentMarker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
+            currentMarker.bindPopup(`<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
         }
 
         function clearMarker() {
-            if (currentMarker) {
-                if (mapType === 'gl') currentMarker.remove();
-                else map.removeLayer(currentMarker);
-                currentMarker = null;
-            }
+            if (currentMarker) { map.removeLayer(currentMarker); currentMarker = null; }
             lastPinCoords = null;
         }
 
-        function clearSearch() {
-            document.getElementById('search-input').value = "";
-            clearMarker();
+        function clearSearch() { document.getElementById('search-input').value = ""; clearMarker(); }
+
+        function resetView() { 
+            if (lastPinCoords) map.setView([lastPinCoords.lat, lastPinCoords.lon], 15); 
         }
 
-        function resetView() { if (lastPinCoords) { if (mapType === 'gl') map.jumpTo({ center: [lastPinCoords.lon, lastPinCoords.lat], zoom: 15 }); else map.setView([lastPinCoords.lat, lastPinCoords.lon], 15); } }
         function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
 
         async function searchLocation() {
@@ -210,18 +196,18 @@
             try {
                 const isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States|France|Germany|Japan/i.test(query);
                 let lat, lon;
-                if (!isExplicit) {
-                    const c = map.getCenter();
-                    const rev = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`)).json();
-                    const code = rev.features?.[0]?.properties?.country_code || "";
-                    const localRes = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.country=${code}&api_key=${STADIA_API_KEY}&size=1`)).json();
-                    if (localRes.features?.length > 0) [lon, lat] = localRes.features[0].geometry.coordinates;
+                const c = map.getCenter();
+                const rev = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`)).json();
+                const code = rev.features?.[0]?.properties?.country_code || "";
+                
+                const searchUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}${!isExplicit ? '&boundary.country='+code : ''}&api_key=${STADIA_API_KEY}&size=1`;
+                const res = await (await fetch(searchUrl)).json();
+                
+                if (res.features?.length > 0) {
+                    [lon, lat] = res.features[0].geometry.coordinates;
+                    addPin(lat, lon); 
+                    resetView();
                 }
-                if (!lat) {
-                    const globalRes = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`)).json();
-                    if (globalRes.features?.length > 0) [lon, lat] = globalRes.features[0].geometry.coordinates;
-                }
-                if (lat) { addPin(lat, lon); resetView(); }
             } catch (e) { console.error(e); } finally { btn.innerText = "SEARCH"; }
         }
     </script>
