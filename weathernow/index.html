@@ -18,6 +18,21 @@
     align-items: center; 
   }
 
+  /* --- Shared Styles --- */
+  .container {
+    background: #fff; color: #000;
+    font: 400 16px Georgia, serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+  .loc { font-weight: bold; line-height: 1; }
+  .v-time { font-size: 16px; font-weight: bold; }
+  .v-temp { font-size: 21px; margin: 2px 0; }
+  .v-cond { font-size: 11px; line-height: 1.2; display: block; } 
+  .v-data { font-size: 11px; }
+  .later-text { font-size: 11px; line-height: 1.2; }
+
   /* --- Desktop & Landscape Layout (Fixed 840x480) --- */
   @media screen and (min-width: 841px) {
     .container {
@@ -32,7 +47,15 @@
     .col-left { width: 230px; }
     .col-center { flex: 1; text-align: center; }
     .col-right { width: 210px; text-align: right; }
+    .loc { font-size: 28px; }
+    .sub-loc { font-size: 18px; margin-top: 2px; }
+    .date-line { font-size: 12px; margin-top: 6px; display: block; }
+    .sun { font-size: 12px; margin-top: 8px; border-top: 1px solid #000; display: inline-block; padding-top: 4px; white-space: nowrap; }
     .temp-big { font-size: 115px; line-height: .8; }
+    .cond-big { font-size: 25px; margin-top: 5px; }
+    .details { font-size: 17px; line-height: 1.6; }
+    .flourish-swoosh { height: 22px; margin: 12px 0 6px auto; display: block; width: 60px; }
+    .quote { font-size: 15px; line-height: 1.25; }
     .hourly-row { 
       display: grid; 
       grid-template-columns: repeat(5, 70px) 1fr; 
@@ -42,6 +65,7 @@
       padding: 15px 0; 
       margin: 5px 0; 
     }
+    .info-block, .footer { font-size: 18px; line-height: 1.3; }
   }
 
   /* --- Mobile & Portrait Layout (Fluid 100vh No-Scroll) --- */
@@ -49,77 +73,59 @@
     .container {
       width: 100vw;
       height: 100vh;
-      padding: 15px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start; /* Better control than space-between */
       text-align: center;
     }
-    .top-row { 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      gap: 10px;
-    }
-    .col-left, .col-center, .col-right { width: 100%; text-align: center; }
+    .top-row { width: 100%; margin-bottom: 5px; }
+    .loc { font-size: 22px; margin-bottom: 2px; }
+    .sub-loc { font-size: 16px; margin: 0; }
+    .date-line { font-size: 11px; margin: 2px 0; }
+    .sun { font-size: 11px; padding-top: 2px; margin-top: 2px; border-top: 1px solid #000; display: inline-block; }
     
-    /* Fluid typography for the big temp based on screen height */
-    .temp-big { font-size: 18vh; line-height: 1; }
-    .cond-big { font-size: 22px; margin-bottom: 5px; }
+    .col-center { margin: 10px 0; }
+    .temp-big { font-size: 12vh; line-height: 0.9; }
+    .cond-big { font-size: 20px; margin-top: 0; }
     
+    .col-right { margin-bottom: 10px; }
     .details { 
       display: flex; 
       justify-content: center; 
-      gap: 20px; 
-      font-size: 16px; 
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
+      gap: 15px; 
+      font-size: 15px; 
+      line-height: 1.2;
     }
-    .flourish-swoosh, .quote { display: none; } /* Hidden on mobile to save vertical space */
+    .flourish-swoosh, .quote { display: none !important; }
 
     .hourly-row {
       display: grid;
-      grid-template-columns: 1fr 1fr; /* 2 columns */
-      grid-template-rows: repeat(3, 1fr); /* 3 rows */
-      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(3, 1fr);
       border-top: 2px solid #000;
       border-bottom: 2px solid #000;
-      padding: 10px 0;
-      flex-grow: 1; /* Allow grid to fill available space */
-      margin: 10px 0;
+      padding: 5px 0;
+      margin: 5px 0;
+      flex: 1; /* Absorbs remaining space */
     }
     .h-col { 
       display: flex; 
       flex-direction: column; 
       justify-content: center;
-      border-right: 1px solid #eee;
+      padding: 2px 0;
     }
-    .h-col:nth-child(2n) { border-right: none; }
-    .later-col { text-align: center; padding-left: 0; display: flex; flex-direction: column; justify-content: center; }
-    .info-block, .footer { font-size: 15px; line-height: 1.2; padding: 2px 0; }
+    .h-col:nth-child(odd) { border-right: 1px solid #eee; }
+    .later-col { text-align: center; padding: 0; display: flex; flex-direction: column; justify-content: center; }
+    
+    .info-block, .footer { 
+      font-size: 14px; 
+      line-height: 1.2; 
+      padding: 4px 0; 
+      text-align: left;
+    }
+    .info-block { border-bottom: 1px solid #eee; }
   }
-
-  /* --- Shared Styles --- */
-  .container {
-    background: #fff; color: #000;
-    font: 400 16px Georgia, serif;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-  }
-  .loc { font-size: 28px; font-weight: bold; line-height: 1; }
-  .sub-loc { font-size: 18px; margin-top: 2px; }
-  .date-line { font-size: 12px; margin-top: 6px; display: block; }
-  .sun { font-size: 12px; margin-top: 8px; border-top: 1px solid #000; display: inline-block; padding-top: 4px; white-space: nowrap; }
-  .cond-big { font-size: 25px; margin-top: 5px; }
-  .details { font-size: 17px; line-height: 1.6; }
-  .flourish-swoosh { height: 22px; margin: 12px 0 6px auto; display: block; width: 60px; }
-  .quote { font-size: 15px; line-height: 1.25; }
-  .v-time { font-size: 16px; font-weight: bold; }
-  .v-temp { font-size: 21px; margin: 2px 0; }
-  .v-cond { font-size: 11px; line-height: 1.2; display: block; } 
-  .v-data { font-size: 11px; }
-  .later-text { font-size: 11px; line-height: 1.2; }
-  .info-block, .footer { font-size: 18px; line-height: 1.3; }
 </style>
 </head>
 <body>
@@ -366,17 +372,17 @@ function renderDashboard(data) {
         <div class="date-line">${dateString}</div>
         <div class="sun">Sunrise ${formatSunTime(d.daily.sunrise[day_now])} <span style="font-size: 10px; margin: 0 1px;">&#9728;</span> Sunset ${formatSunTime(d.daily.sunset[day_now])}</div>
       </div>
-      <div class="col-center">
-        <div class="temp-big">${cur_t}°</div>
-        <div class="cond-big">${condBig}</div>
-      </div>
-      <div class="col-right">
-        <div class="details">
-          <div>${rainStr}</div>
-          <div>${windStr}</div>
-          <svg class="flourish-swoosh" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,15 C20,35 40,-5 60,15 C80,35 100,-5 120,15" stroke="black" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
-          <div class="quote">‘Inspiration is the<br>Temple of Quest’</div>
-        </div>
+    </div>
+    <div class="col-center">
+      <div class="temp-big">${cur_t}°</div>
+      <div class="cond-big">${condBig}</div>
+    </div>
+    <div class="col-right">
+      <div class="details">
+        <div>${rainStr}</div>
+        <div>${windStr}</div>
+        <svg class="flourish-swoosh" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,15 C20,35 40,-5 60,15 C80,35 100,-5 120,15" stroke="black" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+        <div class="quote">‘Inspiration is the<br>Temple of Quest’</div>
       </div>
     </div>
     <div class="hourly-row">
