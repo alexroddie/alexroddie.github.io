@@ -12,6 +12,7 @@
 
     <style>
         :root { --vh: 1vh; }
+        /* Reset blue highlights and force black UI */
         * { -webkit-tap-highlight-color: transparent !important; touch-action: manipulation; }
         a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; border-radius: 0; }
 
@@ -25,25 +26,27 @@
         .window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
         
+        /* High-contrast rendering */
         .maplibregl-canvas, .leaflet-container { 
             width: 100% !important; height: 100% !important; 
             image-rendering: -webkit-optimize-contrast;
         }
 
+        /* TWO-LEVEL SEARCH STYLING per Mockup */
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
-        .panel-top-left { top: 10px; left: 10px; width: 280px; }
+        .panel-top-left { top: 10px; left: 10px; width: 260px; }
         
         .search-container { display: flex; flex-direction: column; gap: 8px; }
         input[type="text"] { width: 100%; padding: 8px; border: 2px solid black; box-sizing: border-box; font-size: 16px !important; }
         
         .button-row { display: flex; gap: 8px; width: 100%; }
-        .sys-btn { background: white; border: 2px solid black; font-weight: bold; padding: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box; font-size: 0.8rem; }
+        .sys-btn { background: white; border: 2px solid black; font-weight: bold; padding: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box; }
         .sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
         
         #search-button { flex: 3; }
         .clear-btn { flex: 1; font-size: 18px; }
-        .gpx-btn { width: 100%; margin-top: 4px; }
 
+        /* NAV CLUSTER */
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
         .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
         .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
@@ -60,8 +63,6 @@
                     <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
                     <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
                 </div>
-                <button class="sys-btn gpx-btn" onclick="document.getElementById('gpx-input').click()">Load GPX Waypoints</button>
-                <input type="file" id="gpx-input" accept=".gpx" style="display:none" onchange="loadGPX(this)">
             </div>
         </div>
         <div class="panel-bottom-right">
@@ -83,7 +84,7 @@
     <script>
         let map = null;
         let mapType = 'gl';
-        let waypoints = []; 
+        let currentMarker = null;
         let lastPinCoords = null; 
         const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         
@@ -119,34 +120,30 @@
             });
         };
 
-        function addPin(lat, lon, isGPX = false) {
-            if (!isGPX) clearMarkers();
+        function addPin(lat, lon) {
+            clearMarker();
             lastPinCoords = {lat: lat, lon: lon};
-            let marker;
-            
             if (mapType === 'gl') {
-                const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`<div onclick="clearMarkers()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
-                marker = new maplibregl.Marker({ color: 'black' }).setLngLat([lon, lat]).setPopup(popup).addTo(map);
+                const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
+                currentMarker = new maplibregl.Marker({ color: 'black' }).setLngLat([lon, lat]).setPopup(popup).addTo(map);
             } else {
-                marker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
-                marker.bindPopup(`<div onclick="clearMarkers()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
+                currentMarker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
+                currentMarker.bindPopup(`<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
             }
-            waypoints.push(marker);
         }
 
-        function clearMarkers() {
-            waypoints.forEach(m => {
-                if (mapType === 'gl') m.remove();
-                else map.removeLayer(m);
-            });
-            waypoints = [];
+        function clearMarker() {
+            if (currentMarker) {
+                if (mapType === 'gl') currentMarker.remove();
+                else map.removeLayer(currentMarker);
+                currentMarker = null;
+            }
             lastPinCoords = null;
         }
 
         function clearSearch() {
             document.getElementById('search-input').value = "";
-            document.getElementById('gpx-input').value = "";
-            clearMarkers();
+            clearMarker();
         }
 
         function resetView() {
@@ -156,30 +153,6 @@
             }
         }
 
-        function loadGPX(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(e.target.result, "text/xml");
-                const wpts = xml.getElementsByTagName("wpt");
-                if (wpts.length === 0) return;
-                clearMarkers();
-                const bounds = mapType === 'gl' ? new maplibregl.LngLatBounds() : L.latLngBounds();
-                for (let i = 0; i < wpts.length; i++) {
-                    const lat = parseFloat(wpts[i].getAttribute("lat"));
-                    const lon = parseFloat(wpts[i].getAttribute("lon"));
-                    addPin(lat, lon, true);
-                    if (mapType === 'gl') bounds.extend([lon, lat]);
-                    else bounds.extend([lat, lon]);
-                }
-                if (mapType === 'gl') map.fitBounds(bounds, { padding: 50 });
-                else map.fitBounds(bounds, { padding: [50, 50] });
-            };
-            reader.readAsText(file);
-        }
-
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
@@ -187,6 +160,7 @@
             const originalText = btn.innerText;
             btn.innerText = "...";
             try {
+                // Explicit check to allow continent jumping
                 const isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States|France|Germany|Japan/i.test(query);
                 let lat, lon;
                 if (!isExplicit) {
