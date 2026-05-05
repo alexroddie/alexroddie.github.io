@@ -13,7 +13,6 @@
     <style>
         :root { --vh: 1vh; }
         
-        /* THE RESET: Forces absolute control over dimensions */
         * { 
             -webkit-tap-highlight-color: transparent !important; 
             touch-action: manipulation; 
@@ -24,9 +23,7 @@
         a, button, input { 
             color: #000000 !important; 
             -webkit-appearance: none; appearance: none; 
-            border-radius: 0; 
-            font-family: inherit;
-            outline: none;
+            border-radius: 0; font-family: inherit;
         }
 
         html, body {
@@ -37,64 +34,62 @@
 
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
 
-        /* UNIFIED SHADOW: 4px black offset used everywhere */
+        /* Unified 4px Shadow Panel */
         .shadow-panel { 
             background: white; border: 2px solid black; 
             z-index: 500; box-shadow: 4px 4px 0 black; 
         }
 
-        /* --- SEARCH CLUSTER (Fixed Heights & Gaps) --- */
+        /* --- SEARCH CLUSTER: Pixel-Locked --- */
         .panel-top-left { 
-            position: absolute; top: 10px; left: 10px; width: 260px; padding: 10px; 
+            position: absolute; top: 10px; left: 10px; width: 260px; padding: 8px; 
         }
         
         input[type="text"] { 
-            width: 100%; height: 36px; padding: 0 8px; border: 2px solid black; 
-            font-size: 16px !important; margin-bottom: 10px; display: block;
+            width: 240px; height: 36px; padding: 0 8px; border: 2px solid black; 
+            font-size: 16px !important; margin-bottom: 8px; display: block;
         }
         
-        /* Table ensures the two buttons stay perfectly level and share height */
-        .search-table { display: table; width: 100%; border-collapse: separate; border-spacing: 6px 0; margin-left: -6px; }
-        .search-cell { display: table-cell; vertical-align: top; }
+        .button-row { width: 240px; height: 36px; display: block; clear: both; }
         
         .sys-btn { 
             background: white; border: 2px solid black; font-weight: bold; 
             cursor: pointer; text-transform: uppercase; 
-            height: 36px; width: 100%; display: flex; align-items: center; justify-content: center;
+            height: 36px; line-height: 32px; /* Fixed height for alignment */
+            float: left; text-align: center; display: block;
         }
         .sys-btn:active { background: black; color: white !important; }
         
-        #search-button { width: 100%; }
-        .clear-btn { font-size: 18px; width: 100%; }
+        #search-button { width: 172px; margin-right: 8px; }
+        .clear-btn { width: 60px; font-size: 18px; }
 
-        /* --- NAVIGATION CLUSTERS (Stacked & Centered) --- */
+        /* --- NAVIGATION COLUMN: Stacked and Centered --- */
         .nav-column { 
             position: absolute; bottom: 20px; right: 20px; 
-            z-index: 500; display: flex; flex-direction: column; align-items: center; 
+            z-index: 500; width: 131px; /* Width of D-Pad + shadow */
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Zoom Panel - Stacked vertically above D-Pad */
+        /* Zoom Cluster: Tight box */
         .zoom-panel { 
-            padding: 6px; margin-bottom: 12px; display: block; 
+            width: 47px; padding: 4px; margin-bottom: 12px; 
         }
         .zoom-btn { 
             width: 35px; height: 35px; background: white; 
             border: 2px solid black; font-weight: bold; font-size: 1.2rem; 
-            display: flex; align-items: center; justify-content: center;
+            display: block; line-height: 31px; text-align: center;
         }
-        .zoom-gap { height: 6px; } /* Explicit 6px gap for Kindle */
+        .zoom-sep { height: 4px; display: block; }
 
-        /* D-Pad Panel */
-        .dpad-panel { padding: 6px; }
-        .dpad-table { border-collapse: separate; border-spacing: 6px; }
+        /* Panning Cluster: Tight box */
+        .dpad-panel { padding: 4px; display: block; }
+        .dpad-table { border-collapse: separate; border-spacing: 4px; }
         
         .d-btn { 
             width: 35px; height: 35px; background: white; 
             border: 2px solid black; font-weight: bold; 
-            font-size: 1.2rem; display: flex; align-items: center; 
-            justify-content: center;
+            font-size: 1.2rem; display: block; line-height: 31px; text-align: center;
         }
-        /* Point button - Pure White, No Grey */
         .d-btn.center { font-size: 0.7rem; background: white; }
 
         .zoom-btn:active, .d-btn:active { background: black; color: white !important; }
@@ -105,24 +100,22 @@
         <!-- Search -->
         <div class="shadow-panel panel-top-left">
             <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
-            <div class="search-table">
-                <div class="search-cell" style="width: 75%;">
-                    <button class="sys-btn" id="search-button" onclick="searchLocation()">SEARCH</button>
-                </div>
-                <div class="search-cell" style="width: 25%;">
-                    <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
-                </div>
+            <div class="button-row">
+                <button class="sys-btn" id="search-button" onclick="searchLocation()">SEARCH</button>
+                <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
             </div>
         </div>
 
         <!-- Navigation Cluster -->
         <div class="nav-column">
+            <!-- Zoom Panel -->
             <div class="shadow-panel zoom-panel">
                 <button class="zoom-btn" onclick="map.zoomIn()">+</button>
-                <div class="zoom-gap"></div>
+                <div class="zoom-sep"></div>
                 <button class="zoom-btn" onclick="map.zoomOut()">-</button>
             </div>
             
+            <!-- Panning Panel -->
             <div class="shadow-panel dpad-panel">
                 <table class="dpad-table">
                     <tr>
