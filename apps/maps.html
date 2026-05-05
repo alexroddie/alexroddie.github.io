@@ -12,38 +12,26 @@
 
     <style>
         :root { --vh: 1vh; }
-        
-        /* 1. Reset blue highlights and force black UI */
         * { -webkit-tap-highlight-color: transparent !important; }
         a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; }
-
         html, body {
             margin: 0; padding: 0; width: 100%;
             height: 100vh; height: calc(var(--vh, 1vh) * 100) !important;
             overflow: hidden; position: fixed;
             background-color: #ffffff; font-family: "Geneva", "Verdana", sans-serif;
         }
-
         .window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
-        
-        /* High-contrast rendering for E-ink */
         .maplibregl-canvas, .leaflet-container { 
             width: 100% !important; height: 100% !important; 
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
         }
-
-        /* UI PANELS */
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
         .panel-top-left { top: 10px; left: 10px; width: 260px; }
-        
-        /* 16px font stops mobile browsers from zooming in on the input */
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-size: 16px !important; }
-        
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; }
         button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
-
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
         .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
         .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
@@ -83,7 +71,6 @@
 
         window.onload = () => {
             const saved = JSON.parse(localStorage.getItem('rekindle_maps_view') || '{"lat":51.5072,"lon":-0.1276,"zoom":13}');
-            
             if (typeof maplibregl !== 'undefined' && maplibregl.supported()) {
                 mapType = 'gl';
                 map = new maplibregl.Map({
@@ -98,7 +85,6 @@
                     .setView([saved.lat, saved.lon], saved.zoom);
                 L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`).addTo(map);
             }
-
             map.on('moveend', () => {
                 const c = map.getCenter();
                 localStorage.setItem('rekindle_maps_view', JSON.stringify({lat: c.lat, lon: (mapType==='gl'?c.lng:c.lng), zoom: map.getZoom()}));
@@ -106,11 +92,12 @@
             setTimeout(forceMapResize, 500);
         };
 
-        // Simple, original-style search
+        // THE "DIRECT" SEARCH: No bounding, no bias, just raw global search.
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
             try {
+                // We send a raw query to Nominatim and take result #1
                 const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
                 const data = await res.json();
                 if (data.length > 0) {
@@ -122,7 +109,7 @@
         }
 
         function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
-        function resetView() { /* Implement search-based reset if desired */ }
+        function resetView() { /* Implementation as needed */ }
     </script>
 </body>
 </html>
