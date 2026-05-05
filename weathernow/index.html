@@ -16,7 +16,7 @@
   .container { background: #fff; color: #000; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
   .loc { font-weight: bold; line-height: 1; }
 
-  /* --- DESKTOP (840x480) - ABSOLUTELY UNCHANGED --- */
+  /* --- DESKTOP (840x480) - FULLY RESTORED --- */
   @media screen and (min-width: 841px) {
     body { align-items: center; overflow: hidden; }
     .container {
@@ -48,10 +48,11 @@
     .v-cond { font-size: 11px; height: 28px; line-height: 14px; display: block; overflow: hidden; } 
     .v-data { font-size: 11px; height: 14px; line-height: 14px; }
     .later-col { text-align: left; padding-left: 10px; }
+    .later-text { font-size: 11px; line-height: 14px; }
     .info-block, .footer { font-size: 18px; line-height: 1.3; }
   }
 
-  /* --- RESPONSIVE / MOBILE - SYMMETRICAL GRID LOCK --- */
+  /* --- RESPONSIVE / MOBILE - SYMMETRICAL GRID --- */
   @media screen and (max-width: 840px) {
     body { overflow-y: auto; }
     .container { width: 100vw; min-height: 100vh; padding: 25px 15px; text-align: center; display: block; }
@@ -68,37 +69,13 @@
     .details { font-size: 16px; line-height: 1.3; }
     .details div { font-size: 16px !important; }
     .flourish-swoosh, .quote { display: none !important; }
-
-    .hourly-row { 
-      display: grid; 
-      grid-template-columns: 1fr 1fr; 
-      border-top: 3px solid #000; 
-      border-bottom: 3px solid #000; 
-      padding: 10px 0; 
-      margin: 20px 0; 
-    }
-    .h-col { 
-      padding: 12px 0; 
-      border: none !important;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    /* Vertical Locks for Symmetry */
+    .hourly-row { display: grid; grid-template-columns: 1fr 1fr; border-top: 3px solid #000; border-bottom: 3px solid #000; padding: 10px 0; margin: 20px 0; }
+    .h-col { padding: 12px 0; border: none !important; display: flex; flex-direction: column; align-items: center; }
     .v-time { font-size: 16px; font-weight: bold; height: 1.2em; }
     .v-temp { font-size: 20px; height: 1.2em; margin: 4px 0; }
-    .v-cond { 
-      font-size: 11px; 
-      line-height: 1.2; 
-      height: 2.5em; /* Fixed height for 2 lines */
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
-      margin-bottom: 4px;
-    }
+    .v-cond { font-size: 11px; line-height: 1.2; height: 2.5em; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
     .v-data { font-size: 11px; line-height: 1.3; height: 1.3em; }
-    
+    .later-col { padding: 12px 0; display: flex; flex-direction: column; align-items: center; }
     .info-block, .footer { font-size: 16px; line-height: 1.4; text-align: left; padding: 8px 0; border: none !important; }
   }
 </style>
@@ -187,43 +164,30 @@ function renderDashboard(data) {
   const d = data;
   const now = new Date();
   const ukTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/London"}));
-  const targetHour = `${ukTime.getFullYear()}-${String(ukTime.getMonth() + 1).padStart(2, '0')}-${String(ukTime.getDate()).padStart(2, '0')}T${String(ukTime.getHours()).padStart(2, '0')}:00`;
-  const day_now = 0;
-  let hr_now = d.hourly.time.indexOf(targetHour);
-  if (hr_now === -1) hr_now = ukTime.getHours(); 
-
   const cur_h = ukTime.getHours();
+  const targetHour = `${ukTime.getFullYear()}-${String(ukTime.getMonth() + 1).padStart(2, '0')}-${String(ukTime.getDate()).padStart(2, '0')}T${String(cur_h).padStart(2, '0')}:00`;
+  let hr_now = d.hourly.time.indexOf(targetHour);
+  if (hr_now === -1) hr_now = cur_h; 
+  const day_now = 0;
   const endOfDayIdx = hr_now + (23 - cur_h); 
-  const cur_p = d.hourly.precipitation_probability[hr_now];
-  const cur_c = d.hourly.weather_code[hr_now];
-  const cur_w = d.hourly.wind_speed_10m[hr_now];
-  const cur_g = d.hourly.wind_gusts_10m[hr_now];
-  const cur_t = Math.round(d.hourly.temperature_2m[hr_now]);
   const sunset_hr = parseInt(d.daily.sunset[day_now].split("T")[1].split(":")[0]);
   const sunrise_hr = parseInt(d.daily.sunrise[day_now].split("T")[1].split(":")[0]);
   const isNight = cur_h >= sunset_hr || cur_h < sunrise_hr;
   const dateString = `${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][ukTime.getDay()]}, ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][ukTime.getMonth()]} ${getOrdinalNum(ukTime.getDate())}, ${ukTime.getFullYear()}`;
 
+  // Hourly Columns
   let hourlyHTML = "";
   for (let i = 1; i <= 5; i++) {
     const idx = hr_now + i;
     const hi = parseInt(d.hourly.time[idx].split("T")[1].split(":")[0]);
-    hourlyHTML += `
-      <div class="h-col">
-        <div class="v-time">${formatAmPm(hi)}</div>
-        <div class="v-temp">${Math.round(d.hourly.temperature_2m[idx])}°</div>
-        <div class="v-cond">${getCondString(d.hourly.weather_code[idx], hi >= sunset_hr || hi < sunrise_hr, d.hourly.wind_speed_10m[idx], d.hourly.precipitation_probability[idx], 'hourly')}</div>
-        <div class="v-data">Rain: ${d.hourly.precipitation_probability[idx]}%</div>
-        <div class="v-data">${Math.round(d.hourly.wind_speed_10m[idx])}/${Math.round(d.hourly.wind_gusts_10m[idx])}mph</div>
-      </div>`;
+    hourlyHTML += `<div class="h-col"><div class="v-time">${formatAmPm(hi)}</div><div class="v-temp">${Math.round(d.hourly.temperature_2m[idx])}°</div><div class="v-cond">${getCondString(d.hourly.weather_code[idx], hi >= sunset_hr || hi < sunrise_hr, d.hourly.wind_speed_10m[idx], d.hourly.precipitation_probability[idx], 'hourly')}</div><div class="v-data">Rain: ${d.hourly.precipitation_probability[idx]}%</div><div class="v-data">${Math.round(d.hourly.wind_speed_10m[idx])}/${Math.round(d.hourly.wind_gusts_10m[idx])}mph</div></div>`;
   }
 
-  // Unified "Later" Structure for Symmetry
+  // Later Data
   const scanStart = hr_now + 6;
   let fMax = -99; for (let k = scanStart; k <= endOfDayIdx; k++) { if (d.hourly.temperature_2m[k] > fMax) fMax = d.hourly.temperature_2m[k]; }
   let uLow = 99; for (let k = scanStart; k <= hr_now + 18; k++) { if (d.hourly.temperature_2m[k] < uLow) uLow = d.hourly.temperature_2m[k]; }
-  const r_fMax = Math.round(fMax), r_tMax = Math.round(d.daily.temperature_2m_max[day_now]);
-  const tempDisplay = (r_fMax >= r_tMax) ? `${r_tMax}°/${Math.round(uLow)}°` : `${Math.round(uLow)}°`;
+  const tempDisplay = (Math.round(fMax) >= Math.round(d.daily.temperature_2m_max[day_now])) ? `${Math.round(d.daily.temperature_2m_max[day_now])}°/${Math.round(uLow)}°` : `${Math.round(uLow)}°`;
   let lmp = 0, lc = 99, lwm = 0, lgm = 0, lphRes = -1, lphCode = 0;
   for (let j = scanStart; j <= endOfDayIdx; j++) {
     let p = d.hourly.precipitation_probability[j]; if (p > lmp) lmp = p;
@@ -233,42 +197,33 @@ function renderDashboard(data) {
     if (d.hourly.wind_gusts_10m[j] > lgm) lgm = d.hourly.wind_gusts_10m[j];
   }
 
-  let laterHTML = `
-    <div class="h-col">
-      <div class="v-time">Later</div>
-      <div class="v-temp">${tempDisplay}</div>
-      <div class="v-cond">${getCondString(lc, true, lwm, lmp, 'hourly')}</div>
-      <div class="v-data">${(lphRes !== -1) ? (lphCode >= 71 && lphCode <= 86 ? 'Snow' : 'Rain') + ' at ' + formatAmPm(lphRes) : 'Likely dry'}</div>
-      <div class="v-data">${Math.round(lwm)}/${Math.round(lgm)}mph</div>
-    </div>`;
+  // CONDITIONAL RENDER FOR LATER SECTION
+  let laterHTML = "";
+  if (window.innerWidth > 840) {
+    // DESKTOP: Original 3-line summary format
+    let laterSum = getCondString(lc, true, lwm, lmp, 'summary');
+    laterSum += (lphRes !== -1) ? `${(lphCode >= 71 && lphCode <= 86) ? "Snow" : "Rain"} at ${formatAmPm(lphRes)}. ` : `Likely dry. `;
+    laterSum += lgm < 10 ? `Probably calm.` : `Winds ${Math.round(lwm)}/${Math.round(lgm)}mph.`;
+    laterHTML = `<div class="later-col"><div class="v-time">Later</div><div class="v-temp">${tempDisplay}</div><div class="later-text">${laterSum}</div></div>`;
+  } else {
+    // MOBILE: 5-line symmetrical stack format
+    laterHTML = `<div class="later-col"><div class="v-time">Later</div><div class="v-temp">${tempDisplay}</div><div class="v-cond">${getCondString(lc, true, lwm, lmp, 'hourly')}</div><div class="v-data">${(lphRes !== -1) ? (lphCode >= 71 && lphCode <= 86 ? 'Snow' : 'Rain') + ' at ' + formatAmPm(lphRes) : 'Likely dry'}</div><div class="v-data">${Math.round(lwm)}/${Math.round(lgm)}mph</div></div>`;
+  }
 
-  // Overnight & Tomorrow Logic preserved
+  // Footer Logic
   let nLow = 100, nWi = 0, nGu = 0, nMp = 0, nPhRes = -1, nPhCode = 0;
-  for (let j = endOfDayIdx - 1; j <= endOfDayIdx + 7; j++) {
-    if (j >= hr_now) {
-      if (d.hourly.temperature_2m[j] < nLow) nLow = d.hourly.temperature_2m[j];
-      if (d.hourly.wind_speed_10m[j] > nWi) nWi = d.hourly.wind_speed_10m[j];
-      if (d.hourly.wind_gusts_10m[j] > nGu) nGu = d.hourly.wind_gusts_10m[j];
-      let p = d.hourly.precipitation_probability[j]; if (p > nMp) nMp = p;
-      if (p >= 40 && nPhRes === -1) { nPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]); nPhCode = d.hourly.weather_code[j]; }
-    }
-  }
+  for (let j = endOfDayIdx - 1; j <= endOfDayIdx + 7; j++) { if (j >= hr_now && j < d.hourly.time.length) { if (d.hourly.temperature_2m[j] < nLow) nLow = d.hourly.temperature_2m[j]; if (d.hourly.wind_speed_10m[j] > nWi) nWi = d.hourly.wind_speed_10m[j]; if (d.hourly.wind_gusts_10m[j] > nGu) nGu = d.hourly.wind_gusts_10m[j]; let p = d.hourly.precipitation_probability[j]; if (p > nMp) nMp = p; if (p >= 40 && nPhRes === -1) { nPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]); nPhCode = d.hourly.weather_code[j]; } } }
   let overHTML = `Likely ${nMp >= 40 ? (nPhCode >= 71 && nPhCode <= 86 ? "snowy" : "rainy") : (d.hourly.weather_code[endOfDayIdx + 1] === 0 ? "clear" : "cloudy")}. Lows of ${Math.round(nLow)}°. ${nPhRes !== -1 ? (nPhCode >= 71 && nPhCode <= 86 ? "Snow" : "Rain") + " at " + formatAmPm(nPhRes) + ". " : "Likely dry. "}${nGu < 10 ? "Probably calm." : "Winds " + Math.round(nWi) + "/" + Math.round(nGu) + "mph."}`;
-
   let tomIdx = day_now + 1, tomPhRes = -1, daylightRainCount = 0, tomPhCode = 0;
-  for (let j = endOfDayIdx + 7; j <= endOfDayIdx + 24; j++) {
-    let p = d.hourly.precipitation_probability[j];
-    if (p >= 40 && tomPhRes === -1) { tomPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]); tomPhCode = d.hourly.weather_code[j]; }
-    if (j <= endOfDayIdx + 19 && p >= 40) daylightRainCount++;
-  }
+  for (let j = endOfDayIdx + 7; j <= endOfDayIdx + 24; j++) { if (j < d.hourly.time.length) { let p = d.hourly.precipitation_probability[j]; if (p >= 40 && tomPhRes === -1) { tomPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]); tomPhCode = d.hourly.weather_code[j]; } if (j <= endOfDayIdx + 19 && p >= 40) daylightRainCount++; } }
   let tomStr = `${daylightRainCount >= 3 ? "Rainy." : (d.daily.weather_code[tomIdx] === 0 ? "Sunny." : "Cloudy.")} Highs of ${Math.round(d.daily.temperature_2m_max[tomIdx])}°, lows of ${Math.round(d.daily.temperature_2m_min[tomIdx])}°. ${tomPhRes !== -1 ? "Expect " + (tomPhCode >= 71 && tomPhCode <= 86 ? "snow" : "rain") + " at about " + formatAmPm(tomPhRes) + ". " : "Likely dry. "}Winds ${Math.round(d.daily.wind_speed_10m_max[tomIdx])}/${Math.round(d.daily.wind_gusts_10m_max[tomIdx])}mph.`;
 
   document.getElementById('dashboard').innerHTML = `
     <div class="top-row">
       <div class="col-left"><div class="loc">Weather now</div><div class="sub-loc">Castleton of Eassie</div><div class="date-line">${dateString}</div><div class="sun">Sunrise ${formatSunTime(d.daily.sunrise[day_now])} &#9728;&#xFE0E; Sunset ${formatSunTime(d.daily.sunset[day_now])}</div></div>
       <div class="main-stats">
-        <div class="col-center"><div class="temp-big">${cur_t}°</div><div class="cond-big">${getCondString(cur_c, isNight, cur_w, cur_p, 'big')}</div></div>
-        <div class="col-right"><div class="details"><div>Rain: ${cur_p}%</div><div>Wind: ${Math.round(cur_w)}/${Math.round(cur_g)}mph</div><svg class="flourish-swoosh" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,15 C20,35 40,-5 60,15 C80,35 100,-5 120,15" stroke="black" stroke-width="3.5" fill="none"/></svg><div class="quote">‘Inspiration is the<br>Temple of Quest’</div></div></div>
+        <div class="col-center"><div class="temp-big">${Math.round(d.hourly.temperature_2m[hr_now])}°</div><div class="cond-big">${getCondString(d.hourly.weather_code[hr_now], isNight, d.hourly.wind_speed_10m[hr_now], d.hourly.precipitation_probability[hr_now], 'big')}</div></div>
+        <div class="col-right"><div class="details"><div>Rain: ${d.hourly.precipitation_probability[hr_now]}%</div><div>Wind: ${Math.round(d.hourly.wind_speed_10m[hr_now])}/${Math.round(d.hourly.wind_gusts_10m[hr_now])}mph</div><svg class="flourish-swoosh" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,15 C20,35 40,-5 60,15 C80,35 100,-5 120,15" stroke="black" stroke-width="3.5" fill="none"/></svg><div class="quote">‘Inspiration is the<br>Temple of Quest’</div></div></div>
       </div>
     </div>
     <div class="hourly-row">${hourlyHTML}${laterHTML}</div>
