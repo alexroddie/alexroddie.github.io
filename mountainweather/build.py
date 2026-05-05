@@ -117,22 +117,22 @@ body{{
         width: auto; height: auto; min-height: 100vh;
         overflow: auto; 
         font-family: "Merriweather", serif;
-        line-height: 1.8;
+        line-height: 1.5;
     }}
     .main-content {{ flex-direction: column; width: 95%; margin: 0 auto; }}
     .left-pane {{ width: 100%; height: auto; padding: 15px 20px 5px 20px; }}
     .right-pane {{ width: 100%; height: auto; padding: 5px 20px 15px 20px; }}
     .outlook-section {{ overflow: visible; }}
     
-    /* SYNCED WITH BOOKMARKS MENU STYLING */
-    .date-header {{ font-size: 36px; margin-top: 0; line-height: 1.8; }}
-    .body-text {{ font-size: 20px; line-height: 1.8; margin-bottom: 20px; }}
+    /* REFINED TYPOGRAPHY */
+    .date-header {{ font-size: 28px; margin-top: 0; line-height: 1.4; }}
+    .body-text {{ font-size: 16px; line-height: 1.5; margin-bottom: 15px; }}
     
     /* REVEAL MOBILE LINKS */
     .mobile-links {{
         display: block;
         margin-top: 16px;
-        font-size: 20px;
+        font-size: 16px;
     }}
     
     .mobile-links a {{ color: #000; text-decoration: none; }}
@@ -155,9 +155,10 @@ body{{
         content: '\\25BC\\FE0E';
     }}
     
+    /* INCREASED INDENTATION FOR SUB-MENU ITEMS */
     .mobile-links ul {{ 
         margin: 0; 
-        padding-left: 20px; 
+        padding-left: 40px; 
         list-style-type: none; 
     }}
     .mobile-links li {{ margin-bottom: 8px; }}
