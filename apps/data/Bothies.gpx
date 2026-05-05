@@ -1,0 +1,1990 @@
+<?xml version="1.0"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1" xmlns:gpxtrx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:trp="http://www.garmin.com/xmlschemas/TripExtensions/v1" xmlns:adv="http://www.garmin.com/xmlschemas/AdventuresExtensions/v1" xmlns:prs="http://www.garmin.com/xmlschemas/PressureExtension/v1" xmlns:tmd="http://www.garmin.com/xmlschemas/TripMetaDataExtensions/v1" xmlns:vptm="http://www.garmin.com/xmlschemas/ViaPointTransportationModeExtensions/v1" xmlns:ctx="http://www.garmin.com/xmlschemas/CreationTimeExtension/v1" xmlns:gpxacc="http://www.garmin.com/xmlschemas/AccelerationExtension/v1" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1" xmlns:vidx1="http://www.garmin.com/xmlschemas/VideoExtension/v1" creator="Garmin Desktop App" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/ActivityExtension/v1 http://www8.garmin.com/xmlschemas/ActivityExtensionv1.xsd http://www.garmin.com/xmlschemas/AdventuresExtensions/v1 http://www8.garmin.com/xmlschemas/AdventuresExtensionv1.xsd http://www.garmin.com/xmlschemas/PressureExtension/v1 http://www.garmin.com/xmlschemas/PressureExtensionv1.xsd http://www.garmin.com/xmlschemas/TripExtensions/v1 http://www.garmin.com/xmlschemas/TripExtensionsv1.xsd http://www.garmin.com/xmlschemas/TripMetaDataExtensions/v1 http://www.garmin.com/xmlschemas/TripMetaDataExtensionsv1.xsd http://www.garmin.com/xmlschemas/ViaPointTransportationModeExtensions/v1 http://www.garmin.com/xmlschemas/ViaPointTransportationModeExtensionsv1.xsd http://www.garmin.com/xmlschemas/CreationTimeExtension/v1 http://www.garmin.com/xmlschemas/CreationTimeExtensionsv1.xsd http://www.garmin.com/xmlschemas/AccelerationExtension/v1 http://www.garmin.com/xmlschemas/AccelerationExtensionv1.xsd http://www.garmin.com/xmlschemas/PowerExtension/v1 http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd http://www.garmin.com/xmlschemas/VideoExtension/v1 http://www.garmin.com/xmlschemas/VideoExtensionv1.xsd">
+  <metadata>
+    <link href="http://www.garmin.com">
+      <text>Garmin International</text>
+    </link>
+    <time>2020-02-13T13:06:20Z</time>
+    <bounds maxlat="58.608544003218412" maxlon="-2.333437018096447" minlat="51.974471993744373" minlon="-7.231098962947726"/>
+  </metadata>
+  <wpt lat="56.977104032412171" lon="-5.384806003421545">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>A'Chuil</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=104) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=104) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="58.426816966384649" lon="-4.345634998753667">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Achnanclach</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=4) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=4) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.839980036020279" lon="-3.911647964268923">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Allt Scheicheachan</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=50) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=50) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.785535024479032" lon="-6.086020013317466">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>An Cladach</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=61) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=61) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="52.926297029480338" lon="-3.711686013266444">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Arenig Fawr</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=97) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=97) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.434498034417629" lon="-5.298970034345984">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Bearnais</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=18) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=18) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.779345013201237" lon="-4.459334006533027">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Ben Alder Cottage</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=39) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=39) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.08815997466445" lon="-4.671931006014347">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Blackburn of Corrieyairack</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=40) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=40) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.346565032377839" lon="-3.553532995283604">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Brattleburn</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=74) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=74) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.284450016915798" lon="-3.621619027107954">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Burlywhag</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=75) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=75) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.484486004337668" lon="-5.174559038132429">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Cadderlie</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=62) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=62) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.943917982280254" lon="-3.352676024660468">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Callater Stable</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=51) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=51) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.192005971446633" lon="-6.122343996539712">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Camasunary</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=19) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=19) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.214541975408792" lon="-5.225177016109228">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Camban</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=20) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=20) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.144935023039579" lon="-5.311070987954736">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Carron</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=66) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=66) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.937760971486568" lon="-2.633071029558778">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Charr</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=52) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=52) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.275736022740602" lon="-4.200395978987217">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Clennoch</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=76) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=76) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.475776979699731" lon="-5.421107020229101">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Coire Fionnaraich</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=21) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=21) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.856604978442192" lon="-4.857753021642566">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Coiremor</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=6) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=6) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.04222203232348" lon="-3.681063987314701">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Corrour</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=53) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=53) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.609675033017993" lon="-5.726974988356233">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Craig</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=22) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=22) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="58.412501011043787" lon="-4.067029003053904">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Croft House</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=5) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=5) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="54.712937995791435" lon="-2.481549018993974">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Cross Fell (Greg's Hut)</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=86) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=86) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.97709403373301" lon="-5.901681007817388">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Cruib</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=119) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=119) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.853683022782207" lon="-4.424137976020575">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Culra (CLOSED)</name>
+    <cmt>This bothy has been closed due to asbestos and is unsafe to use (March 2014).  Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=42) for more information.</cmt>
+    <desc>This bothy has been closed due to asbestos and is unsafe to use (March 2014).  Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=42) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.953092981129885" lon="-6.290128994733095">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Dibidil</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=105) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=105) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.292773019522429" lon="-4.696376994252205">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Doune Byre</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=64) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=64) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.286856964230537" lon="-3.3084009680897">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Dryfehead</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=122) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=122) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="54.509469978511333" lon="-3.222444970160723">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Dubs Hut</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=123) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=123) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="53.161556012928486" lon="-3.937879968434572">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Dulyn</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=98) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=98) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.51930202357471" lon="-5.321736037731171">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Easan Dorcha (The Teahouse)</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=23) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=23) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.874994011595845" lon="-5.583523996174335">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Essan</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=65) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=65) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.137330984696746" lon="-3.519015982747078">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Faindouran</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=54) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=54) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.109423018991947" lon="-3.5833889991045">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Fords of Avon Refuge Hut</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=117) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=117) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.452998019754887" lon="-3.369963029399514">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Gameshope</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=77) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=77) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.995265018194914" lon="-3.224229980260134">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Gelder Shiel Stable</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=55) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=55) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.883623013272882" lon="-5.3751499671489">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Gleann Dubh-lighe</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=106) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=106) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.057018019258976" lon="-4.745873976498842">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Glenbuck</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=43) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=43) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="58.228869019076228" lon="-4.946888023987412">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Glencoul</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=9) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=9) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="58.258299976587296" lon="-4.926588982343674">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Glendhu</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=10) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=10) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.10690800473094" lon="-5.790218962356448">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Glengarrisdale</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=66) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=66) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.958084991201758" lon="-5.396005986258388">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Glenpean</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=107) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=107) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.596898976713419" lon="-4.648634009063244">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Gorton</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=44) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=44) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.101254973560572" lon="-2.409117976203561">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Green</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=87) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=87) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.289824996143579" lon="-3.084149016067386">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Greensykes</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=118) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=118) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="51.974471993744373" lon="-3.128758007660508">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Grwyne Fawr</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=99) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=99) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.025430984795094" lon="-6.418402958661318">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Guirdil</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=115) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=115) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.035459967330098" lon="-2.333437018096447">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Haughtongreen</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=88) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=88) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.078788001090288" lon="-3.613472990691662">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Hutchinson Memorial Hut</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=56) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=56) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.952959960326552" lon="-5.067103039473295">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Invermallie</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=109) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=109) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="58.608544003218412" lon="-4.941493012011051">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Kearvaig</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=11) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=11) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.168944038450718" lon="-2.717039007693529">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Kershopehead</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=90) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=90) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.299929967150092" lon="-3.716010991483927">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Kettleton Byre</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=78) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=78) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.012846982106566" lon="-5.29232301749289">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Kinbreak</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=110) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=110) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.914958028122783" lon="-4.894949980080128">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Knockdamph</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=12) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=12) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.8225790373981" lon="-4.815911985933781">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Lairig Leacach</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=45) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=45) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.561929006129503" lon="-5.676448037847877">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Leacraithnaich</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=67) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=67) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="52.321445988491178" lon="-3.614430036395788">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Lluest Cwm Bach</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=121) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=121) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.730690998956561" lon="-4.798493972048163">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Loch Chiarain</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=46) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=46) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.005967032164335" lon="-4.646181967109442">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Luib Chonnal</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=47) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=47) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.37242802977562" lon="-5.240958966314793">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Maol Bhuide</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=25) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=25) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.11644602380693" lon="-4.849637998268008">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Mark Cottage</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=116) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=116) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.77572101354599" lon="-4.839387014508247">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Meanach</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=48) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=48) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="52.235409021377563" lon="-3.749968009069562">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Moel Prysgau</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=100) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=100) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="54.478358030319214" lon="-2.781242961063981">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Mosedale Cottage</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=92) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=92) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="52.399066016077995" lon="-3.711403962224722">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Nant Rhys</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=101) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=101) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="52.3953150305897" lon="-3.804383995011449">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Nant Syddion</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=102) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=102) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.952168960124254" lon="-5.515313996002078">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Oban</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=111) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=111) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.359774960204959" lon="-6.635846961289644">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Ollisdal</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=26) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=26) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.360617963597178" lon="-3.292350964620709">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Over Phawhope</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=80) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=80) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.859825029969215" lon="-5.755387041717768">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Peanmeanach</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=68) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=68) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="52.797645963728428" lon="-3.873825967311859">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Penrhos Isaf</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=103) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=103) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.780816037207842" lon="-5.50218902528286">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Resourie</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=69) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=69) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.143549973145127" lon="-2.401114013046026">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Roughside</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=93) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=93) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.202317029237747" lon="-4.683980997651815">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Rowchoish</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=70) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=70) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.012022035196424" lon="-3.9004469756037">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Ruigh Aiteachain</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=57) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=57) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.183666983619332" lon="-3.646044982597232">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Ryvoan</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=58) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=58) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.776379017159343" lon="-5.255396040156484">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Shenavall</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=13) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=13) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.930222036316991" lon="-3.091363990679383">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Shielin of Mark</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=59) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=59) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.997438026592135" lon="-5.510830013081431">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Sourlies</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=112) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=112) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.344438040629029" lon="-2.367043001577258">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Spithope</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=94) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=94) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.770853977650404" lon="-4.790506018325686">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Staoineag</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=49) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=49) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="58.424861971288919" lon="-4.756421009078622">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Strabeg</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=14) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=14) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="58.503467962145805" lon="-5.009879032149911">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Strathan</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=15) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=15) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="58.544832989573479" lon="-5.01022201962769">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Strathchailleach</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=16) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=16) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.197107030078769" lon="-5.506537975743413">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Suardalan</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=113) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=113) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="58.139886986464262" lon="-5.145328994840384">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Suileag</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=17) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=17) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.635173009708524" lon="-5.226905029267073">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Taigh Seumas a' Ghlinne</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=71) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=71) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.500727977603674" lon="-5.988845005631447">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Taigh Thormoid Dhuibh (Raasay)</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=27) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=27) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.888915011659265" lon="-3.762989966198802">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Tarf Hotel (Feith Uaine)</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=60) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=60) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.701319996267557" lon="-6.344805993139744">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>The Lookout</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=24) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=24) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.935382965952158" lon="-4.805438965559006">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>The Schoolhouse</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=7) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=7) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="56.466691978275776" lon="-5.869690971449018">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Tomsleibhe</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=72) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=72) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.184362968429923" lon="-4.476278023794293">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Tunskeen</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=82) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=82) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.348187984898686" lon="-5.785630038008094">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Uags</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=28) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=28) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="57.280695978552103" lon="-7.231098962947726">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Uisinis</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=29) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=29) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.225882977247238" lon="-2.51920698210597">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Wainhope</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=95) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=95) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="54.508606977760792" lon="-3.229816015809774">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>Warnscale Head</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=96) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=96) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+  <wpt lat="55.067927017807961" lon="-4.403966004028916">
+    <ele>0</ele>
+    <time>2019-09-23T08:48:03Z</time>
+    <name>White Laggan</name>
+    <cmt>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=83) for more information.</cmt>
+    <desc>Click here (http://www.mountainbothies.org.uk/bothy-details.asp?bothy_id=83) for more information.</desc>
+    <sym>Residence</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2019-09-23T08:48:03Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+</gpx>
