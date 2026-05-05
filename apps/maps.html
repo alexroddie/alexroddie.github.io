@@ -51,9 +51,10 @@
         .search-table { width: 250px; border-collapse: collapse; table-layout: fixed; }
         .search-table td { padding: 0; vertical-align: top; }
         
+        /* Updated: Non-bold and removed text-transform */
         .sys-btn { 
             background: #ffffff; border: 2px solid black;
-            font-weight: bold; cursor: pointer; text-transform: uppercase; 
+            font-weight: normal; cursor: pointer; 
             height: 36px; line-height: 32px; text-align: center; width: 100%;
             display: block; font-size: 15px;
         }
@@ -65,22 +66,22 @@
             bottom: 25px; 
             right: 20px; 
             z-index: 1000;
-            width: 125px; /* Locked width based on 35px buttons + 5px gaps */
+            width: 125px; 
             text-align: center;
         }
 
-        /* Zoom Cluster: Centered */
+        /* Zoom Cluster */
         .zoom-panel { 
             display: inline-block; width: 45px; margin-bottom: 10px; 
         }
-        .zoom-sep { height: 5px; } /* Strict 5px Gap */
+        .zoom-sep { height: 5px; }
 
-        /* Panning Cluster: Tight-wrapped */
+        /* Panning Cluster */
         .dpad-panel { display: inline-block; width: 125px; }
         .dpad-table { border-collapse: separate; border-spacing: 5px; margin: -5px; }
         .dpad-table td { padding: 0; }
         
-        /* Nav Buttons: 35x35px */
+        /* Nav Buttons */
         .ctrl-btn { 
             width: 35px; height: 35px; cursor: pointer; background: #fff;
             border: 2px solid black; display: block; position: relative;
@@ -105,7 +106,7 @@
         <table class="search-table">
             <tr>
                 <td style="width: 185px;">
-                    <button class="sys-btn" id="search-button" onclick="searchLocation()">SEARCH</button>
+                    <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
                 </td>
                 <td style="width: 5px;"></td> <!-- Strict 5px Internal Gap -->
                 <td style="width: 60px;">
@@ -196,8 +197,8 @@
                     addPin(c[1], c[0]);
                     map.setView([c[1], c[0]], 15);
                 }
-                btn.innerText = "SEARCH";
-            }).catch(function(){ btn.innerText = "SEARCH"; });
+                btn.innerText = "Search";
+            }).catch(function(){ btn.innerText = "Search"; });
         }
     </script>
 </body>
