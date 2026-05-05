@@ -16,20 +16,22 @@
             margin: 0; padding: 0;
         }
 
+        /* Updated to Georgia with Serif fallback */
         button, input { 
             color: #000000 !important; 
             border-radius: 0; 
-            font-family: "Geneva", "Verdana", sans-serif;
+            font-family: Georgia, serif;
             outline: none; 
             background: #ffffff;
             border: 2px solid black;
-            font-size: 15px; /* Unified font size for all text buttons */
+            font-size: 15px; /* Unified text scale */
         }
 
         html, body {
             width: 100%; height: 100%;
             overflow: hidden; position: fixed; 
             background-color: #ffffff;
+            font-family: Georgia, serif;
         }
 
         #map { 
@@ -38,14 +40,14 @@
             background: #ffffff; z-index: 1; 
         }
 
-        /* Standardized Shadow Panel - 5px Padding per Mockup, 4px Shadow */
+        /* Standardized Shadow Panel - 5px Padding, 4px Shadow */
         .shadow-panel { 
             background: #ffffff; 
             border: 2px solid #000000; 
             z-index: 500; 
             box-shadow: 4px 4px 0 #000000; 
             position: absolute;
-            padding: 5px; /* Reduced to match the narrowest border */
+            padding: 5px; 
         }
 
         /* --- SEARCH CLUSTER (5px Border / 10px Internal Gaps) --- */
@@ -66,10 +68,10 @@
         }
         .sys-btn:active { background: #000000; color: #ffffff !important; }
         
-        /* --- NAVIGATION COLUMN (Centered Zoom over Panning) --- */
+        /* --- NAVIGATION COLUMN --- */
         .nav-column { 
             position: absolute; bottom: 20px; right: 20px; 
-            z-index: 500; width: 135px; /* Matches D-Pad Panel width for centering */
+            z-index: 500; width: 135px; 
             text-align: center;
         }
 
@@ -83,7 +85,7 @@
         .dpad-panel { display: inline-block; width: 135px; }
         .dpad-table { border-collapse: separate; border-spacing: 10px; margin: -10px; }
         
-        /* 35x35px Buttons & 24px Icons */
+        /* 35x35px Buttons & 24px SVG Icons */
         .ctrl-btn { 
             width: 35px; height: 35px; cursor: pointer; background: #fff;
             display: block; position: relative;
@@ -120,14 +122,12 @@
 
     <!-- Navigation Column -->
     <div class="nav-column">
-        <!-- Separate Zoom Cluster Centered Above -->
         <div class="shadow-panel zoom-panel">
             <button class="ctrl-btn" onclick="map.zoomIn()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
             <div class="zoom-sep"></div>
             <button class="ctrl-btn" onclick="map.zoomOut()"><svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg></button>
         </div>
 
-        <!-- Separate Panning Cluster -->
         <div class="shadow-panel dpad-panel">
             <table class="dpad-table">
                 <tr>
