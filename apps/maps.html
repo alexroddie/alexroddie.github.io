@@ -12,7 +12,6 @@
 
     <style>
         :root { --vh: 1vh; }
-        /* Reset blue highlights and force black UI */
         * { -webkit-tap-highlight-color: transparent !important; touch-action: manipulation; }
         a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; border-radius: 0; }
 
@@ -26,32 +25,91 @@
         .window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
         
-        /* High-contrast rendering */
         .maplibregl-canvas, .leaflet-container { 
             width: 100% !important; height: 100% !important; 
             image-rendering: -webkit-optimize-contrast;
         }
 
-        /* TWO-LEVEL SEARCH STYLING per Mockup */
-        .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
-        .panel-top-left { top: 10px; left: 10px; width: 260px; }
+        /* Standardized Panel Style */
+        .overlay-panel, .zoom-controls, .d-pad { 
+            position: absolute; 
+            background: white; 
+            border: 2px solid black; 
+            z-index: 500; 
+            box-shadow: 4px 4px 0 black; /* Unified drop shadow */
+        }
+
+        /* Search Cluster Position */
+        .panel-top-left { top: 10px; left: 10px; width: 260px; padding: 10px; }
         
         .search-container { display: flex; flex-direction: column; gap: 8px; }
         input[type="text"] { width: 100%; padding: 8px; border: 2px solid black; box-sizing: border-box; font-size: 16px !important; }
         
         .button-row { display: flex; gap: 8px; width: 100%; }
-        .sys-btn { background: white; border: 2px solid black; font-weight: bold; padding: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box; }
-        .sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
+        
+        /* Cleaned Buttons (No internal/offset shadows) */
+        .sys-btn { 
+            background: white; 
+            border: 2px solid black; 
+            font-weight: bold; 
+            padding: 8px; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            box-sizing: border-box;
+            box-shadow: none; /* Removed internal shadow */
+        }
+        .sys-btn:active { background: black; color: white !important; }
         
         #search-button { flex: 3; }
         .clear-btn { flex: 1; font-size: 18px; }
 
-        /* NAV CLUSTER */
-        .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
-        .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
-        .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
-        .d-pad { display: grid; grid-template-columns: repeat(3, 35px); gap: 4px; }
-        .d-btn.center { font-size: 0.7rem; background: #eee; }
+        /* Navigation Clusters */
+        .panel-bottom-right { 
+            position: absolute; 
+            bottom: 20px; 
+            right: 20px; 
+            z-index: 500; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        /* Zoom controls with standardized gap */
+        .zoom-controls { 
+            position: static; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 4px; 
+            gap: 4px; /* Matches D-Pad gap */
+            margin-bottom: 10px; 
+        }
+
+        /* D-Pad with standardized gap */
+        .d-pad { 
+            position: static; 
+            display: grid; 
+            grid-template-columns: repeat(3, 35px); 
+            gap: 4px; 
+            padding: 4px; 
+        }
+
+        .zoom-btn, .d-btn { 
+            width: 35px; 
+            height: 35px; 
+            background: white; 
+            border: 2px solid black; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 1.2rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: none;
+        }
+        .zoom-btn:active, .d-btn:active { background: black; color: white !important; }
+        
+        /* Point button - Removed grey background */
+        .d-btn.center { font-size: 0.7rem; background: white; }
     </style>
 </head>
 <body>
@@ -160,7 +218,6 @@
             const originalText = btn.innerText;
             btn.innerText = "...";
             try {
-                // Explicit check to allow continent jumping
                 const isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States|France|Germany|Japan/i.test(query);
                 let lat, lon;
                 if (!isExplicit) {
