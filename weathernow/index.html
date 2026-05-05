@@ -65,17 +65,16 @@
     .main-stats { 
       display: flex; justify-content: center; align-items: center; 
       margin: 15px 0 25px; 
-      /* 'gap' is completely removed as Kindle ignores it */
     }
     
     .col-center { 
       text-align: right; flex: 0 0 auto; 
-      padding-right: 30px; /* Safe, old-school spacing that Kindle cannot ignore */
+      padding-right: 30px; 
       border-right: 1px solid transparent; 
     }
     .col-right { 
       text-align: right; flex: 0 0 auto; 
-      padding-left: 30px; /* Safe, old-school spacing */
+      padding-left: 30px; 
     } 
     
     .temp-big { font-size: 80px; line-height: 0.9; }
@@ -99,12 +98,8 @@
 
   /* --- KINDLE-SPECIFIC OVERRIDE --- */
   @media screen and (min-width: 500px) and (max-width: 840px) {
-    .col-center {
-      padding-right: 70px; /* Forces wide separation specifically for the Kindle's wider screen */
-    }
-    .col-right {
-      padding-left: 70px;
-    }
+    .col-center { padding-right: 70px; }
+    .col-right { padding-left: 70px; }
   }
 </style>
 </head>
@@ -240,11 +235,44 @@ function renderDashboard(data) {
   }
 
   let nLow = 100, nWi = 0, nGu = 0, nMp = 0, nPhRes = -1, nPhCode = 0;
-  for (let j = endOfDayIdx - 1; j <= endOfDayIdx + 7; j++) { if (j >= hr_now && j < d.hourly.time.length) { if (d.hourly.temperature_2m[j] < nLow) nLow = d.hourly.temperature_2m[j]; if (d.hourly.wind_speed_10m[j] > nWi) nWi = d.hourly.wind_speed_10m[j]; if (d.hourly.wind_gusts_10m[j] > nGu) nGu = d.hourly.wind_gusts_10m[j]; let p = d.hourly.precipitation_probability[j]; if (p > nMp) nMp = p; if (p >= 40 && nPhRes === -1) { nPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]); nPhCode = d.hourly.weather_code[j]; } } }
+  for (let j = endOfDayIdx - 1; j <= endOfDayIdx + 7; j++) { 
+    if (j >= hr_now && j < d.hourly.time.length) { 
+      if (d.hourly.temperature_2m[j] < nLow) nLow = d.hourly.temperature_2m[j]; 
+      if (d.hourly.wind_speed_10m[j] > nWi) nWi = d.hourly.wind_speed_10m[j]; 
+      if (d.hourly.wind_gusts_10m[j] > nGu) nGu = d.hourly.wind_gusts_10m[j]; 
+      let p = d.hourly.precipitation_probability[j]; 
+      if (p > nMp) nMp = p; 
+      if (p >= 40 && nPhRes === -1) { nPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]); nPhCode = d.hourly.weather_code[j]; } 
+    } 
+  }
   let overHTML = `Likely ${nMp >= 40 ? (nPhCode >= 71 && nPhCode <= 86 ? "snowy" : "rainy") : (d.hourly.weather_code[endOfDayIdx + 1] === 0 ? "clear" : "cloudy")}. Lows of ${Math.round(nLow)}°. ${nPhRes !== -1 ? (nPhCode >= 71 && nPhCode <= 86 ? "Snow" : "Rain") + " at " + formatAmPm(nPhRes) + ". " : "Likely dry. "}${nGu < 10 ? "Probably calm." : "Winds " + Math.round(nWi) + "/" + Math.round(nGu) + "mph."}`;
+  
+  // --- FIXED TOMORROW LOGIC (06:00 to 23:00 Only) ---
   let tomIdx = day_now + 1, tomPhRes = -1, daylightRainCount = 0, tomPhCode = 0;
-  for (let j = endOfDayIdx + 7; j <= endOfDayIdx + 24; j++) { if (j < d.hourly.time.length) { let p = d.hourly.precipitation_probability[j]; if (p >= 40 && tomPhRes === -1) { tomPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]); tomPhCode = d.hourly.weather_code[j]; } if (j <= endOfDayIdx + 19 && p >= 40) daylightRainCount++; } }
-  let tomStr = `${daylightRainCount >= 3 ? "Rainy." : (d.daily.weather_code[tomIdx] === 0 ? "Sunny." : "Cloudy.")} Highs of ${Math.round(d.daily.temperature_2m_max[tomIdx])}°, lows of ${Math.round(d.daily.temperature_2m_min[tomIdx])}°. ${tomPhRes !== -1 ? "Expect " + (tomPhCode >= 71 && tomPhCode <= 86 ? "snow" : "rain") + " at about " + formatAmPm(tomPhRes) + ". " : "Likely dry. "}Winds ${Math.round(d.daily.wind_speed_10m_max[tomIdx])}/${Math.round(d.daily.wind_gusts_10m_max[tomIdx])}mph.`;
+  let tMax = -99, tLow = 99, tWind = 0, tGust = 0;
+  
+  for (let j = endOfDayIdx + 7; j <= endOfDayIdx + 24; j++) { 
+    if (j < d.hourly.time.length) { 
+      // Manually find the true High, Low, and Max Winds for tomorrow between 6am and 11pm
+      let t = d.hourly.temperature_2m[j];
+      if (t > tMax) tMax = t;
+      if (t < tLow) tLow = t;
+      
+      let w = d.hourly.wind_speed_10m[j];
+      let g = d.hourly.wind_gusts_10m[j];
+      if (w > tWind) tWind = w;
+      if (g > tGust) tGust = g;
+
+      let p = d.hourly.precipitation_probability[j]; 
+      if (p >= 40 && tomPhRes === -1) { 
+        tomPhRes = parseInt(d.hourly.time[j].split("T")[1].split(":")[0]); 
+        tomPhCode = d.hourly.weather_code[j]; 
+      } 
+      if (j <= endOfDayIdx + 19 && p >= 40) daylightRainCount++; 
+    } 
+  }
+  
+  let tomStr = `${daylightRainCount >= 3 ? "Rainy." : (d.daily.weather_code[tomIdx] === 0 ? "Sunny." : "Cloudy.")} Highs of ${Math.round(tMax)}°, lows of ${Math.round(tLow)}°. ${tomPhRes !== -1 ? "Expect " + (tomPhCode >= 71 && tomPhCode <= 86 ? "snow" : "rain") + " at about " + formatAmPm(tomPhRes) + ". " : "Likely dry. "}Winds ${Math.round(tWind)}/${Math.round(tGust)}mph.`;
 
   document.getElementById('dashboard').innerHTML = `
     <div class="top-row">
