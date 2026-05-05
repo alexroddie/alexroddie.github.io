@@ -16,7 +16,7 @@
   .container { background: #fff; color: #000; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
   .loc { font-weight: bold; line-height: 1; }
 
-  /* --- DESKTOP (840x480) --- */
+  /* --- DESKTOP (840x480) - FIXED CANVAS --- */
   @media screen and (min-width: 841px) {
     body { align-items: center; overflow: hidden; }
     .container {
@@ -30,53 +30,60 @@
     .col-center { flex: 1; text-align: center; }
     .col-right { width: 210px; text-align: right; }
     
-    .loc { font-size: 28px; } /* Unchanged as requested */
-    .sub-loc { font-size: 20px; margin-top: 4px; } /* Bumped from 18 */
-    .date-line { font-size: 15px; margin-top: 8px; display: block; } /* Bumped from 12 */
-    .sun { font-size: 14px; margin-top: 10px; border-top: 1px solid #000; display: inline-block; padding-top: 6px; white-space: nowrap; } /* Bumped from 12 */
+    .loc { font-size: 28px; }
+    .sub-loc { font-size: 20px; margin-top: 4px; }
+    .date-line { font-size: 15px; margin-top: 8px; display: block; }
+    .sun { font-size: 14px; margin-top: 10px; border-top: 1px solid #000; display: inline-block; padding-top: 4px; white-space: nowrap; }
     
-    .temp-big { font-size: 115px; line-height: .8; } /* Unchanged as requested */
-    .cond-big { font-size: 28px; margin-top: 8px; } /* Bumped from 25 */
+    .temp-big { font-size: 115px; line-height: .8; }
+    .cond-big { font-size: 28px; margin-top: 8px; }
     
-    .details { font-size: 20px; line-height: 1.5; } /* Bumped from 17 */
+    .details { font-size: 20px; line-height: 1.5; }
     .details div { font-size: 20px !important; }
     
     .flourish-swoosh { height: 22px; margin: 12px 0 6px auto; display: block; width: 60px; }
-    .quote { font-size: 16px; line-height: 1.3; } /* Bumped from 15 */
+    .quote { font-size: 16px; line-height: 1.3; }
     
     .hourly-row { 
       display: grid; grid-template-columns: repeat(5, 70px) 1fr; column-gap: 25px; 
       border-top: 3px solid #000; border-bottom: 3px solid #000; padding: 18px 0; margin: 8px 0;
     }
-    .v-time { font-size: 18px; font-weight: bold; height: 20px; line-height: 20px; } /* Bumped from 16 */
-    .v-temp { font-size: 24px; margin: 4px 0; height: 28px; line-height: 28px; } /* Bumped from 21 */
-    .v-cond { font-size: 13px; height: 32px; line-height: 16px; display: block; overflow: hidden; } /* Bumped from 11 */
-    .v-data { font-size: 13px; height: 16px; line-height: 16px; } /* Bumped from 11 */
+    .v-time { font-size: 18px; font-weight: bold; height: 20px; line-height: 20px; }
+    .v-temp { font-size: 24px; margin: 4px 0; height: 28px; line-height: 28px; }
+    .v-cond { font-size: 13px; height: 32px; line-height: 16px; display: block; overflow: hidden; }
+    .v-data { font-size: 13px; height: 16px; line-height: 16px; }
     
     .later-col { text-align: left; padding-left: 15px; }
-    .later-text { font-size: 13px; line-height: 16px; } /* Bumped from 11 */
-    .info-block, .footer { font-size: 20px; line-height: 1.4; } /* Bumped from 18 */
+    .later-text { font-size: 13px; line-height: 16px; }
+    .info-block, .footer { font-size: 20px; line-height: 1.4; }
   }
 
-  /* --- RESPONSIVE / MOBILE --- */
+  /* --- RESPONSIVE / MOBILE - CENTERED COLUMNS --- */
   @media screen and (max-width: 840px) {
     body { overflow-y: auto; }
     .container { width: 100vw; min-height: 100vh; padding: 30px 20px; text-align: center; display: block; }
     .top-row { margin-bottom: 20px; }
     
-    .loc { font-size: 26px; } /* Unchanged as requested */
-    .sub-loc { font-size: 20px; margin-top: 4px; } /* Bumped from 18 */
-    .date-line { font-size: 16px; margin: 6px 0; } /* Bumped from 14 */
-    .sun { font-size: 15px; display: block; margin-top: 8px; } /* Bumped from 13 */
+    .loc { font-size: 26px; }
+    .sub-loc { font-size: 20px; margin-top: 4px; }
+    .date-line { font-size: 16px; margin: 6px 0; }
+    .sun { font-size: 15px; display: block; margin-top: 8px; }
     
-    .main-stats { display: flex; justify-content: center; align-items: center; gap: 60px; margin: 15px 0 25px; }
-    .col-center { text-align: right; flex: 1; }
-    .col-right { text-align: right; flex: 1; }
+    /* Removed flex: 1 to prevent stretching to screen edges */
+    .main-stats { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      gap: 50px; 
+      margin: 15px 0 25px; 
+    }
+    .col-center { text-align: right; flex: 0 1 auto; }
+    .col-right { text-align: right; flex: 0 1 auto; } 
     
-    .temp-big { font-size: 80px; line-height: 0.9; } /* Unchanged as requested */
-    .cond-big { font-size: 20px; margin-top: -2px; } /* Bumped from 18 */
+    .temp-big { font-size: 80px; line-height: 0.9; }
+    .cond-big { font-size: 20px; margin-top: -2px; }
     
-    .details { font-size: 18px; line-height: 1.5; } /* Bumped from 16 */
+    .details { font-size: 18px; line-height: 1.5; }
     .details div { font-size: 18px !important; }
     
     .flourish-swoosh, .quote { display: none !important; }
@@ -88,12 +95,12 @@
     }
     .h-col, .later-col { padding: 15px 0; display: flex; flex-direction: column; align-items: center; }
     
-    .v-time { font-size: 18px; font-weight: bold; height: 1.3em; } /* Bumped from 16 */
-    .v-temp { font-size: 24px; height: 1.3em; margin: 6px 0; } /* Bumped from 20 */
-    .v-cond { font-size: 13px; line-height: 1.3; height: 2.8em; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; } /* Bumped from 11 */
-    .v-data { font-size: 13px; line-height: 1.4; height: 1.4em; } /* Bumped from 11 */
+    .v-time { font-size: 18px; font-weight: bold; height: 1.3em; }
+    .v-temp { font-size: 24px; height: 1.3em; margin: 6px 0; }
+    .v-cond { font-size: 13px; line-height: 1.3; height: 2.8em; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+    .v-data { font-size: 13px; line-height: 1.4; height: 1.4em; }
     
-    .info-block, .footer { font-size: 18px; line-height: 1.5; text-align: left; padding: 10px 0; } /* Bumped from 16 */
+    .info-block, .footer { font-size: 18px; line-height: 1.5; text-align: left; padding: 10px 0; }
   }
 </style>
 </head>
