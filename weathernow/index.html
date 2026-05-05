@@ -16,7 +16,7 @@
   .container { background: #fff; color: #000; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
   .loc { font-weight: bold; line-height: 1; }
 
-  /* --- DESKTOP (840x480) - ABSOLUTELY RESTORED & CENTERED --- */
+  /* --- DESKTOP (840x480) - ABSOLUTELY UNTOUCHED & CENTERED --- */
   @media screen and (min-width: 841px) {
     body { align-items: center; overflow: hidden; }
     .container {
@@ -43,7 +43,6 @@
       display: grid; grid-template-columns: repeat(5, 70px) 1fr; column-gap: 20px; 
       border-top: 3px solid #000; border-bottom: 3px solid #000; padding: 15px 0; margin: 5px 0;
     }
-    /* Forced Center Justification for Desktop */
     .h-col { display: block; text-align: center; } 
     .v-time { font-size: 16px; font-weight: bold; height: 18px; line-height: 18px; }
     .v-temp { font-size: 21px; margin: 2px 0; height: 25px; line-height: 25px; }
@@ -65,12 +64,20 @@
     
     .main-stats { 
       display: flex; justify-content: center; align-items: center; 
-      gap: 100px; /* Safe gap for mobile phones */
       margin: 15px 0 25px; 
+      /* 'gap' is completely removed as Kindle ignores it */
     }
     
-    .col-center { text-align: right; flex: 0 0 auto; min-width: 100px; }
-    .col-right { text-align: right; flex: 0 0 auto; min-width: 100px; } 
+    .col-center { 
+      text-align: right; flex: 0 0 auto; 
+      padding-right: 30px; /* Safe, old-school spacing that Kindle cannot ignore */
+      border-right: 1px solid transparent; 
+    }
+    .col-right { 
+      text-align: right; flex: 0 0 auto; 
+      padding-left: 30px; /* Safe, old-school spacing */
+    } 
+    
     .temp-big { font-size: 80px; line-height: 0.9; }
     .cond-big { font-size: 20px; margin-top: -2px; }
     .details { font-size: 18px; line-height: 1.5; }
@@ -90,10 +97,13 @@
     .info-block, .footer { font-size: 18px; line-height: 1.5; text-align: left; padding: 10px 0; }
   }
 
-  /* --- KINDLE-SPECIFIC OVERRIDE (Wider screens under the 840px threshold) --- */
-  @media screen and (min-width: 550px) and (max-width: 840px) {
-    .main-stats {
-      gap: 220px; /* Pushes the columns apart on the wider Kindle screen */
+  /* --- KINDLE-SPECIFIC OVERRIDE --- */
+  @media screen and (min-width: 500px) and (max-width: 840px) {
+    .col-center {
+      padding-right: 70px; /* Forces wide separation specifically for the Kindle's wider screen */
+    }
+    .col-right {
+      padding-left: 70px;
     }
   }
 </style>
