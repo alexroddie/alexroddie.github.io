@@ -11,39 +11,50 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        :root { --bg-color: #ffffff; --text-color: #000000; --vh: 1vh; }
+        :root { --vh: 1vh; }
+        
+        /* 1. Reset blue highlights and force black UI */
         * { -webkit-tap-highlight-color: transparent !important; }
-        a, button { color: #000000 !important; text-decoration: none; }
+        a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; }
+
         html, body {
-            margin: 0 !important; padding: 0 !important; width: 100%;
+            margin: 0; padding: 0; width: 100%;
             height: 100vh; height: calc(var(--vh, 1vh) * 100) !important;
-            overflow: hidden !important; position: fixed; top: 0; left: 0;
+            overflow: hidden; position: fixed;
             background-color: #ffffff; font-family: "Geneva", "Verdana", sans-serif;
-            box-sizing: border-box;
         }
-        .window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: none; background-color: #ffffff; }
-        #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; z-index: 1; }
-        .maplibregl-canvas, .leaflet-container { width: 100% !important; height: 100% !important; outline: none; }
+
+        .window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+        #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
+        
+        /* High-contrast rendering for E-ink */
+        .maplibregl-canvas, .leaflet-container { 
+            width: 100% !important; height: 100% !important; 
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        /* UI PANELS */
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
         .panel-top-left { top: 10px; left: 10px; width: 260px; }
-        input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-family: inherit; font-size: 16px !important; color: #000000; }
-        button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box;}
+        
+        /* 16px font stops mobile browsers from zooming in on the input */
+        input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-size: 16px !important; }
+        
+        button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; }
         button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
+
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
-        .zoom-controls, .d-pad { display: flex; flex-direction: column; background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
-        .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: 900; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .d-pad { display: grid; grid-template-columns: 35px 35px 35px; gap: 4px; }
+        .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
+        .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        .d-pad { display: grid; grid-template-columns: repeat(3, 35px); gap: 4px; }
         .d-btn.center { font-size: 0.7rem; background: #eee; }
     </style>
-
-    <script src="js/i18n.js"></script>
-    <script src="theme.js"></script>
 </head>
-
 <body>
     <div class="window">
         <div class="overlay-panel panel-top-left">
-            <input type="text" id="search-input" placeholder="Search location..." onkeypress="if(event.key==='Enter') searchLocation()">
+            <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
             <button class="sys-btn" onclick="searchLocation()">Search</button>
         </div>
         <div class="panel-bottom-right">
@@ -72,13 +83,14 @@
 
         window.onload = () => {
             const saved = JSON.parse(localStorage.getItem('rekindle_maps_view') || '{"lat":51.5072,"lon":-0.1276,"zoom":13}');
+            
             if (typeof maplibregl !== 'undefined' && maplibregl.supported()) {
                 mapType = 'gl';
                 map = new maplibregl.Map({
                     container: 'map',
                     style: `https://tiles.stadiamaps.com/styles/stamen_toner.json?api_key=${STADIA_API_KEY}`,
                     center: [saved.lon, saved.lat], zoom: saved.zoom, attributionControl: false, fadeDuration: 0,
-                    scrollZoom: false, boxZoom: false, doubleClickZoom: false, touchZoomRotate: false
+                    scrollZoom: false, touchZoomRotate: false, doubleClickZoom: false
                 });
             } else {
                 mapType = 'leaflet';
@@ -86,6 +98,7 @@
                     .setView([saved.lat, saved.lon], saved.zoom);
                 L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`).addTo(map);
             }
+
             map.on('moveend', () => {
                 const c = map.getCenter();
                 localStorage.setItem('rekindle_maps_view', JSON.stringify({lat: c.lat, lon: (mapType==='gl'?c.lng:c.lng), zoom: map.getZoom()}));
@@ -93,35 +106,23 @@
             setTimeout(forceMapResize, 500);
         };
 
+        // Simple, original-style search
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
-            const bounds = map.getBounds();
-            // ADDED bounded=1 to force the search to stay inside the viewbox coordinates
-            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()},${bounds.getSouth()}&bounded=1&limit=1`;
-            
             try {
-                const res = await fetch(url);
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
                 const data = await res.json();
                 if (data.length > 0) {
                     const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
                     else map.setView([lat, lon], 15);
-                } else {
-                    // Fallback: If nothing found in current view, search globally
-                    const globalRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
-                    const globalData = await globalRes.json();
-                    if (globalData.length > 0) {
-                        const lat = parseFloat(globalData[0].lat), lon = parseFloat(globalData[0].lon);
-                        if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
-                        else map.setView([lat, lon], 15);
-                    }
                 }
             } catch (e) { console.error(e); }
         }
 
         function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
-        function resetView() { /* Implementation as needed */ }
+        function resetView() { /* Implement search-based reset if desired */ }
     </script>
 </body>
 </html>
