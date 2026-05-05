@@ -34,20 +34,13 @@
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
         .panel-top-left { top: 10px; left: 10px; width: 260px; }
         
-        /* TWO-LEVEL SEARCH STYLING */
         .search-container { display: flex; flex-direction: column; gap: 8px; }
-        
-        input[type="text"] { 
-            width: 100%; padding: 8px; border: 2px solid black; box-sizing: border-box; 
-            font-size: 16px !important; 
-        }
+        input[type="text"] { width: 100%; padding: 8px; border: 2px solid black; box-sizing: border-box; font-size: 16px !important; }
         
         .button-row { display: flex; gap: 8px; width: 100%; }
-        
         .sys-btn { background: white; border: 2px solid black; font-weight: bold; padding: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; box-sizing: border-box; }
         .sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
         
-        /* SEARCH is ~3x wider than X */
         #search-button { flex: 3; }
         .clear-btn { flex: 1; font-size: 18px; }
 
@@ -55,6 +48,7 @@
         .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
         .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
         .d-pad { display: grid; grid-template-columns: repeat(3, 35px); gap: 4px; }
+        .d-btn.center { font-size: 0.7rem; background: #eee; }
     </style>
 </head>
 <body>
@@ -75,7 +69,9 @@
             </div>
             <div class="d-pad">
                 <div></div><button class="d-btn" onclick="panMap(0, -1)">▲</button><div></div>
-                <button class="d-btn" onclick="panMap(-1, 0)">◀</button><button class="d-btn center" style="font-size:0.7rem">●</button><button class="d-btn" onclick="panMap(1, 0)">▶</button>
+                <button class="d-btn" onclick="panMap(-1, 0)">◀</button>
+                <button class="d-btn center" onclick="resetView()">●</button>
+                <button class="d-btn" onclick="panMap(1, 0)">▶</button>
                 <div></div><button class="d-btn" onclick="panMap(0, 1)">▼</button><div></div>
             </div>
         </div>
@@ -86,6 +82,7 @@
         let map = null;
         let mapType = 'gl';
         let currentMarker = null;
+        let lastPinCoords = null; // Store coordinates for the navigation center button
         const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         
         const blackIcon = L.divIcon({
@@ -100,7 +97,6 @@
 
         window.onload = () => {
             const saved = JSON.parse(localStorage.getItem('rekindle_maps_view') || '{"lat":51.5072,"lon":-0.1276,"zoom":13}');
-            
             if (typeof maplibregl !== 'undefined' && maplibregl.supported()) {
                 mapType = 'gl';
                 map = new maplibregl.Map({
@@ -115,7 +111,6 @@
                     .setView([saved.lat, saved.lon], saved.zoom);
                 L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`).addTo(map);
             }
-
             map.on('moveend', () => {
                 const c = map.getCenter();
                 localStorage.setItem('rekindle_maps_view', JSON.stringify({lat: c.lat, lon: c.lng, zoom: map.getZoom()}));
@@ -124,6 +119,7 @@
 
         function addPin(lat, lon) {
             clearMarker();
+            lastPinCoords = {lat: lat, lon: lon}; // Update last searched coords
             if (mapType === 'gl') {
                 const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
                 currentMarker = new maplibregl.Marker({ color: 'black' })
@@ -142,6 +138,7 @@
                 else map.removeLayer(currentMarker);
                 currentMarker = null;
             }
+            lastPinCoords = null;
         }
 
         function clearSearch() {
@@ -149,38 +146,39 @@
             clearMarker();
         }
 
+        function resetView() {
+            if (lastPinCoords) {
+                if (mapType === 'gl') map.jumpTo({ center: [lastPinCoords.lon, lastPinCoords.lat], zoom: 15 });
+                else map.setView([lastPinCoords.lat, lastPinCoords.lon], 15);
+            }
+        }
+
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
-
             const btn = document.getElementById('search-button');
             const originalText = btn.innerText;
             btn.innerText = "...";
-
             try {
                 const isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States|France|Germany|Japan/i.test(query);
                 let lat, lon;
-
                 if (!isExplicit) {
                     const c = map.getCenter();
                     const revUrl = `https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`;
                     const revRes = await fetch(revUrl);
                     const revData = await revRes.json();
                     let countryCode = (revData.features && revData.features.length > 0) ? revData.features[0].properties.country_code : "";
-
                     const localUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.country=${countryCode}&api_key=${STADIA_API_KEY}&size=1`;
                     const localRes = await fetch(localUrl);
                     const localData = await localRes.json();
                     if (localData.features && localData.features.length > 0) [lon, lat] = localData.features[0].geometry.coordinates;
                 }
-
                 if (!lat || !lon) {
                     const globalUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`;
                     const globalRes = await fetch(globalUrl);
                     const globalData = await globalRes.json();
                     if (globalData.features && globalData.features.length > 0) [lon, lat] = globalData.features[0].geometry.coordinates;
                 }
-
                 if (lat && lon) {
                     addPin(lat, lon);
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
