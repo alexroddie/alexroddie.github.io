@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        /* 1. Reset and Global Georgia Font */
+        /* 1. Global Reset & Georgia Font */
         * { 
             -webkit-tap-highlight-color: transparent !important; 
             box-sizing: border-box !important; 
@@ -29,66 +29,58 @@
             background: #ffffff; z-index: 1; 
         }
 
-        /* 2. The 5px Border / 4px Shadow Standard */
+        /* 2. Universal 5px Shadow Panel */
         .shadow-panel { 
             background: #ffffff; 
             border: 2px solid #000000; 
             z-index: 1000; 
             box-shadow: 4px 4px 0 #000000; 
             position: fixed; 
-            padding: 5px; /* The "Thinner" White Border */
+            padding: 5px; /* Strict 5px outer border */
         }
 
-        /* 3. Search Cluster: Hard-Locked Table */
+        /* 3. Search Cluster (5px gaps) */
         .panel-top-left { top: 15px; left: 15px; width: 260px; }
         
         #search-input { 
-            width: 246px; height: 36px; padding: 0 8px; 
+            width: 250px; height: 36px; padding: 0 8px; 
             font-size: 16px; border: 2px solid black; 
-            margin-bottom: 10px; display: block; background: #fff;
+            margin-bottom: 5px; display: block; background: #fff;
         }
         
-        /* Table prevents the buttons from ever wrapping or stacking */
-        .search-table { width: 246px; border-collapse: collapse; table-layout: fixed; }
+        .search-table { width: 250px; border-collapse: collapse; table-layout: fixed; }
         .search-table td { padding: 0; vertical-align: top; }
         
         .sys-btn { 
             background: #ffffff; border: 2px solid black;
             font-weight: bold; cursor: pointer; text-transform: uppercase; 
             height: 36px; line-height: 32px; text-align: center; width: 100%;
-            display: block; font-size: 15px; /* Identical size for SEARCH and X */
+            display: block; font-size: 15px;
         }
         .sys-btn:active { background: #000000; color: #ffffff !important; }
 
-        /* 4. Navigation Cluster: Fixed Bottom Right */
+        /* 4. Navigation Cluster (Centered & 5px standard) */
         .nav-wrapper { 
             position: fixed; 
-            bottom: 20px; 
+            bottom: 25px; 
             right: 20px; 
             z-index: 1000;
-            width: 145px; /* Locked width to keep zoom centered over d-pad */
+            width: 125px; /* Locked width based on 35px buttons + 5px gaps */
             text-align: center;
         }
 
-        /* Zoom Cluster: 5px Padding */
+        /* Zoom Cluster: Centered */
         .zoom-panel { 
-            display: inline-block; 
-            width: 49px; 
-            margin-bottom: 15px; 
-            position: relative;
+            display: inline-block; width: 45px; margin-bottom: 10px; 
         }
-        .zoom-sep { height: 10px; }
+        .zoom-sep { height: 5px; } /* Strict 5px Gap */
 
-        /* Panning Cluster: 5px Padding */
-        .dpad-panel { 
-            display: inline-block; 
-            width: 145px; 
-            position: relative;
-        }
-        .dpad-table { border-collapse: separate; border-spacing: 10px; }
+        /* Panning Cluster: Tight-wrapped */
+        .dpad-panel { display: inline-block; width: 125px; }
+        .dpad-table { border-collapse: separate; border-spacing: 5px; margin: -5px; }
         .dpad-table td { padding: 0; }
         
-        /* Navigation Buttons: SVG Powered */
+        /* Nav Buttons: 35x35px */
         .ctrl-btn { 
             width: 35px; height: 35px; cursor: pointer; background: #fff;
             border: 2px solid black; display: block; position: relative;
@@ -112,30 +104,26 @@
         <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.keyCode==13)searchLocation()">
         <table class="search-table">
             <tr>
-                <td style="width: 181px;">
+                <td style="width: 185px;">
                     <button class="sys-btn" id="search-button" onclick="searchLocation()">SEARCH</button>
                 </td>
-                <td style="width: 10px;"></td> <!-- Strict 10px Gap -->
-                <td style="width: 55px;">
+                <td style="width: 5px;"></td> <!-- Strict 5px Internal Gap -->
+                <td style="width: 60px;">
                     <button class="sys-btn" onclick="clearSearch()">X</button>
                 </td>
             </tr>
         </table>
     </div>
 
-    <!-- Navigation Clusters Wrapper -->
+    <!-- Navigation Column -->
     <div class="nav-wrapper">
-        <!-- Separate Zoom Panel -->
-        <div class="shadow-panel zoom-panel">
+        <div class="shadow-panel zoom-panel" style="position: relative; left: auto; bottom: auto; right: auto;">
             <button class="ctrl-btn" onclick="map.zoomIn()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
             <div class="zoom-sep"></div>
             <button class="ctrl-btn" onclick="map.zoomOut()"><svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg></button>
         </div>
 
-        <br>
-
-        <!-- Separate Panning Panel -->
-        <div class="shadow-panel dpad-panel">
+        <div class="shadow-panel dpad-panel" style="position: relative; left: auto; bottom: auto; right: auto;">
             <table class="dpad-table">
                 <tr>
                     <td></td>
@@ -167,7 +155,14 @@
 
         window.onload = function() {
             var saved = JSON.parse(localStorage.getItem('rekindle_maps_view') || '{"lat":51.5072,"lon":-0.1276,"zoom":13}');
-            map = L.map('map', { zoomControl: false, attributionControl: false, touchZoom: false, scrollWheelZoom: false, doubleClickZoom: false }).setView([saved.lat, saved.lon], saved.zoom);
+            map = L.map('map', { 
+                zoomControl: false, 
+                attributionControl: false, 
+                touchZoom: false, 
+                scrollWheelZoom: false, 
+                doubleClickZoom: false 
+            }).setView([saved.lat, saved.lon], saved.zoom);
+
             L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=' + API_KEY).addTo(map);
 
             fetch('https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=' + saved.lat + '&point.lon=' + saved.lon + '&api_key=' + API_KEY + '&size=1')
