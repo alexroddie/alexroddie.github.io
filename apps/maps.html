@@ -30,102 +30,93 @@
             image-rendering: -webkit-optimize-contrast;
         }
 
-        /* Standardized Panel Style */
+        /* Unified Cluster Shadows (4px black offset) */
         .overlay-panel, .zoom-controls, .d-pad { 
             position: absolute; 
             background: white; 
             border: 2px solid black; 
             z-index: 500; 
-            box-shadow: 4px 4px 0 black; /* Unified drop shadow */
+            box-shadow: 4px 4px 0 black; 
         }
 
-        /* Search Cluster Position */
+        /* --- SEARCH CLUSTER --- */
         .panel-top-left { top: 10px; left: 10px; width: 260px; padding: 10px; }
         
-        .search-container { display: flex; flex-direction: column; gap: 8px; }
-        input[type="text"] { width: 100%; padding: 8px; border: 2px solid black; box-sizing: border-box; font-size: 16px !important; }
+        /* Spacing for Kindle: Using margin-bottom instead of gap */
+        input[type="text"] { 
+            width: 100%; padding: 8px; border: 2px solid black; 
+            box-sizing: border-box; font-size: 16px !important; 
+            margin-bottom: 8px; 
+        }
         
-        .button-row { display: flex; gap: 8px; width: 100%; }
+        .button-row { display: table; width: 100%; border-collapse: separate; border-spacing: 0; }
         
-        /* Cleaned Buttons (No internal/offset shadows) */
         .sys-btn { 
-            background: white; 
-            border: 2px solid black; 
-            font-weight: bold; 
-            padding: 8px; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            box-sizing: border-box;
-            box-shadow: none; /* Removed internal shadow */
+            background: white; border: 2px solid black; font-weight: bold; 
+            padding: 8px; cursor: pointer; text-transform: uppercase; 
+            box-sizing: border-box; box-shadow: none; 
         }
         .sys-btn:active { background: black; color: white !important; }
         
-        #search-button { flex: 3; }
-        .clear-btn { flex: 1; font-size: 18px; }
+        /* 75% / 25% split with manual margin for Kindle */
+        #search-button { width: 70%; float: left; }
+        .clear-btn { width: 25%; float: right; font-size: 18px; }
 
-        /* Navigation Clusters */
+        /* --- NAVIGATION CLUSTERS --- */
         .panel-bottom-right { 
-            position: absolute; 
-            bottom: 20px; 
-            right: 20px; 
-            z-index: 500; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+            position: absolute; bottom: 20px; right: 20px; 
+            z-index: 500; display: block; text-align: center;
         }
 
-        /* Zoom controls with standardized gap */
+        /* Zoom Cluster: Manual spacing for Kindle */
         .zoom-controls { 
-            position: static; 
-            display: flex; 
-            flex-direction: column; 
-            padding: 4px; 
-            gap: 4px; /* Matches D-Pad gap */
-            margin-bottom: 10px; 
+            position: relative; display: inline-block; padding: 4px; 
+            margin-bottom: 12px; /* Gap between Zoom and D-Pad */
         }
+        .zoom-btn { 
+            width: 35px; height: 35px; background: white; 
+            border: 2px solid black; font-weight: bold; font-size: 1.2rem; 
+            display: block; box-shadow: none;
+        }
+        #zoom-in-btn { margin-bottom: 4px; } /* Manual gap between + and - */
 
-        /* D-Pad with standardized gap */
+        /* D-Pad: Grid gap is usually okay, but we'll reinforce it */
         .d-pad { 
-            position: static; 
-            display: grid; 
+            position: relative; display: grid; 
             grid-template-columns: repeat(3, 35px); 
-            gap: 4px; 
-            padding: 4px; 
+            gap: 4px; padding: 4px; 
         }
 
-        .zoom-btn, .d-btn { 
-            width: 35px; 
-            height: 35px; 
-            background: white; 
-            border: 2px solid black; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 1.2rem; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            box-shadow: none;
+        .d-btn { 
+            width: 35px; height: 35px; background: white; 
+            border: 2px solid black; font-weight: bold; 
+            font-size: 1.2rem; display: flex; align-items: center; 
+            justify-content: center; box-shadow: none;
         }
         .zoom-btn:active, .d-btn:active { background: black; color: white !important; }
         
-        /* Point button - Removed grey background */
+        /* Point button - Pure white background */
         .d-btn.center { font-size: 0.7rem; background: white; }
+
+        /* Clear floats */
+        .button-row:after { content: ""; display: table; clear: both; }
     </style>
 </head>
 <body>
     <div class="window">
+        <!-- Search Cluster -->
         <div class="overlay-panel panel-top-left">
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
-                <div class="button-row">
-                    <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
-                    <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
-                </div>
+            <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
+            <div class="button-row">
+                <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
+                <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
             </div>
         </div>
+
+        <!-- Navigation Clusters -->
         <div class="panel-bottom-right">
             <div class="zoom-controls">
-                <button class="zoom-btn" onclick="map.zoomIn()">+</button>
+                <button class="zoom-btn" id="zoom-in-btn" onclick="map.zoomIn()">+</button>
                 <button class="zoom-btn" onclick="map.zoomOut()">-</button>
             </div>
             <div class="d-pad">
