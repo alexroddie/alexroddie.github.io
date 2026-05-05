@@ -37,25 +37,25 @@
             background: #ffffff; z-index: 1; 
         }
 
-        /* Standardized Shadow Panel - 10px Padding, 4px Shadow */
+        /* Standardized Shadow Panel: 10px Padding, 4px Shadow */
         .shadow-panel { 
             background: #ffffff; 
             border: 2px solid #000000; 
             z-index: 500; 
             box-shadow: 4px 4px 0 #000000; 
-            position: absolute;
             padding: 10px;
         }
 
-        /* --- SEARCH CLUSTER: TABLE-LOCKED HORIZONTAL --- */
-        .panel-top-left { top: 10px; left: 10px; width: 260px; }
+        /* --- SEARCH CLUSTER (Master Reference Model) --- */
+        .panel-top-left { 
+            position: absolute; top: 10px; left: 10px; width: 260px; 
+        }
         
         #search-input { 
             width: 240px; height: 36px; padding: 0 8px; 
             font-size: 16px !important; margin-bottom: 10px; display: block;
         }
         
-        /* Table forces buttons to stay on one line and match heights */
         .search-table { width: 240px; border-collapse: collapse; table-layout: fixed; }
         .search-table td { padding: 0; vertical-align: top; }
         
@@ -65,32 +65,36 @@
             display: block;
         }
         .sys-btn:active { background: #000000; color: #ffffff !important; }
-        
         .clear-btn { font-size: 18px; }
 
-        /* --- UNIFIED NAVIGATION CLUSTER --- */
-        .nav-panel { bottom: 20px; right: 20px; display: table; }
+        /* --- NAVIGATION COLUMN: Centered Zoom over Panning --- */
+        .nav-column { 
+            position: absolute; bottom: 20px; right: 20px; 
+            z-index: 500; width: 149px; /* Matches D-Pad Width */
+            text-align: center;
+        }
 
-        .nav-cell { display: table-cell; vertical-align: middle; }
-        .panning-cell { padding-right: 10px; } /* Consistent 10px gap */
+        /* Separate Zoom Cluster: Centered */
+        .zoom-panel { 
+            display: inline-block; width: 59px; margin-bottom: 15px; 
+        }
+        .zoom-sep { height: 10px; } /* Consistent 10px Gap */
 
+        /* Separate Panning Cluster */
+        .dpad-panel { display: inline-block; width: 149px; }
         .dpad-table { border-collapse: separate; border-spacing: 10px; margin: -10px; }
         
+        /* Consistent 35x35px Buttons & 24px Icons */
         .ctrl-btn { 
             width: 35px; height: 35px; cursor: pointer; background: #fff;
             display: block; position: relative;
         }
-        
-        /* Restored Icon Sizes (24px) */
         .ctrl-btn svg { 
             display: block; width: 24px; height: 24px; 
             position: absolute; top: 50%; left: 50%; 
             margin: -12px 0 0 -12px; 
         }
         
-        .zoom-container { width: 35px; }
-        .zoom-sep { height: 10px; } /* Consistent 10px gap */
-
         .ctrl-btn:active { background: #000000; }
         .ctrl-btn:active svg { fill: #ffffff; }
     </style>
@@ -99,7 +103,7 @@
 
     <div id="map"></div>
 
-    <!-- Search Panel -->
+    <!-- Search Panel (Restored and Locked) -->
     <div class="shadow-panel panel-top-left">
         <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.keyCode==13)searchLocation()">
         <table class="search-table">
@@ -107,7 +111,7 @@
                 <td style="width: 170px;">
                     <button class="sys-btn" id="search-button" onclick="searchLocation()">SEARCH</button>
                 </td>
-                <td style="width: 10px;"></td> <!-- Fixed 10px white gap -->
+                <td style="width: 10px;"></td> <!-- Consistent 10px Gap -->
                 <td style="width: 60px;">
                     <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
                 </td>
@@ -115,9 +119,17 @@
         </table>
     </div>
 
-    <!-- Unified Navigation Cluster -->
-    <div class="shadow-panel nav-panel">
-        <div class="nav-cell panning-cell">
+    <!-- Navigation Column -->
+    <div class="nav-column">
+        <!-- Separate Zoom Cluster Centered Above -->
+        <div class="shadow-panel zoom-panel">
+            <button class="ctrl-btn" onclick="map.zoomIn()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+            <div class="zoom-sep"></div>
+            <button class="ctrl-btn" onclick="map.zoomOut()"><svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg></button>
+        </div>
+
+        <!-- Separate Panning Cluster -->
+        <div class="shadow-panel dpad-panel">
             <table class="dpad-table">
                 <tr>
                     <td></td>
@@ -136,14 +148,6 @@
                 </tr>
             </table>
         </div>
-
-        <div class="nav-cell">
-            <div class="zoom-container">
-                <button class="ctrl-btn" onclick="map.zoomIn()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
-                <div class="zoom-sep"></div>
-                <button class="ctrl-btn" onclick="map.zoomOut()"><svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg></button>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -160,7 +164,6 @@
             map = L.map('map', { zoomControl: false, attributionControl: false, touchZoom: false, scrollWheelZoom: false, doubleClickZoom: false }).setView([saved.lat, saved.lon], saved.zoom);
             L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=' + API_KEY).addTo(map);
 
-            // Pre-fetch country code to prevent search lag
             fetch('https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=' + saved.lat + '&point.lon=' + saved.lon + '&api_key=' + API_KEY + '&size=1')
                 .then(function(r){return r.json()}).then(function(d){ if(d.features && d.features[0]) countryCode = d.features[0].properties.country_code; });
 
@@ -185,10 +188,7 @@
             if (!q) return;
             var btn = document.getElementById('search-button');
             btn.innerText = "...";
-
-            var isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States|France|Germany|Japan/i.test(q);
-            var url = 'https://api.stadiamaps.com/geocoding/v1/search?text=' + encodeURIComponent(q) + (isExplicit ? '' : '&boundary.country=' + countryCode) + '&api_key=' + API_KEY + '&size=1';
-
+            var url = 'https://api.stadiamaps.com/geocoding/v1/search?text=' + encodeURIComponent(q) + (q.indexOf(',') === -1 ? '&boundary.country=' + countryCode : '') + '&api_key=' + API_KEY + '&size=1';
             fetch(url).then(function(r){return r.json()}).then(function(res) {
                 if (res.features && res.features.length > 0) {
                     var c = res.features[0].geometry.coordinates;
