@@ -22,15 +22,9 @@
             background-color: #ffffff; font-family: "Geneva", "Verdana", sans-serif;
         }
 
-        .window { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
         #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #ffffff; z-index: 1; }
-        
-        .maplibregl-canvas, .leaflet-container { 
-            width: 100% !important; height: 100% !important; 
-            image-rendering: -webkit-optimize-contrast;
-        }
 
-        /* SEARCH UI (Per Screenshot 2026-05-05 at 08.40.07.png) */
+        /* UI PANELS */
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
         .panel-top-left { top: 10px; left: 10px; width: 260px; }
         .search-container { display: flex; flex-direction: column; gap: 8px; }
@@ -41,27 +35,34 @@
         #search-button { flex: 3; }
         .clear-btn { flex: 1; font-size: 18px; }
 
-        /* NAV CLUSTER */
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
         .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
         .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
         .d-pad { display: grid; grid-template-columns: repeat(3, 35px); gap: 4px; }
         .d-btn.center { font-size: 0.7rem; background: #eee; }
 
-        /* LABELS */
-        .marker-label {
+        /* THE FIX: Unified Marker & Label */
+        .unified-marker {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            pointer-events: none !important;
+        }
+
+        .m-label {
             background: white;
             border: 1px solid black;
-            padding: 1px 4px;
+            padding: 0px 3px;
             font-size: 10px;
-            font-weight: bold;
+            font-weight: 900;
             white-space: nowrap;
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            pointer-events: none;
+            margin-bottom: 2px;
+            line-height: 1.1;
         }
+
+        .m-icon svg { display: block; filter: drop-shadow(1px 1px 0px white); }
     </style>
 </head>
 <body>
@@ -97,10 +98,9 @@
         let mapType = 'gl';
         let searchMarker = null;
         let lastPinCoords = null;
-        let gpxData = []; // Store waypoints for local search
+        let gpxData = [];
 
-        // SVG Path Icons
-        const ICON_PATHS = {
+        const ICONS = {
             bothy: `<path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 13a2 2 0 110-4 2 2 0 010 4z"/>`,
             munro: `<path d="M12 2L1 21h22L12 2zm0 4l6.5 11h-13L12 6z"/>`,
             search: `<path d="M12 0C7.58 0 4 3.58 4 8c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11a3 3 0 110-6 3 3 0 010 6z"/>`
@@ -112,6 +112,8 @@
 
         window.onload = () => {
             const saved = JSON.parse(localStorage.getItem('rekindle_maps_view') || '{"lat":51.5072,"lon":-0.1276,"zoom":13}');
+            
+            // On Kindle, we force Leaflet if GL is shaky, but we'll try to detect support
             if (typeof maplibregl !== 'undefined' && maplibregl.supported()) {
                 mapType = 'gl';
                 map = new maplibregl.Map({
@@ -125,12 +127,13 @@
                 map = L.map('map', { zoomControl: false, attributionControl: false, touchZoom: false, scrollWheelZoom: false, doubleClickZoom: false }).setView([saved.lat, saved.lon], saved.zoom);
                 L.tileLayer(`https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png?api_key=${STADIA_API_KEY}`).addTo(map);
             }
+
             map.on('moveend', () => {
                 const c = map.getCenter();
                 localStorage.setItem('rekindle_maps_view', JSON.stringify({lat: c.lat, lon: c.lng, zoom: map.getZoom()}));
             });
 
-            // Load permanent waypoints
+            // Silent background load
             loadGPX('data/bothies.gpx', 'bothy');
             loadGPX('data/munros.gpx', 'munro');
         };
@@ -138,32 +141,46 @@
         async function loadGPX(url, type) {
             try {
                 const res = await fetch(url);
-                const text = await res.text();
-                const xml = new DOMParser().parseFromString(text, "text/xml");
+                const text = await res.json ? "" : await res.text(); // Simple way to handle text response
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(text, "text/xml");
                 const wpts = xml.getElementsByTagName("wpt");
+                
                 for (let i = 0; i < wpts.length; i++) {
                     const lat = parseFloat(wpts[i].getAttribute("lat"));
                     const lon = parseFloat(wpts[i].getAttribute("lon"));
-                    const name = wpts[i].getElementsByTagName("name")[0]?.textContent || "Waypoint";
-                    gpxData.push({ lat, lon, name, type });
-                    createMarker(lat, lon, name, type);
+                    const name = wpts[i].getElementsByTagName("name")[0]?.textContent || "";
+                    const shortName = name.split(',')[0].split('(')[0].trim();
+                    
+                    gpxData.push({ lat, lon, name: shortName, type });
+                    placeUnifiedMarker(lat, lon, shortName, type, false);
                 }
-            } catch (e) { console.warn("GPX Load Failed:", url); }
+            } catch (e) { console.warn("GPX Error:", url); }
         }
 
-        function createMarker(lat, lon, name, type, isSearch = false) {
-            const shortName = name.split(',')[0].trim();
+        function placeUnifiedMarker(lat, lon, label, type, isSearch) {
+            const html = `
+                <div class="unified-marker">
+                    <div class="m-label">${label}</div>
+                    <div class="m-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1.5">
+                            ${ICONS[type]}
+                        </svg>
+                    </div>
+                </div>`;
+
             if (mapType === 'gl') {
                 const el = document.createElement('div');
-                el.style.position = 'relative';
-                el.innerHTML = `<div class="marker-label">${shortName}</div><svg width="24" height="24" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1">${ICON_PATHS[type]}</svg>`;
-                const m = new maplibregl.Marker({element: el}).setLngLat([lon, lat]).addTo(map);
+                el.className = 'unified-marker-container';
+                el.innerHTML = html;
+                const m = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat([lon, lat]).addTo(map);
                 if(isSearch) searchMarker = m;
             } else {
                 const icon = L.divIcon({
-                    className: '',
-                    html: `<div style="position:relative"><div class="marker-label">${shortName}</div><svg width="24" height="24" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1">${ICON_PATHS[type]}</svg></div>`,
-                    iconSize: [24, 24], iconAnchor: [12, 12]
+                    html: html,
+                    className: 'unified-marker',
+                    iconSize: [100, 40], // Wide enough for labels
+                    iconAnchor: [50, 40]  // Anchored at bottom center
                 });
                 const m = L.marker([lat, lon], { icon }).addTo(map);
                 if(isSearch) searchMarker = m;
@@ -176,46 +193,41 @@
             const btn = document.getElementById('search-button');
             btn.innerText = "...";
 
-            // 1. Check local GPX first
-            const localMatch = gpxData.find(pt => pt.name.toLowerCase().includes(query.toLowerCase()));
-            if (localMatch) {
-                jumpTo(localMatch.lat, localMatch.lon);
+            // 1. Local Search (Bothies/Munros)
+            const local = gpxData.find(p => p.name.toLowerCase().includes(query.toLowerCase()));
+            if (local) {
+                moveTo(local.lat, local.lon);
                 btn.innerText = "SEARCH";
                 return;
             }
 
-            // 2. Intent-aware Global Search
+            // 2. Global Search
             try {
-                const isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States|France|Germany|Japan/i.test(query);
+                const isExplicit = /[,]|UK|U\.K|United Kingdom|Australia|USA|U\.S|States/i.test(query);
                 let lat, lon, name;
-                if (!isExplicit) {
-                    const c = map.getCenter();
-                    const rev = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`)).json();
-                    const code = rev.features?.[0]?.properties?.country_code || "";
-                    const localRes = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&boundary.country=${code}&api_key=${STADIA_API_KEY}&size=1`)).json();
-                    if (localRes.features?.length > 0) {
-                        [lon, lat] = localRes.features[0].geometry.coordinates;
-                        name = localRes.features[0].properties.name;
-                    }
-                }
-                if (!lat) {
-                    const globalRes = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`)).json();
-                    if (globalRes.features?.length > 0) {
-                        [lon, lat] = globalRes.features[0].geometry.coordinates;
-                        name = globalRes.features[0].properties.name;
-                    }
-                }
-                if (lat) {
+                
+                // Get current context for bias
+                const c = map.getCenter();
+                const rev = await (await fetch(`https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`)).json();
+                const code = rev.features?.[0]?.properties?.country_code || "";
+                
+                const searchUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}${!isExplicit ? '&boundary.country='+code : ''}&api_key=${STADIA_API_KEY}&size=1`;
+                const res = await (await fetch(searchUrl)).json();
+                
+                if (res.features?.length > 0) {
+                    [lon, lat] = res.features[0].geometry.coordinates;
+                    name = res.features[0].properties.name.split(',')[0];
+                    
                     if(searchMarker) { if(mapType==='gl') searchMarker.remove(); else map.removeLayer(searchMarker); }
-                    createMarker(lat, lon, name, 'search', true);
-                    jumpTo(lat, lon);
+                    placeUnifiedMarker(lat, lon, name, 'search', true);
+                    moveTo(lat, lon);
                 }
             } catch (e) { console.error(e); } finally { btn.innerText = "SEARCH"; }
         }
 
-        function jumpTo(lat, lon) {
+        function moveTo(lat, lon) {
             lastPinCoords = {lat, lon};
-            if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
+            if(mapType==='gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
             else map.setView([lat, lon], 15);
         }
 
@@ -225,7 +237,7 @@
             lastPinCoords = null;
         }
 
-        function resetView() { if(lastPinCoords) jumpTo(lastPinCoords.lat, lastPinCoords.lon); }
+        function resetView() { if(lastPinCoords) moveTo(lastPinCoords.lat, lastPinCoords.lon); }
         function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
     </script>
 </body>
