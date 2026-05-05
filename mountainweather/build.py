@@ -128,7 +128,7 @@ body{{
     .date-header {{ font-size: 28px; margin-top: 0; line-height: 1.4; }}
     .body-text {{ font-size: 16px; line-height: 1.5; margin-bottom: 15px; }}
     
-    /* REVEAL MOBILE LINKS (Restored to 20px) */
+    /* REVEAL MOBILE LINKS */
     .mobile-links {{
         display: block;
         margin-top: 16px;
@@ -137,29 +137,19 @@ body{{
     
     .mobile-links a {{ color: #000; text-decoration: none; }}
     
-    /* FORCE CLEAN BLACK ARROWS & NO BULLETS */
+    /* FORCE CLEAN HEADERS - NO ARROWS & NO BULLETS */
     .mobile-links summary {{ 
-        cursor: pointer;  
-        list-style: none;
-        font-weight: normal;
+        cursor: pointer; 
+        font-weight: normal; 
         margin-bottom: 8px; 
         list-style: none; 
     }}
     .mobile-links summary::-webkit-details-marker {{ display: none; }}
-    .mobile-links summary::before {{
-        content: '\\25B6\\FE0E';
-        display: inline-block;
-        margin-right: 8px;
-        color: #000;
-    }}
-    .mobile-links details[open] summary::before {{
-        content: '\\25BC\\FE0E';
-    }}
     
-    /* ADJUSTED INDENTATION (30px) */
+    /* ADJUSTED INDENTATION (40px) */
     .mobile-links ul {{ 
         margin: 0; 
-        padding-left: 30px; 
+        padding-left: 40px; 
         list-style-type: none; 
     }}
     .mobile-links li {{ margin-bottom: 8px; }}
