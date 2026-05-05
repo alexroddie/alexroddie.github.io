@@ -12,7 +12,7 @@
 
     <style>
         :root { --vh: 1vh; }
-        * { -webkit-tap-highlight-color: transparent !important; touch-action: manipulation; }
+        * { -webkit-tap-highlight-color: transparent !important; touch-action: manipulation; box-sizing: border-box; }
         a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; border-radius: 0; }
 
         html, body {
@@ -30,76 +30,70 @@
             image-rendering: -webkit-optimize-contrast;
         }
 
-        /* Unified Cluster Shadows (4px black offset) */
-        .overlay-panel, .zoom-controls, .d-pad { 
-            position: absolute; 
-            background: white; 
-            border: 2px solid black; 
-            z-index: 500; 
-            box-shadow: 4px 4px 0 black; 
+        /* Unified Cluster Style (4px black offset) */
+        .overlay-panel, .zoom-wrapper, .d-pad { 
+            position: absolute; background: white; border: 2px solid black; 
+            z-index: 500; box-shadow: 4px 4px 0 black; 
         }
 
         /* --- SEARCH CLUSTER --- */
         .panel-top-left { top: 10px; left: 10px; width: 260px; padding: 10px; }
         
-        /* Spacing for Kindle: Using margin-bottom instead of gap */
         input[type="text"] { 
-            width: 100%; padding: 8px; border: 2px solid black; 
-            box-sizing: border-box; font-size: 16px !important; 
-            margin-bottom: 8px; 
+            width: 100%; height: 38px; padding: 0 8px; border: 2px solid black; 
+            font-size: 16px !important; margin-bottom: 8px; display: block;
         }
         
-        .button-row { display: table; width: 100%; border-collapse: separate; border-spacing: 0; }
+        /* Table layout is the most reliable for Kindle button alignment */
+        .button-row { display: table; width: 100%; border-spacing: 6px 0; margin-left: -6px; }
+        .btn-cell { display: table-cell; vertical-align: top; }
         
         .sys-btn { 
-            background: white; border: 2px solid black; font-weight: bold; 
-            padding: 8px; cursor: pointer; text-transform: uppercase; 
-            box-sizing: border-box; box-shadow: none; 
+            width: 100%; height: 38px; background: white; border: 2px solid black; 
+            font-weight: bold; cursor: pointer; text-transform: uppercase; 
+            padding: 0; line-height: 34px; /* Centers text vertically */
+            box-shadow: none; display: block;
         }
         .sys-btn:active { background: black; color: white !important; }
         
-        /* 75% / 25% split with manual margin for Kindle */
-        #search-button { width: 70%; float: left; }
-        .clear-btn { width: 25%; float: right; font-size: 18px; }
+        /* 75/25 distribution */
+        .cell-search { width: 75%; }
+        .cell-x { width: 25%; }
+        .clear-btn { font-size: 18px; }
 
         /* --- NAVIGATION CLUSTERS --- */
         .panel-bottom-right { 
             position: absolute; bottom: 20px; right: 20px; 
-            z-index: 500; display: block; text-align: center;
+            z-index: 500; display: block;
         }
 
-        /* Zoom Cluster: Manual spacing for Kindle */
-        .zoom-controls { 
-            position: relative; display: inline-block; padding: 4px; 
-            margin-bottom: 12px; /* Gap between Zoom and D-Pad */
+        /* Zoom Cluster */
+        .zoom-wrapper { 
+            position: relative; padding: 4px; margin-bottom: 12px; 
+            right: 0; display: block; width: 47px; /* 35px + 8px padding + 4px border */
         }
+        
         .zoom-btn { 
             width: 35px; height: 35px; background: white; 
             border: 2px solid black; font-weight: bold; font-size: 1.2rem; 
-            display: block; box-shadow: none;
+            display: block; line-height: 31px; padding: 0;
         }
-        #zoom-in-btn { margin-bottom: 4px; } /* Manual gap between + and - */
+        .zoom-sep { height: 4px; } /* Fixed 4px gap to match D-Pad */
 
-        /* D-Pad: Grid gap is usually okay, but we'll reinforce it */
-        .d-pad { 
-            position: relative; display: grid; 
-            grid-template-columns: repeat(3, 35px); 
-            gap: 4px; padding: 4px; 
-        }
-
+        /* D-Pad Cluster */
+        .d-pad { position: relative; padding: 4px; display: block; }
+        .d-table { border-collapse: separate; border-spacing: 4px; }
+        
         .d-btn { 
             width: 35px; height: 35px; background: white; 
             border: 2px solid black; font-weight: bold; 
-            font-size: 1.2rem; display: flex; align-items: center; 
-            justify-content: center; box-shadow: none;
+            font-size: 1.2rem; display: block; line-height: 31px; 
+            padding: 0; text-align: center;
         }
         .zoom-btn:active, .d-btn:active { background: black; color: white !important; }
         
-        /* Point button - Pure white background */
+        /* Point button - Plain white */
         .d-btn.center { font-size: 0.7rem; background: white; }
-
-        /* Clear floats */
-        .button-row:after { content: ""; display: table; clear: both; }
     </style>
 </head>
 <body>
@@ -108,23 +102,37 @@
         <div class="overlay-panel panel-top-left">
             <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
             <div class="button-row">
-                <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
-                <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
+                <div class="btn-cell cell-search">
+                    <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
+                </div>
+                <div class="btn-cell cell-x">
+                    <button class="sys-btn clear-btn" onclick="clearSearch()">X</button>
+                </div>
             </div>
         </div>
 
         <!-- Navigation Clusters -->
         <div class="panel-bottom-right">
-            <div class="zoom-controls">
-                <button class="zoom-btn" id="zoom-in-btn" onclick="map.zoomIn()">+</button>
+            <div class="zoom-wrapper">
+                <button class="zoom-btn" onclick="map.zoomIn()">+</button>
+                <div class="zoom-sep"></div>
                 <button class="zoom-btn" onclick="map.zoomOut()">-</button>
             </div>
+            
             <div class="d-pad">
-                <div></div><button class="d-btn" onclick="panMap(0, -1)">▲</button><div></div>
-                <button class="d-btn" onclick="panMap(-1, 0)">◀</button>
-                <button class="d-btn center" onclick="resetView()">●</button>
-                <button class="d-btn" onclick="panMap(1, 0)">▶</button>
-                <div></div><button class="d-btn" onclick="panMap(0, 1)">▼</button><div></div>
+                <table class="d-table">
+                    <tr>
+                        <td></td><td><button class="d-btn" onclick="panMap(0, -1)">▲</button></td><td></td>
+                    </tr>
+                    <tr>
+                        <td><button class="d-btn" onclick="panMap(-1, 0)">◀</button></td>
+                        <td><button class="d-btn center" onclick="resetView()">●</button></td>
+                        <td><button class="d-btn" onclick="panMap(1, 0)">▶</button></td>
+                    </tr>
+                    <tr>
+                        <td></td><td><button class="d-btn" onclick="panMap(0, 1)">▼</button></td><td></td>
+                    </tr>
+                </table>
             </div>
         </div>
         <div id="map"></div>
