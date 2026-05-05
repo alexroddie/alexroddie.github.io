@@ -30,7 +30,6 @@
             image-rendering: -webkit-optimize-contrast;
         }
 
-        /* UI PANELS */
         .overlay-panel { position: absolute; background: white; border: 2px solid black; padding: 10px; z-index: 500; box-shadow: 2px 2px 0px rgba(0,0,0,0.5); }
         .panel-top-left { top: 10px; left: 10px; width: 280px; }
         
@@ -84,7 +83,7 @@
     <script>
         let map = null;
         let mapType = 'gl';
-        let waypoints = []; // Array to store multiple markers
+        let waypoints = []; 
         let lastPinCoords = null; 
         const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         
@@ -121,15 +120,16 @@
         };
 
         function addPin(lat, lon, isGPX = false) {
-            if (!isGPX) clearMarkers(); // Search results clear the map, GPX adds to it
-            
+            if (!isGPX) clearMarkers();
             lastPinCoords = {lat: lat, lon: lon};
             let marker;
             
             if (mapType === 'gl') {
-                marker = new maplibregl.Marker({ color: 'black' }).setLngLat([lon, lat]).addTo(map);
+                const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`<div onclick="clearMarkers()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
+                marker = new maplibregl.Marker({ color: 'black' }).setLngLat([lon, lat]).setPopup(popup).addTo(map);
             } else {
                 marker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
+                marker.bindPopup(`<div onclick="clearMarkers()" style="cursor:pointer; font-weight:bold;">Remove Pin</div>`);
             }
             waypoints.push(marker);
         }
@@ -156,32 +156,24 @@
             }
         }
 
-        // --- GPX PROCESSING ---
         function loadGPX(input) {
             const file = input.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = (e) => {
                 const parser = new DOMParser();
                 const xml = parser.parseFromString(e.target.result, "text/xml");
                 const wpts = xml.getElementsByTagName("wpt");
-                
-                if (wpts.length === 0) return alert("No waypoints found in GPX.");
-
+                if (wpts.length === 0) return;
                 clearMarkers();
                 const bounds = mapType === 'gl' ? new maplibregl.LngLatBounds() : L.latLngBounds();
-
                 for (let i = 0; i < wpts.length; i++) {
                     const lat = parseFloat(wpts[i].getAttribute("lat"));
                     const lon = parseFloat(wpts[i].getAttribute("lon"));
                     addPin(lat, lon, true);
-                    
                     if (mapType === 'gl') bounds.extend([lon, lat]);
                     else bounds.extend([lat, lon]);
                 }
-
-                // Center map on the loaded GPX data
                 if (mapType === 'gl') map.fitBounds(bounds, { padding: 50 });
                 else map.fitBounds(bounds, { padding: [50, 50] });
             };
