@@ -58,7 +58,7 @@
     .info-block, .footer { font-size: 20px; line-height: 1.4; }
   }
 
-  /* --- RESPONSIVE / MOBILE - 3-ACROSS GRID RESTORED --- */
+  /* --- RESPONSIVE / MOBILE - SPACED & SYMMETRICAL --- */
   @media screen and (max-width: 840px) {
     body { overflow-y: auto; }
     .container { width: 100vw; min-height: 100vh; padding: 30px 15px; text-align: center; display: block; }
@@ -69,15 +69,16 @@
     .date-line { font-size: 16px; margin: 6px 0; }
     .sun { font-size: 15px; display: block; margin-top: 8px; }
     
+    /* Widened gap and auto-sizing for Kindle clarity */
     .main-stats { 
       display: flex; 
       justify-content: center; 
       align-items: center; 
-      gap: 50px; 
+      gap: 80px; 
       margin: 15px 0 25px; 
     }
-    .col-center { text-align: right; flex: 0 1 auto; }
-    .col-right { text-align: right; flex: 0 1 auto; } 
+    .col-center { text-align: right; flex: 0 0 auto; }
+    .col-right { text-align: right; flex: 0 0 auto; } 
     
     .temp-big { font-size: 80px; line-height: 0.9; }
     .cond-big { font-size: 20px; margin-top: -2px; }
@@ -87,7 +88,7 @@
     
     .flourish-swoosh, .quote { display: none !important; }
 
-    /* RESTORED 3-ACROSS GRID */
+    /* 3-ACROSS GRID */
     .hourly-row { 
       display: grid; 
       grid-template-columns: repeat(3, 1fr); 
@@ -95,10 +96,10 @@
       border-bottom: 3px solid #000; 
       padding: 15px 0; 
       margin: 25px 0; 
-      column-gap: 10px;
+      column-gap: 15px;
     }
     .h-col, .later-col { 
-      padding: 10px 0; 
+      padding: 12px 0; 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
@@ -115,7 +116,7 @@
 </head>
 <body>
 <div id="dashboard" class="container">
-  <div style="text-align:center; padding-top:100px;">Syncing Weather Data...</div>
+  <div style="text-align:center; padding-top:100px;">Syncing...</div>
 </div>
 
 <script>
