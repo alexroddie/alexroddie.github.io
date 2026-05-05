@@ -128,11 +128,11 @@ body{{
     .date-header {{ font-size: 28px; margin-top: 0; line-height: 1.4; }}
     .body-text {{ font-size: 16px; line-height: 1.5; margin-bottom: 15px; }}
     
-    /* REVEAL MOBILE LINKS */
+    /* REVEAL MOBILE LINKS (Restored to 20px) */
     .mobile-links {{
         display: block;
         margin-top: 16px;
-        font-size: 16px;
+        font-size: 20px;
     }}
     
     .mobile-links a {{ color: #000; text-decoration: none; }}
@@ -155,10 +155,10 @@ body{{
         content: '\\25BC\\FE0E';
     }}
     
-    /* INCREASED INDENTATION FOR SUB-MENU ITEMS */
+    /* ADJUSTED INDENTATION (30px) */
     .mobile-links ul {{ 
         margin: 0; 
-        padding-left: 40px; 
+        padding-left: 30px; 
         list-style-type: none; 
     }}
     .mobile-links li {{ margin-bottom: 8px; }}
