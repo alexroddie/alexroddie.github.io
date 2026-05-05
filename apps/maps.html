@@ -12,8 +12,8 @@
 
     <style>
         :root { --vh: 1vh; }
-        * { -webkit-tap-highlight-color: transparent !important; }
-        a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; }
+        * { -webkit-tap-highlight-color: transparent !important; outline: none; }
+        a, button, input { color: #000000 !important; -webkit-appearance: none; appearance: none; border-radius: 0; }
         html, body {
             margin: 0; padding: 0; width: 100%;
             height: 100vh; height: calc(var(--vh, 1vh) * 100) !important;
@@ -30,6 +30,7 @@
         .panel-top-left { top: 10px; left: 10px; width: 260px; }
         input[type="text"] { width: 100%; padding: 6px; border: 2px solid black; box-sizing: border-box; margin-bottom: 5px; font-size: 16px !important; }
         button.sys-btn { width: 100%; background: white; border: 2px solid black; font-weight: bold; padding: 5px; cursor: pointer; text-transform: uppercase; box-shadow: 2px 2px 0 black; }
+        button.sys-btn:active { background: black; color: white; transform: translate(2px, 2px); box-shadow: none; }
         .panel-bottom-right { position: absolute; bottom: 20px; right: 20px; z-index: 500; display: flex; flex-direction: column; align-items: center; }
         .zoom-controls, .d-pad { background: white; border: 2px solid black; padding: 4px; box-shadow: 4px 4px 0 black; margin-top: 10px; }
         .zoom-btn, .d-btn { width: 35px; height: 35px; background: white; border: 2px solid black; font-weight: bold; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
@@ -40,7 +41,7 @@
     <div class="window">
         <div class="overlay-panel panel-top-left">
             <input type="text" id="search-input" placeholder="Search..." onkeypress="if(event.key==='Enter') searchLocation()">
-            <button class="sys-btn" onclick="searchLocation()">Search</button>
+            <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
         </div>
         <div class="panel-bottom-right">
             <div class="zoom-controls">
@@ -59,25 +60,11 @@
     <script>
         let map = null;
         let mapType = 'gl';
-        let currentCountryCode = ""; // This is the secret to the Perth problem
         const STADIA_API_KEY = '292f4474-40a3-4335-aebb-aa57f6b11d09';
         
         function fixViewportHeight() { document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); if (map) { if (mapType === 'gl') map.resize(); else map.invalidateSize(); } }
         window.addEventListener('resize', fixViewportHeight);
         fixViewportHeight();
-
-        // 1. Silent lateral logic: Identify the country we are currently in
-        async function updateCountryContext() {
-            try {
-                const c = map.getCenter();
-                const url = `https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&layers=address&size=1`;
-                const res = await fetch(url);
-                const data = await res.json();
-                if (data.features && data.features.length > 0) {
-                    currentCountryCode = data.features[0].properties.country_code; // e.g., "GBR" or "GB"
-                }
-            } catch (e) { console.error("Context update failed", e); }
-        }
 
         window.onload = () => {
             const saved = JSON.parse(localStorage.getItem('rekindle_maps_view') || '{"lat":51.5072,"lon":-0.1276,"zoom":13}');
@@ -100,42 +87,53 @@
             map.on('moveend', () => {
                 const c = map.getCenter();
                 localStorage.setItem('rekindle_maps_view', JSON.stringify({lat: c.lat, lon: c.lng, zoom: map.getZoom()}));
-                updateCountryContext(); // Update context whenever map moves
             });
-            
-            updateCountryContext(); // Initial run
         };
 
-        // 2. Simple but Contextual Search
+        // THE LATERAL FIX: Reverse geocode to get country name, then append it.
         async function searchLocation() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
 
-            // Logic: Search with a country filter if we have one, otherwise global.
-            // This allows for fuzzy search while keeping results "local" to your view.
-            let url = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`;
-            if (currentCountryCode) {
-                url += `&boundary.country=${currentCountryCode}`;
-            }
+            const btn = document.getElementById('search-button');
+            btn.innerText = "WAIT...";
 
             try {
-                const res = await fetch(url);
-                const data = await res.json();
+                // 1. Get current country name from center point
+                const c = map.getCenter();
+                const revUrl = `https://api.stadiamaps.com/geocoding/v1/reverse?point.lat=${c.lat}&point.lon=${c.lng}&api_key=${STADIA_API_KEY}&size=1`;
+                const revRes = await fetch(revUrl);
+                const revData = await revRes.json();
+                
+                let countryName = "";
+                if (revData.features && revData.features.length > 0) {
+                    countryName = revData.features[0].properties.country || "";
+                }
+
+                // 2. Search for "UserQuery + CountryName" (e.g. "Perth United Kingdom")
+                // Using Stadia search for fuzzy/typo tolerance
+                let searchUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query + " " + countryName)}&api_key=${STADIA_API_KEY}&size=1`;
+                
+                let res = await fetch(searchUrl);
+                let data = await res.json();
+
+                // 3. If nothing found with country suffix, try global fallback
+                if (!data.features || data.features.length === 0) {
+                    searchUrl = `https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`;
+                    res = await fetch(searchUrl);
+                    data = await res.json();
+                }
+
                 if (data.features && data.features.length > 0) {
                     const [lon, lat] = data.features[0].geometry.coordinates;
                     if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
                     else map.setView([lat, lon], 15);
-                } else if (currentCountryCode) {
-                    // Fallback: If no results found in current country, try global
-                    const globalRes = await fetch(`https://api.stadiamaps.com/geocoding/v1/search?text=${encodeURIComponent(query)}&api_key=${STADIA_API_KEY}&size=1`);
-                    const globalData = await globalRes.json();
-                    if (globalData.features.length > 0) {
-                        const [lon, lat] = globalData.features[0].geometry.coordinates;
-                        if (mapType === 'gl') map.jumpTo({ center: [lon, lat], zoom: 15 });
-                        else map.setView([lat, lon], 15);
-                    }
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error(e); 
+            } finally {
+                btn.innerText = "SEARCH";
+            }
         }
 
         function panMap(dx, dy) { map.panBy([dx * 100, dy * 100], { animate: false }); }
