@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        /* 1. Global Reset & Georgia Font */
+        /* 1. Global Reset & Georgia Font Enforcement */
         * { 
             -webkit-tap-highlight-color: transparent !important; 
             box-sizing: border-box !important; 
@@ -29,17 +29,17 @@
             background: #ffffff; z-index: 1; 
         }
 
-        /* 2. Universal 5px Shadow Panel */
+        /* 2. Universal 5px Standard Panel */
         .shadow-panel { 
             background: #ffffff; 
             border: 2px solid #000000; 
             z-index: 1000; 
             box-shadow: 4px 4px 0 #000000; 
             position: fixed; 
-            padding: 5px; 
+            padding: 5px; /* Unified 5px outer border */
         }
 
-        /* 3. ReKindle Style Search Cluster (Top Left) */
+        /* 3. Search Cluster (Vertical ReKindle Style) */
         .panel-top-left { 
             top: 15px; left: 15px; width: 220px; 
         }
@@ -58,27 +58,26 @@
         }
         .sys-btn:active { background: #000000; color: #ffffff !important; }
 
-        /* 4. Navigation Column (Bottom Right) */
+        /* 4. Navigation Column (Shrink-Wrapped for Margin Consistency) */
         .nav-column { 
             position: fixed; 
             bottom: 25px; 
             right: 20px; 
             z-index: 1000;
-            width: 125px; 
-            text-align: center;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
         }
 
-        /* ReKindle Stacked Zoom Panel */
-        .zoom-panel { 
-            display: inline-block; width: 45px; margin-bottom: 10px; 
-        }
+        /* Standardized 5px Gaps */
+        .zoom-panel { display: inline-block; padding: 5px; margin-bottom: 5px; }
         .zoom-sep { height: 5px; }
 
-        /* ReKindle Grid Panning Panel */
-        .dpad-panel { display: inline-block; width: 125px; }
+        .dpad-panel { display: inline-block; padding: 5px; }
         .dpad-table { border-collapse: separate; border-spacing: 5px; margin: -5px; }
         .dpad-table td { padding: 0; }
         
+        /* Nav Buttons: 35x35px with 24px SVG Icons */
         .ctrl-btn { 
             width: 35px; height: 35px; cursor: pointer; background: #fff;
             border: 2px solid black; display: block; position: relative;
@@ -91,13 +90,15 @@
         .ctrl-btn:active { background: #000000; }
         .ctrl-btn:active svg { fill: #ffffff; }
 
+        /* Leaflet Popup Alignment */
+        .leaflet-popup-content { font-size: 14px; text-align: center; margin: 8px; }
     </style>
 </head>
 <body>
 
     <div id="map"></div>
 
-    <!-- Search Cluster: Vertical ReKindle Layout -->
+    <!-- Search Cluster -->
     <div class="shadow-panel panel-top-left">
         <input type="text" id="search-input" placeholder="Search location..." onkeypress="if(event.keyCode==13)searchLocation()">
         <button class="sys-btn" id="search-button" onclick="searchLocation()">Search</button>
@@ -105,15 +106,15 @@
 
     <!-- Navigation Column -->
     <div class="nav-column">
-        <!-- Zoom -->
-        <div class="shadow-panel zoom-panel" style="position: relative; left: auto; bottom: auto; right: auto;">
+        <!-- Zoom Panel -->
+        <div class="shadow-panel zoom-panel">
             <button class="ctrl-btn" onclick="map.zoomIn()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
             <div class="zoom-sep"></div>
             <button class="ctrl-btn" onclick="map.zoomOut()"><svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg></button>
         </div>
 
-        <!-- Panning -->
-        <div class="shadow-panel dpad-panel" style="position: relative; left: auto; bottom: auto; right: auto;">
+        <!-- Panning Panel -->
+        <div class="shadow-panel dpad-panel">
             <table class="dpad-table">
                 <tr>
                     <td></td>
@@ -169,10 +170,9 @@
             lastPinCoords = {lat: lat, lon: lon};
             currentMarker = L.marker([lat, lon], { icon: blackIcon }).addTo(map);
             
-            // Per request: Removing pin via tap on the pin itself
-            currentMarker.on('click', function() {
-                clearMarker();
-            });
+            // Restored Pop-up clear system
+            var popupContent = '<div onclick="clearMarker()" style="cursor:pointer; font-weight:bold; font-family: Georgia, serif;">Remove Pin</div>';
+            currentMarker.bindPopup(popupContent).openPopup();
         }
 
         function clearMarker() { 
@@ -182,10 +182,7 @@
         }
 
         function resetView() { 
-            // Defaults to most recent search pin if available
-            if(lastPinCoords) {
-                map.setView([lastPinCoords.lat, lastPinCoords.lon], 15); 
-            }
+            if(lastPinCoords) map.setView([lastPinCoords.lat, lastPinCoords.lon], 15); 
         }
 
         function panMap(dx, dy) { 
