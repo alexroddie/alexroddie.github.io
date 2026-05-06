@@ -324,11 +324,8 @@ function renderDashboard(data) {
 
   const tomIdx = day_now + 1;
   const tomTc = d.daily.weather_code[tomIdx];
-  const tomGu = d.daily.wind_gusts_10m_max[tomIdx];
-  const tomWi = d.daily.wind_speed_10m_max[tomIdx];
-  const tMax = Math.round(d.daily.temperature_2m_max[tomIdx]);
-  const tMin = Math.round(d.daily.temperature_2m_min[tomIdx]);
 
+  let tMax = -99, tMin = 99, tomWi = 0, tomGu = 0;
   let tomPhRes = -1, tomPhCode = 0;
   let daylightRainCount = 0, daylightSnowCount = 0;
   
@@ -337,6 +334,16 @@ function renderDashboard(data) {
   const daylightEndIdx = endOfDayIdx + 19; // 6:00 PM tomorrow
   
   for (let j = tomStartIdx; j <= tomEndIdx; j++) {
+    let ht = d.hourly.temperature_2m[j];
+    if (ht > tMax) tMax = ht;
+    if (ht < tMin) tMin = ht;
+    
+    let hw = d.hourly.wind_speed_10m[j];
+    if (hw > tomWi) tomWi = hw;
+    
+    let hg = d.hourly.wind_gusts_10m[j];
+    if (hg > tomGu) tomGu = hg;
+
     let p = d.hourly.precipitation_probability[j];
     
     // Alert Track: Capture the very first hour of rain for the whole day
@@ -352,6 +359,8 @@ function renderDashboard(data) {
       if (hc >= 71 && hc <= 86) daylightSnowCount++;
     }
   }
+  tMax = Math.round(tMax);
+  tMin = Math.round(tMin);
 
   let tomCond = "Cloudy.";
   if (tomTc >= 95) tomCond = "Thunder.";
