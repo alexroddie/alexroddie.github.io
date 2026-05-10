@@ -27,7 +27,8 @@
     transition: transform 0.3s ease;
   }
 
-  /* Trigger for narrow displays (Kindle Portrait). Rotates -90deg and scales to fit 800px height */
+  /* Trigger for narrow displays (Kindle Portrait). Rotates -90deg and scales to fit 800px height. 
+     Set to 799px so TRMNL's 800px screenshot bot ignores it. */
   @media screen and (max-width: 799px) {
     .kindle-wrapper {
       transform: rotate(-90deg) scale(0.92);
@@ -36,10 +37,10 @@
   }
 
   .container {
-    width: 840px; height: 480px; background: #fff; color: #000;
+    width: 800px; height: 480px; background: #fff; color: #000;
     font: 400 16px Georgia, serif;
     display: flex; flex-direction: column; justify-content: space-between;
-    padding: 30px 100px 30px 35px;
+    padding: 30px 45px;
     text-rendering: optimizeLegibility;
     position: relative;
     overflow: hidden;
@@ -82,7 +83,6 @@ async function fetchWeather() {
   const lat = 56.60712432274488;
   const lon = -3.0858753489219812;
   
-  // URL UPDATED: &current= added to fetch live metrics
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max,weather_code,wind_speed_10m_max,wind_gusts_10m_max&timezone=Europe%2FLondon&forecast_days=3&wind_speed_unit=mph`;
 
   try {
@@ -181,7 +181,6 @@ function renderDashboard(data) {
   const current_h_int = ukTime.getHours();
   const endOfDayIdx = hr_now + (23 - current_h_int); 
   
-  // LIVE VARIABLES: Pointer shifts to live 'd.current' logic (Except probability)
   const cur_p = d.hourly.precipitation_probability[hr_now];
   const cur_c = d.current.weather_code;
   const cur_w = d.current.wind_speed_10m;
