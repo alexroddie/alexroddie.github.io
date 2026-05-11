@@ -88,19 +88,22 @@
 </div>
 
 <script>
-function fetchWeatherSync() {
-  const lat = 56.60712432274488;
-  const lon = -3.0858753489219812;
-  
-  // Cache buster: ensures the URL is completely unique every millisecond
-  const cb = new Date().getTime(); 
-  
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max,weather_code,wind_speed_10m_max,wind_gusts_10m_max&timezone=Europe%2FLondon&forecast_days=3&wind_speed_unit=mph&_cb=${cb}`;
+// 1. The Modern, Smooth Version (For your Phone)
+async function fetchWeatherAsync(url) {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    renderDashboard(data);
+  } catch (error) {
+    document.getElementById('dashboard').innerHTML = `<div style="text-align:center; padding-top:200px; color:red;">Failed to load data. Ensure you have an internet connection.</div>`;
+  }
+}
 
+// 2. The Frozen, Synchronous Hack (For TRMNL Bot)
+function fetchWeatherSync(url) {
   try {
     var request = new XMLHttpRequest();
-    // The 'false' parameter forces the browser to freeze and wait for the Open-Meteo data
-    request.open('GET', url, false);  
+    request.open('GET', url, false); // false = synchronous freeze 
     request.send(null);
 
     if (request.status === 200) {
@@ -114,6 +117,25 @@ function fetchWeatherSync() {
   }
 }
 
+// 3. The Traffic Cop (Decides which version to run)
+function initDashboard() {
+  const lat = 56.60712432274488;
+  const lon = -3.0858753489219812;
+  const cb = new Date().getTime(); // Cache buster
+  
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max,weather_code,wind_speed_10m_max,wind_gusts_10m_max&timezone=Europe%2FLondon&forecast_days=3&wind_speed_unit=mph&_cb=${cb}`;
+
+  // Check if the screen is exactly 800x480 (TRMNL's bot)
+  const isTRMNL = (window.innerWidth === 800 && window.innerHeight === 480);
+
+  if (isTRMNL) {
+    fetchWeatherSync(url);
+  } else {
+    fetchWeatherAsync(url);
+  }
+}
+
+// Helper Functions
 function getOrdinalNum(n) {
   const s = ["th", "st", "nd", "rd"];
   const v = n % 100;
@@ -439,8 +461,8 @@ function renderDashboard(data) {
   `;
 }
 
-// Initialize the sync fetch call
-fetchWeatherSync();
+// Start the app
+initDashboard();
 </script>
 </body>
 </html>
