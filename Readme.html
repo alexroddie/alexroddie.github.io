@@ -141,11 +141,11 @@
         </ul>
 
         <h3>Weather Now <code>weathernow/index.html</code></h3>
-        <p>A dedicated page for localized, real-time weather conditions.</p>
+        <p>A custom, highly intelligent weather dashboard built specifically for E-Ink displays (like TRMNL and Kindle).</p>
         <ul>
-            <li><strong>Features:</strong> Displays current temperature, wind speed, and a simplified 3-day forecast.</li>
-            <li><strong>Optimization:</strong> Uses a "mobile-first" and "E-Ink first" layout. Data is presented in a clear, tabular, or list-based format that renders perfectly in grayscale.</li>
-            <li><strong>Data Source:</strong> Usually configured for a specific home location or region. The Open-Meteo API is the data source.</li>
+            <li><strong>Features:</strong> Displays current temperature, wind speed, dynamic forecasting summaries, and intelligent array slicing for future time-blocks.</li>
+            <li><strong>Optimization:</strong> Completely static and pre-rendered. Zero client-side JavaScript fetching is required, making it load instantly on slow E-Ink processors.</li>
+            <li><strong>Data Source & Architecture:</strong> Powered by the Open-Meteo API. To bypass API rate limits, a local Synology NAS fetches the data every 15 minutes, generates this static HTML file, and deploys it automatically.</li>
             <li><strong>Documentation:</strong> <a href="https://alexroddie.github.io/weathernow/Readme.html">Readme.html</a></li>
         </ul>
 
@@ -189,7 +189,7 @@
         <ul>
             <li><strong>Hosting:</strong> Hosted on GitHub Pages for 100% uptime and SSL security.</li>
             <li><strong>Framework:</strong> Built with raw HTML5 and CSS3 (No heavy frameworks like Bootstrap or React).</li>
-            <li><strong>Maintenance:</strong> To update links or the Weather Now location, the files must be edited in the GitHub repository.</li>
+            <li><strong>Maintenance:</strong> To update links on the main index or Mountain Dashboard, edit the files directly in the GitHub repository. <strong>Crucially, Weather Now files must ONLY be edited locally on the Synology NAS</strong>, as any direct GitHub edits to the <code>weathernow</code> folder will be permanently overwritten every 15 minutes by the automated deployment script.</li>
         </ul>
     </section>
 
@@ -207,4 +207,3 @@
 
 </body>
 </html>
-       
