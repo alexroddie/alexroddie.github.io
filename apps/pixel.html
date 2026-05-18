@@ -14,7 +14,7 @@
             --text-color: #000000;
             --border: 2px solid #000000;
             --shadow: 4px 4px 0px #000000;
-            --stripe-pattern: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px, #000 4px);
+            --stripe-pattern: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px);
         }
 
         body {
@@ -65,8 +65,9 @@
 
         .title-stripes {
             position: absolute;
-            top: 4px;
-            bottom: 4px;
+            /* Adjusted top/bottom to ensure a 24px height (multiple of 4) to fix ghost lines */
+            top: 6px;
+            bottom: 5px;
             left: 4px;
             right: 4px;
             background-image: var(--stripe-pattern);
@@ -119,7 +120,7 @@
             box-shadow: none;
         }
 
-        .close-box svg { width: 12px; height: 12px; }
+        .close-box svg { width: 14px; height: 14px; display: block; }
 
         .screen {
             display: none;
@@ -175,20 +176,11 @@
             border-bottom: 2px solid black;
         }
         
-        .gallery-item.new-btn span { 
-            font-size: 3rem; 
-            font-weight: bold; 
-            color: black; 
-        }
+        .gallery-item.new-btn span { font-size: 3rem; font-weight: bold; color: black; }
 
         .item-info { font-size: 0.8rem; margin-top: 5px; text-align: center; font-weight: bold; }
 
-        .delete-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            z-index: 10;
-        }
+        .delete-btn { position: absolute; top: 5px; right: 5px; z-index: 10; }
 
         .game-content {
             display: flex;
@@ -217,7 +209,7 @@
 
         .toolbar-wrapper {
             display: flex;
-            gap: 30px; /* Substantial gap for separation */
+            gap: 30px;
             margin-top: 15px;
             flex-wrap: wrap;
             justify-content: center;
@@ -230,7 +222,7 @@
             padding: 0;
             display: none; 
             z-index: 10;
-            margin: 5px; /* Extra margin safeguard */
+            margin: 5px;
         }
 
         .floating-palette .sys-btn {
@@ -295,10 +287,7 @@
             width: 100%;
         }
 
-        .btn-row .sys-btn {
-            flex: 1;
-            white-space: nowrap;
-        }
+        .btn-row .sys-btn { flex: 1; white-space: nowrap; }
 
         .cancel-btn {
             display: inline-block !important;
@@ -313,7 +302,10 @@
 
     <div id="new-drawing-modal" class="modal-overlay">
         <div class="modal-box">
-            <h3 style="margin-top:0;">New Drawing</h3>
+            <div class="title-bar" style="margin-bottom: 20px; border: 2px solid black;">
+                <div class="title-stripes"></div>
+                <span class="title-text">New Drawing</span>
+            </div>
             <p style="margin-bottom:20px; font-weight: bold;">Select grid size:</p>
             <div class="btn-row">
                 <button class="sys-btn" onclick="createNew(16)">16x16</button>
