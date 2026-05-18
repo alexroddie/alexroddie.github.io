@@ -382,38 +382,6 @@
             transform: translate(3px, 3px);
         }
 
-        input[type=range].gradient-slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 25px;
-            background: linear-gradient(to right, black, white);
-            border: 2px solid black;
-            outline: none;
-            cursor: pointer;
-            margin: 0;
-        }
-
-        input[type=range].gradient-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 15px;
-            height: 35px;
-            background: white;
-            border: 2px solid black;
-            cursor: pointer;
-            box-shadow: 2px 2px 0 black;
-        }
-
-        input[type=range].gradient-slider::-moz-range-thumb {
-            width: 15px;
-            height: 35px;
-            background: white;
-            border: 2px solid black;
-            cursor: pointer;
-            box-shadow: 2px 2px 0 black;
-        }
-
         #modal-overlay {
             display: none;
             position: fixed;
@@ -465,35 +433,12 @@
             display: flex;
             width: 100%;
             border-bottom: 2px solid black;
-            background: white;
-            padding: 2px 5px;
+            background: #d6d6d6;
+            padding: 10px;
             box-sizing: border-box;
             flex-shrink: 0;
             align-items: center;
-        }
-
-        .menu-bar>*+* {
-            margin-left: 15px;
-        }
-
-        .menu-btn {
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            padding: 2px 6px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-transform: capitalize;
-            font-weight: normal;
-        }
-
-        .menu-btn:hover,
-        .menu-btn:active {
-            background: black;
-            color: white;
-            transform: none;
-            box-shadow: none;
+            justify-content: flex-end;
         }
     </style>
 </head>
@@ -553,16 +498,6 @@
         </div>
     </div>
 
-    <div id="wallpaper-modal" class="modal-overlay">
-        <div class="modal-box">
-            <h3>Wallpaper Set!</h3>
-            <p style="margin-bottom:20px;">Your new wallpaper has been applied to this session.</p>
-            <div style="display: flex; justify-content: center">
-                <button class="sys-btn" onclick="closeModal('wallpaper-modal')">OK</button>
-            </div>
-        </div>
-    </div>
-
     <div class="window">
         <div class="title-bar">
             <div class="title-stripes"></div>
@@ -587,19 +522,13 @@
 
         <div id="screen-editor" class="screen">
             <div class="menu-bar">
-                <button class="menu-btn" onclick="downloadImage()">Download</button>
-                <button class="menu-btn" onclick="setWallpaper()">Preview Background</button>
+                <button class="sys-btn" style="margin: 0;" onclick="downloadImage()">Download</button>
             </div>
 
             <div class="game-content">
-
                 <div id="canvas-container">
                     <canvas id="pixel-canvas"></canvas>
                     <canvas id="grid-canvas"></canvas>
-                </div>
-
-                <div id="slider-container" style="margin-bottom: 10px;">
-                    <input type="range" id="shade-slider" class="gradient-slider" min="0" max="100" value="0" title="Shade Selector" oninput="updateShade(this.value)">
                 </div>
 
                 <div class="controls-container">
@@ -654,7 +583,6 @@
         let cellSize;
         let grid;
         let currentTool = 'pen';
-        let currentShade = 1; 
         let isDrawing = false;
 
         let lastDrawnRow = -1;
@@ -925,9 +853,6 @@
             const menuBar = document.querySelector('.menu-bar');
             const menuBarH = (menuBar && menuBar.offsetParent !== null) ? menuBar.offsetHeight : 0;
 
-            const sliderEl = document.getElementById('slider-container');
-            const sliderH = sliderEl && sliderEl.offsetParent !== null ? (sliderEl.offsetHeight + 10) : 0;
-
             const controlsList = document.querySelectorAll('.controls');
             let controlsH = 0;
             controlsList.forEach(el => {
@@ -936,7 +861,8 @@
                 }
             });
 
-            const uiHeight = titleBarH + menuBarH + sliderH + controlsH + 30;
+            // Removed sliderH from calculation
+            const uiHeight = titleBarH + menuBarH + controlsH + 30;
             const availableHeight = maxWindowHeight - uiHeight;
             const containerHeight = availableHeight;
 
@@ -958,11 +884,6 @@
             container.style.width = canvasSize + 'px';
             container.style.height = canvasSize + 'px';
             container.style.flexGrow = '0'; 
-
-            const sliderCont = document.getElementById('slider-container');
-            if (sliderCont) {
-                sliderCont.style.width = canvasSize + 'px';
-            }
 
             cellSize = canvas.width / gridSize;
 
@@ -1007,11 +928,8 @@
         function drawPixel(row, col, value) {
             if (value === 0) {
                 ctx.fillStyle = 'white';
-            } else if (value === 1) {
-                ctx.fillStyle = 'black';
             } else {
-                const shade = Math.round((1 - value) * 255);
-                ctx.fillStyle = `rgb(${shade},${shade},${shade})`;
+                ctx.fillStyle = 'black';
             }
             ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
         }
@@ -1050,8 +968,7 @@
             const row = Math.floor(y / cellSize);
 
             if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
-                const penVal = Math.round(currentShade * 100) / 100;
-                const newValue = (currentTool === 'eraser') ? 0 : penVal;
+                const newValue = (currentTool === 'eraser') ? 0 : 1;
 
                 if (lastDrawnRow !== -1 && lastDrawnCol !== -1) {
                     drawLine(lastDrawnRow, lastDrawnCol, row, col, newValue);
@@ -1194,50 +1111,11 @@
             if (tool === 'eraser') document.getElementById('tool-eraser').classList.add('active');
         }
 
-        function updateShade(val) {
-            currentShade = 1.0 - (val / 100);
-            if (currentTool !== 'pen') setTool('pen');
-        }
-
         function downloadImage() {
             const link = document.createElement('a');
             link.download = 'pixel-art.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
-        }
-
-        function setWallpaper() {
-            const tileCanvas = document.createElement('canvas');
-            tileCanvas.width = gridSize;
-            tileCanvas.height = gridSize;
-            const tileCtx = tileCanvas.getContext('2d');
-
-            tileCtx.fillStyle = '#ffffff';
-            tileCtx.fillRect(0, 0, gridSize, gridSize);
-
-            for (let row = 0; row < gridSize; row++) {
-                for (let col = 0; col < gridSize; col++) {
-                    const value = grid[row][col];
-                    if (value !== 0) {
-                        if (value === 1) {
-                            tileCtx.fillStyle = '#000000';
-                        } else {
-                            const shade = Math.round((1 - value) * 255);
-                            tileCtx.fillStyle = `rgb(${shade},${shade},${shade})`;
-                        }
-                        tileCtx.fillRect(col, row, 1, 1);
-                    }
-                }
-            }
-
-            const dataUrl = tileCanvas.toDataURL('image/png');
-            const cssUrl = `url("${dataUrl}")`;
-            const sizeVal = `${gridSize}px ${gridSize}px`;
-
-            document.body.style.backgroundImage = cssUrl;
-            document.body.style.backgroundSize = sizeVal;
-
-            openModal('wallpaper-modal');
         }
     </script>
 </body>
