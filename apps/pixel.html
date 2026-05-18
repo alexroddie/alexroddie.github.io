@@ -19,6 +19,8 @@
 
         body {
             image-rendering: pixelated;
+            background-repeat: repeat;
+            background-position: top left;
             background-color: #ffffff;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='1' height='1' fill='black'/%3E%3Crect x='1' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
             background-size: 4px 4px;
@@ -279,22 +281,24 @@
             margin-top: 10px;
         }
         
-        /* New Drawing Modal Fix */
+        /* Fixed Button Row for New Drawing Dialogue */
         .btn-row {
             display: flex;
             justify-content: center;
             gap: 8px;
             width: 100%;
         }
+
         .btn-row .sys-btn {
             flex: 1;
-            min-width: 0; /* Ensures they fit on one line */
             white-space: nowrap;
         }
+
+        /* Fixed Cancel Button Sizing */
         .cancel-btn {
-            display: inline-block;
-            width: auto;
-            margin-top: 20px;
+            display: inline-block !important;
+            width: auto !important;
+            margin-top: 20px !important;
             padding: 8px 20px !important;
         }
 
@@ -310,13 +314,6 @@
 </head>
 
 <body>
-
-    <div id="modal-overlay" class="modal-overlay">
-        <div class="modal-box">
-            <div id="modal-message" class="modal-text" style="margin-bottom:20px; font-weight:bold;"></div>
-            <div id="modal-btns" style="display:flex; justify-content:center; gap:10px;"></div>
-        </div>
-    </div>
 
     <div id="new-drawing-modal" class="modal-overlay">
         <div class="modal-box">
@@ -403,13 +400,16 @@
         <button id="tool-eraser" class="sys-btn" onclick="setTool('eraser')" title="Eraser">
             <svg viewBox="1 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"></path></svg>
         </button>
+        
         <button id="tool-bucket" class="sys-btn" onclick="setTool('bucket')" title="Flood Fill">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 10 L16 6 L20 14 L10 18 Z"></path>
-                <path d="M10 8 C8 8 5 10 5 14"></path>
-                <path d="M19 13 L22 20" stroke-width="3"></path>
+                <path d="M4 11 L14 7 L18 15 C18 19, 10 23, 8 19 Z" fill="white" />
+                <path d="M4 11 L14 7 L18 15 C18 19, 10 23, 8 19 Z" />
+                <path d="M4 11 C4 3, 17 3, 17 10" />
+                <path d="M17 11 C22 16, 22 23, 20 24 C19 21, 17 16, 17 11 Z" fill="currentColor" stroke="none" />
             </svg>
         </button>
+
         <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
             <svg viewBox="4 4 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M18 6L6 18M6 6l12 12"></path></svg>
         </button>
@@ -546,7 +546,7 @@
             const x = Math.floor(col * cellSize), y = Math.floor(row * cellSize);
             const w = Math.floor((col + 1) * cellSize) - x, h = Math.floor((row + 1) * cellSize) - y;
             ctx.fillStyle = value === 1 ? 'black' : 'white';
-            // FIXED GHOST LINES: Erasing now clears the +1px expanded area to perfectly restore the grid.
+            // FIXED GHOST LINES: Fill expansion (+1) for BOTH black and white to ensure the grid overlap is cleared.
             ctx.fillRect(x, y, w + 1, h + 1);
         }
 
