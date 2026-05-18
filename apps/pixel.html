@@ -115,10 +115,7 @@
             text-transform: none;
         }
         
-        .close-box.fixed-w {
-            width: 18px;
-            padding: 0;
-        }
+        .close-box.fixed-w { width: 18px; padding: 0; }
 
         .close-box:active {
             background: black;
@@ -135,14 +132,9 @@
             overflow: hidden;
         }
 
-        .screen.active {
-            display: flex;
-        }
+        .screen.active { display: flex; }
 
-        #screen-gallery {
-            padding: 0;
-            background: #eee;
-        }
+        #screen-gallery { background: #eee; }
 
         .gallery-header {
             padding: 10px;
@@ -177,44 +169,18 @@
             position: relative;
         }
 
-        .gallery-item:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 #ccc;
-            background: black;
-            color: white;
-        }
-
         .gallery-preview {
             width: 100%;
             flex-grow: 1;
             border: 1px solid #ddd;
             background: white;
             object-fit: contain;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -webkit-crisp-edges;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
             pointer-events: none;
         }
 
-        .gallery-item.new-btn {
-            justify-content: center;
-            border-style: dashed;
-            background: #fafafa;
-        }
-
-        .gallery-item.new-btn span {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #ccc;
-        }
-
-        .item-info {
-            font-size: 0.8rem;
-            margin-top: 5px;
-            text-align: center;
-            font-weight: bold;
-        }
+        .gallery-item.new-btn { justify-content: center; border-style: dashed; background: #fafafa; }
+        .gallery-item.new-btn span { font-size: 3rem; font-weight: bold; color: #ccc; }
+        .item-info { font-size: 0.8rem; margin-top: 5px; text-align: center; font-weight: bold; }
 
         .delete-btn {
             position: absolute;
@@ -230,12 +196,6 @@
             font-weight: bold;
             cursor: pointer;
             z-index: 10;
-            text-transform: none;
-        }
-
-        .delete-btn:hover {
-            background: black;
-            color: white;
         }
 
         .game-content {
@@ -249,16 +209,11 @@
 
         #canvas-wrapper {
             position: relative;
-            box-sizing: content-box;
             background: white;
             display: block;
         }
 
-        #pixel-canvas {
-            display: block;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-        }
+        #pixel-canvas { display: block; image-rendering: pixelated; }
 
         #grid-canvas {
             position: absolute;
@@ -290,33 +245,14 @@
             align-items: center;
             justify-content: center;
             background: white;
-            box-shadow: none;
             cursor: pointer;
             color: black;
         }
 
-        .floating-palette .sys-btn:last-child {
-            border-right: none;
-        }
-
-        .floating-palette .sys-btn:active,
-        .floating-palette .sys-btn.active {
-            background: black;
-            color: white;
-        }
-
-        .floating-palette .sys-btn:disabled {
-            background: white !important;
-            color: #ccc !important;
-            cursor: default;
-            opacity: 1 !important; 
-        }
-
-        .floating-palette .sys-btn svg {
-            width: 30px; 
-            height: 30px;
-            display: block; 
-        }
+        .floating-palette .sys-btn:last-child { border-right: none; }
+        .floating-palette .sys-btn.active { background: black; color: white; }
+        .floating-palette .sys-btn:disabled { background: white !important; color: #ccc !important; }
+        .floating-palette .sys-btn svg { width: 30px; height: 30px; display: block; }
 
         .modal-overlay {
             display: none;
@@ -341,13 +277,6 @@
             text-align: center;
         }
 
-        .modal-box h3 {
-            margin-top: 0;
-            border-bottom: 2px solid black;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-
         .sys-btn {
             background: white;
             border: 2px solid black;
@@ -358,35 +287,7 @@
             font-family: inherit;
             margin-top: 10px;
         }
-
-        .sys-btn:active {
-            box-shadow: none;
-            transform: translate(3px, 3px);
-        }
-
-        .grid-size-btn {
-            flex: 1;
-            min-width: 65px;
-            padding: 8px 0;
-            text-align: center;
-        }
-
-        .modal-text {
-            margin-bottom: 20px;
-            font-weight: bold;
-            line-height: 1.4;
-            color: black;
-        }
-
-        .modal-btns {
-            display: flex;
-            justify-content: center;
-        }
-
-        .modal-btns>*+* {
-            margin-left: 10px;
-        }
-
+        
         .modal-btn {
             background: white;
             border: 2px solid black;
@@ -394,14 +295,6 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 2px 2px 0 black;
-            font-family: inherit;
-        }
-
-        .modal-btn:active {
-            background: black;
-            color: white;
-            transform: translate(1px, 1px);
-            box-shadow: none;
         }
     </style>
 </head>
@@ -410,20 +303,20 @@
 
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-box">
-            <div id="modal-message" class="modal-text"></div>
-            <div id="modal-btns" class="modal-btns"></div>
+            <div id="modal-message" class="modal-text" style="margin-bottom:20px; font-weight:bold;"></div>
+            <div id="modal-btns" style="display:flex; justify-content:center; gap:10px;"></div>
         </div>
     </div>
 
     <div id="new-drawing-modal" class="modal-overlay">
         <div class="modal-box">
-            <h3>New Drawing</h3>
+            <h3 style="margin-top:0;">New Drawing</h3>
             <p style="margin-bottom:20px; font-weight: bold;">Select grid size:</p>
             <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-                <button class="sys-btn grid-size-btn" onclick="createNew(16)">16x16</button>
-                <button class="sys-btn grid-size-btn" onclick="createNew(32)">32x32</button>
-                <button class="sys-btn grid-size-btn" onclick="createNew(64)">64x64</button>
-                <button class="sys-btn grid-size-btn" onclick="createNew(128)">128x128</button>
+                <button class="sys-btn" onclick="createNew(16)">16x16</button>
+                <button class="sys-btn" onclick="createNew(32)">32x32</button>
+                <button class="sys-btn" onclick="createNew(64)">64x64</button>
+                <button class="sys-btn" onclick="createNew(128)">128x128</button>
             </div>
             <button class="sys-btn" style="margin-top:20px;" onclick="closeModal('new-drawing-modal')">Cancel</button>
         </div>
@@ -432,10 +325,10 @@
     <div id="delete-modal" class="modal-overlay">
         <div class="modal-box">
             <h3>Delete Drawing?</h3>
-            <p style="margin-bottom:20px; font-weight: bold;">Are you sure you want to delete this drawing? This cannot be undone.</p>
-            <div style="display: flex; justify-content: center">
+            <p style="margin-bottom:20px; font-weight: bold;">Are you sure you want to delete this drawing?</p>
+            <div style="display: flex; justify-content: center; gap: 10px;">
                 <button class="sys-btn" id="confirm-delete-btn">Delete</button>
-                <button class="sys-btn" onclick="closeModal('delete-modal')" style="margin-left: 10px">Cancel</button>
+                <button class="sys-btn" onclick="closeModal('delete-modal')">Cancel</button>
             </div>
         </div>
     </div>
@@ -444,9 +337,9 @@
         <div class="modal-box">
             <h3>Rename Drawing</h3>
             <input type="text" id="rename-input" maxlength="20" style="width:80%; padding:5px; margin-bottom:20px; font-family:inherit; font-weight:bold; text-align:center; border:2px solid black;">
-            <div style="display: flex; justify-content: center">
+            <div style="display: flex; justify-content: center; gap: 10px;">
                 <button class="sys-btn" id="confirm-rename-btn">Rename</button>
-                <button class="sys-btn" onclick="closeModal('rename-modal')" style="margin-left: 10px">Cancel</button>
+                <button class="sys-btn" onclick="closeModal('rename-modal')">Cancel</button>
             </div>
         </div>
     </div>
@@ -455,9 +348,9 @@
         <div class="modal-box">
             <h3>Clear Canvas?</h3>
             <p style="margin-bottom:20px; font-weight: bold;">Are you sure you want to clear the canvas?</p>
-            <div style="display: flex; justify-content: center">
+            <div style="display: flex; justify-content: center; gap: 10px;">
                 <button class="sys-btn" onclick="confirmClear()">Yes</button>
-                <button class="sys-btn" onclick="closeModal('clear-modal')" style="margin-left: 10px">No</button>
+                <button class="sys-btn" onclick="closeModal('clear-modal')">No</button>
             </div>
         </div>
     </div>
@@ -473,9 +366,7 @@
 
         <div id="screen-gallery" class="screen active">
             <div class="gallery-header">
-                <div style="display: flex; margin-left: 10px">
-                    <span style="font-weight:bold; text-decoration:underline;">My Drawings</span>
-                </div>
+                <div style="padding:10px; background:white; font-weight:bold; border-bottom:2px solid black;">My Drawings</div>
             </div>
             <div id="gallery-grid" class="gallery-grid">
                 <div class="gallery-item new-btn" onclick="openModal('new-drawing-modal')">
@@ -497,38 +388,30 @@
 
     <div id="tool-palette" class="floating-palette">
         <button id="tool-pen" class="sys-btn active" onclick="setTool('pen')" title="Pen">
-            <svg viewBox="6 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M18 2l4 4-10 10H8v-4L18 2z"></path>
-            </svg>
+            <svg viewBox="6 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2l4 4-10 10H8v-4L18 2z"></path></svg>
         </button>
         <button id="tool-eraser" class="sys-btn" onclick="setTool('eraser')" title="Eraser">
-            <svg viewBox="1 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"></path>
+            <svg viewBox="1 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"></path></svg>
+        </button>
+        <button id="tool-bucket" class="sys-btn" onclick="setTool('bucket')" title="Flood Fill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square">
+                <path d="M8 7l8-4 5 10-8 4-5-10z" fill="white" />
+                <path d="M8 7l8-4 5 10-8 4-5-10z" stroke="currentColor" />
+                <path d="M12 5l4 8" stroke="currentColor" />
+                <path d="M7 16l-2 3" stroke="currentColor" stroke-width="2.5" />
             </svg>
         </button>
         <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
-            <svg viewBox="4 4 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
-                <path d="M18 6L6 18M6 6l12 12"></path>
-            </svg>
+            <svg viewBox="4 4 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M18 6L6 18M6 6l12 12"></path></svg>
         </button>
         <button id="tool-undo" class="sys-btn" onclick="undo()" title="Undo" disabled>
-            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M3 7v6h6"></path>
-                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
-            </svg>
+            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
         </button>
         <button id="tool-redo" class="sys-btn" onclick="redo()" title="Redo" disabled>
-            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M21 7v6h-6"></path>
-                <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path>
-            </svg>
+            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg>
         </button>
         <button id="tool-download" class="sys-btn" onclick="downloadImage()" title="Download">
-            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
+            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         </button>
     </div>
 
@@ -545,620 +428,233 @@
         let grid;
         let currentTool = 'pen';
         let isDrawing = false;
-
-        let lastDrawnRow = -1;
-        let lastDrawnCol = -1;
-        
+        let lastDrawnRow = -1, lastDrawnCol = -1;
         let currentStrokeValue = 1; 
 
-        let undoHistory = [];
-        let redoHistory = [];
+        let undoHistory = [], redoHistory = [];
         const MAX_UNDO = 20;
-
-        let autoSaveTimer = null;
-        let manifest = [];
-
-        function showModal(msg, isConfirm = false, callback = null) {
-            const overlay = document.getElementById('modal-overlay');
-            const messageEl = document.getElementById('modal-message');
-            const btnsEl = document.getElementById('modal-btns');
-            messageEl.textContent = msg;
-            if (isConfirm) {
-                btnsEl.innerHTML = `<button class="modal-btn" id="modal-cancel">Cancel</button><button class="modal-btn" id="modal-ok">OK</button>`;
-                document.getElementById('modal-cancel').onclick = () => { overlay.style.display = 'none'; if (callback) callback(false); };
-                document.getElementById('modal-ok').onclick = () => { overlay.style.display = 'none'; if (callback) callback(true); };
-            } else {
-                btnsEl.innerHTML = `<button class="modal-btn" onclick="hideModal()">OK</button>`;
-            }
-            overlay.style.display = 'flex';
-        }
-        
-        function hideModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+        let autoSaveTimer = null, manifest = [];
 
         window.onload = () => {
             initApp();
-
             canvas.addEventListener('pointerdown', startDrawing);
             canvas.addEventListener('pointermove', moveDrawing);
             canvas.addEventListener('pointerup', stopDrawing);
             canvas.addEventListener('pointerleave', stopDrawing);
-
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey || e.metaKey) {
-                    if (e.key === 'z' && !e.shiftKey) {
-                        e.preventDefault();
-                        undo();
-                    } else if ((e.key === 'z' && e.shiftKey) || e.key === 'y') {
-                        e.preventDefault();
-                        redo();
-                    }
-                }
-            });
-
             canvas.oncontextmenu = (e) => e.preventDefault();
         };
 
-        window.onresize = () => {
-            if (currentDrawingId) setupCanvas(false); 
-        };
+        window.onresize = () => { if (currentDrawingId) setupCanvas(false); };
 
-        function initApp() {
-            loadManifest();
-            migrateLegacyData(); 
-            renderGallery();
-        }
-
-        function loadManifest() {
-            const key = 'pixel_manifest';
-            const local = localStorage.getItem(key);
-            if (local) { 
-                try { manifest = JSON.parse(local); } catch (e) { manifest = []; } 
-            }
-        }
-
-        function saveManifest() {
-            const key = 'pixel_manifest';
-            localStorage.setItem(key, JSON.stringify(manifest)); 
-        }
+        function initApp() { loadManifest(); migrateLegacyData(); renderGallery(); }
+        function loadManifest() { const local = localStorage.getItem('pixel_manifest'); if (local) try { manifest = JSON.parse(local); } catch (e) { manifest = []; } }
+        function saveManifest() { localStorage.setItem('pixel_manifest', JSON.stringify(manifest)); }
 
         function migrateLegacyData() {
             let changed = false;
             [16, 32, 64].forEach(size => {
-                const legacyKey = `pixel_art_${size}`;
-                const data = localStorage.getItem(legacyKey);
+                const data = localStorage.getItem(`pixel_art_${size}`);
                 if (data) {
                     const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-                    const newEntry = {
-                        id: id,
-                        title: 'Untitled (' + size + 'x' + size + ')', 
-                        created: Date.now(),
-                        modified: Date.now(),
-                        size: size,
-                        thumbnail: null 
-                    };
-
+                    manifest.push({ id, title: 'Untitled', created: Date.now(), modified: Date.now(), size, thumbnail: null });
                     localStorage.setItem(`pixel_drawing_${id}`, data);
-                    manifest.push(newEntry);
-                    localStorage.removeItem(legacyKey);
+                    localStorage.removeItem(`pixel_art_${size}`);
                     changed = true;
                 }
             });
-            if (changed) {
-                saveManifest();
-                renderGallery();
-            }
-        }
-
-        function loadDrawingData(id) {
-            const key = `pixel_drawing_${id}`;
-            let data = localStorage.getItem(key);
-            if (data) return JSON.parse(data);
-            return null;
-        }
-
-        function saveDrawingData(id, gridData) {
-            const key = `pixel_drawing_${id}`;
-            const json = JSON.stringify(gridData);
-            localStorage.setItem(key, json);
+            if (changed) { saveManifest(); renderGallery(); }
         }
 
         function renderGallery() {
             const gridEl = document.getElementById('gallery-grid');
-            gridEl.innerHTML = '';
-
-            const newDiv = document.createElement('div');
-            newDiv.className = 'gallery-item new-btn';
-            newDiv.onclick = () => openModal('new-drawing-modal');
-            newDiv.innerHTML = '<span>+</span><div class="item-info">New Drawing</div>';
-            gridEl.appendChild(newDiv);
-
-            const sorted = [...manifest].sort((a, b) => b.modified - a.modified);
-
-            sorted.forEach(item => {
+            gridEl.innerHTML = '<div class="gallery-item new-btn" onclick="openModal(\'new-drawing-modal\')"><span>+</span><div class="item-info">New Drawing</div></div>';
+            [...manifest].sort((a, b) => b.modified - a.modified).forEach(item => {
                 const el = document.createElement('div');
                 el.className = 'gallery-item';
-                el.onclick = (e) => {
-                    if (!e.target.closest('.action-btn')) openDrawing(item.id);
-                };
-
-                let thumbHtml = '';
-                if (item.thumbnail) {
-                    thumbHtml = `<img src="${item.thumbnail}" class="gallery-preview">`;
-                } else {
-                    thumbHtml = `<div class="gallery-preview" style="background:#f0f0f0; display:flex; align-items:center; justify-content:center; color:#ccc;">?</div>`;
-                }
-
-                const title = item.title || "Untitled";
-
-                el.innerHTML = `
-                    <div class="delete-btn action-btn" onclick="deleteDrawing('${item.id}')">X</div>
-                    ${thumbHtml}
-                    <div class="item-info">
-                        <div onclick="event.stopPropagation(); promptRename('${item.id}')" style="font-size:0.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100px; cursor:pointer; text-decoration:underline;">${title}</div>
-                        <span style="font-weight:normal; color:#666; font-size:0.7rem;">${item.size}x${item.size}</span>
-                    </div>
-                `;
+                el.onclick = (e) => { if (!e.target.closest('.delete-btn')) openDrawing(item.id); };
+                const thumb = item.thumbnail ? `<img src="${item.thumbnail}" class="gallery-preview">` : `<div class="gallery-preview" style="background:#f0f0f0;"></div>`;
+                el.innerHTML = `<div class="delete-btn" onclick="deleteDrawing('${item.id}')">X</div>${thumb}<div class="item-info"><div style="text-decoration:underline;">${item.title || "Untitled"}</div><span>${item.size}x${item.size}</span></div>`;
                 gridEl.appendChild(el);
             });
-        }
-
-        let renameId = null;
-        function promptRename(id) {
-            const item = manifest.find(m => m.id === id);
-            if (!item) return;
-            renameId = id;
-            document.getElementById('rename-input').value = item.title || "Untitled";
-            document.getElementById('confirm-rename-btn').onclick = performRename;
-            openModal('rename-modal');
-        }
-
-        function performRename() {
-            const newTitle = document.getElementById('rename-input').value.trim() || "Untitled";
-            const item = manifest.find(m => m.id === renameId);
-            if (item) {
-                item.title = newTitle;
-                item.modified = Date.now();
-                saveManifest();
-                renderGallery();
-                
-                if (currentDrawingId === renameId) {
-                    document.getElementById('window-title').textContent = newTitle;
-                }
-            }
-            closeModal('rename-modal');
-            // Redraw for Kindle stability
-            if (currentDrawingId) redrawAllPixels();
-        }
-
-        let drawingToDeleteId = null;
-
-        function deleteDrawing(id) {
-            drawingToDeleteId = id;
-            document.getElementById('confirm-delete-btn').onclick = () => performDelete(drawingToDeleteId);
-            openModal('delete-modal');
-        }
-
-        function performDelete(id) {
-            manifest = manifest.filter(m => m.id !== id);
-            saveManifest();
-            localStorage.removeItem(`pixel_drawing_${id}`);
-            closeModal('delete-modal');
-            renderGallery();
-        }
-
-        function createNew(size) {
-            gridSize = size;
-            currentDrawingId = null; 
-            grid = createGrid(size); 
-            undoHistory = []; 
-            redoHistory = [];
-            updateUndoButton();
-            updateRedoButton();
-
-            closeModal('new-drawing-modal');
-            
-            document.getElementById('window-title').textContent = "Untitled";
-            showEditor();
-
-            setupCanvas(false);
-            redrawAllPixels(); 
         }
 
         function openDrawing(id) {
             let item = manifest.find(m => m.id === id);
             if (!item) return;
-
-            currentDrawingId = id;
-            gridSize = item.size || 32;
-
-            let data = loadDrawingData(id);
-            if (data) {
-                grid = data;
-            } else {
-                grid = createGrid(gridSize);
-            }
-
+            currentDrawingId = id; gridSize = item.size || 32;
+            const data = localStorage.getItem(`pixel_drawing_${id}`);
+            grid = data ? JSON.parse(data) : createGrid(gridSize);
             document.getElementById('window-title').textContent = item.title || "Untitled";
-            showEditor();
-            setupCanvas(false);
-            redrawAllPixels();
-            undoHistory = []; 
-            redoHistory = [];
-            updateUndoButton();
-            updateRedoButton();
+            showEditor(); setupCanvas(false); redrawAllPixels();
+            undoHistory = []; redoHistory = []; updateUndoButton(); updateRedoButton();
         }
 
-        function showGallery() {
-            document.querySelector('.window').style.width = '100%';
-            
-            document.getElementById('screen-editor').classList.remove('active');
-            document.getElementById('screen-gallery').classList.add('active');
-            document.getElementById('tool-palette').style.display = 'none';
-            
-            const titleEl = document.getElementById('window-title');
-            titleEl.textContent = "Pixel";
-            titleEl.style.cursor = 'default';
-            titleEl.style.textDecoration = 'none';
-            titleEl.onclick = null;
-            
-            renderGallery(); 
-        }
-
-        function showEditor() {
-            document.getElementById('screen-gallery').classList.remove('active');
-            document.getElementById('screen-editor').classList.add('active');
-            document.getElementById('tool-palette').style.display = 'flex';
-            
-            const titleEl = document.getElementById('window-title');
-            titleEl.style.cursor = 'pointer';
-            titleEl.onclick = () => {
-                if (currentDrawingId) promptRename(currentDrawingId);
-            };
-        }
-
-        function createGrid(size) {
-            return new Array(size).fill(null).map(() => new Array(size).fill(0));
+        function createNew(size) {
+            gridSize = size; currentDrawingId = null; grid = createGrid(size);
+            undoHistory = []; redoHistory = []; closeModal('new-drawing-modal');
+            document.getElementById('window-title').textContent = "Untitled";
+            showEditor(); setupCanvas(false); redrawAllPixels();
         }
 
         function setupCanvas(reset = true) {
             const gameContent = document.querySelector('.game-content');
             if (!gameContent || gameContent.offsetParent === null) return;
-
             const windowEl = document.querySelector('.window');
             windowEl.style.width = '100%';
-
-            const scaleStr = localStorage.getItem('rekindle_scale') || '1.0';
-            const scale = parseFloat(scaleStr);
-
-            wrapper.style.width = '';
-            wrapper.style.height = '';
-            wrapper.style.zoom = '';
-
-            const containerWidth = gameContent.clientWidth; 
-            const logicalWindowH = window.innerHeight / scale;
-            const maxWindowHeight = Math.min(logicalWindowH * 0.95, logicalWindowH - (20 / scale));
-
-            const titleBarH = document.querySelector('.title-bar').offsetHeight;
-            
-            const palette = document.getElementById('tool-palette');
-            const paletteH = (palette && palette.offsetParent !== null) ? palette.offsetHeight + 20 : 0; 
-
-            const uiHeight = titleBarH + paletteH; 
-            const availableHeight = maxWindowHeight - uiHeight;
-
-            const maxDimension = Math.min(containerWidth, availableHeight) * scale;
-            const validSize = Math.max(200, maxDimension);
-            
-            const canvasSize = Math.floor(validSize / 64) * 64;
-
-            if (scale !== 1.0 && scale > 0) {
-                wrapper.style.zoom = (1.0 / scale);
-            } else {
-                wrapper.style.zoom = '';
-            }
-
-            canvas.width = canvasSize;
-            canvas.height = canvasSize;
-            gridCanvas.width = canvasSize;
-            gridCanvas.height = canvasSize;
-
-            wrapper.style.width = canvasSize + 'px';
-            wrapper.style.height = canvasSize + 'px';
-
-            windowEl.style.width = canvasSize + 'px';
-
-            cellSize = canvas.width / gridSize;
-
+            const containerWidth = gameContent.clientWidth;
+            const availableHeight = window.innerHeight - 150;
+            const size = Math.floor(Math.floor(Math.min(containerWidth, availableHeight)) / 64) * 64;
+            canvas.width = size; canvas.height = size; gridCanvas.width = size; gridCanvas.height = size;
+            wrapper.style.width = size + 'px'; wrapper.style.height = size + 'px'; windowEl.style.width = size + 'px';
+            cellSize = size / gridSize;
             drawGridLines();
-            if (reset) {
-                grid = createGrid(gridSize);
-            }
-            // Always redraw to prevent blackout on Kindle resize
-            redrawAllPixels();
+            if (reset) grid = createGrid(gridSize);
+            redrawAllPixels(); 
         }
 
         function drawGridLines() {
             gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
-            
-            const scaleStr = localStorage.getItem('rekindle_scale') || '1.0';
-            const scale = parseFloat(scaleStr);
-
-            gridCtx.fillStyle = 'black'; 
-            gridCtx.strokeStyle = 'black'; 
-            gridCtx.lineWidth = (scale < 1.0) ? 2 : 1;
-            
+            gridCtx.fillStyle = 'black'; gridCtx.strokeStyle = 'black';
             if (gridSize === 128) {
-                for (let r = 1; r < gridSize; r++) {
-                    for (let c = 1; c < gridSize; c++) {
-                        gridCtx.fillRect(Math.floor(c * cellSize), Math.floor(r * cellSize), 1, 1);
-                    }
+                for (let r = 1; r < gridSize; r++) for (let c = 1; c < gridSize; c++) gridCtx.fillRect(Math.floor(c * cellSize), Math.floor(r * cellSize), 1, 1);
+            } else {
+                gridCtx.setLineDash([1, 1]); gridCtx.beginPath();
+                for (let i = 1; i < gridSize; i++) {
+                    const pos = Math.floor(i * cellSize) + 0.5;
+                    gridCtx.moveTo(pos, 0); gridCtx.lineTo(pos, gridCanvas.height);
+                    gridCtx.moveTo(0, pos); gridCtx.lineTo(canvas.width, pos);
                 }
-                return;
+                gridCtx.stroke();
             }
-
-            if (cellSize <= 4) return;
-            
-            gridCtx.setLineDash([gridCtx.lineWidth, gridCtx.lineWidth]); 
-            gridCtx.beginPath();
-
-            const offset = (gridCtx.lineWidth % 2 === 0) ? 0 : 0.5;
-
-            for (let i = 1; i < gridSize; i++) {
-                const pos = Math.floor(i * cellSize) + offset;
-                gridCtx.moveTo(pos, 0);
-                gridCtx.lineTo(pos, gridCanvas.height);
-                gridCtx.moveTo(0, pos);
-                gridCtx.lineTo(canvas.width, pos);
-            }
-            gridCtx.stroke();
-            gridCtx.setLineDash([]); 
         }
 
         function redrawAllPixels() {
-            // First pass: Fill whole canvas white
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Second pass: Draw only black pixels with expansion
-            // This order ensures white squares don't clip neighbor expansions
-            for (let r = 0; r < gridSize; r++) {
-                for (let c = 0; c < gridSize; c++) {
-                    if (grid[r][c] === 1) {
-                        drawPixel(r, c, 1);
-                    }
-                }
-            }
+            ctx.fillStyle = 'white'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for (let r = 0; r < gridSize; r++) for (let c = 0; c < gridSize; c++) if (grid[r][c] === 1) drawPixel(r, c, 1);
         }
 
         function drawPixel(row, col, value) {
-            const x = Math.floor(col * cellSize);
-            const y = Math.floor(row * cellSize);
-            // Integer-based width/height based on slot size
-            const w = Math.floor((col + 1) * cellSize) - x;
-            const h = Math.floor((row + 1) * cellSize) - y;
-
-            if (value === 0) {
-                ctx.fillStyle = 'white';
-                ctx.fillRect(x, y, w, h);
-            } else {
-                ctx.fillStyle = 'black';
-                // Expansion: Add exactly 1 screen pixel to width and height
-                ctx.fillRect(x, y, w + 1, h + 1);
-            }
+            const x = Math.floor(col * cellSize), y = Math.floor(row * cellSize);
+            const w = Math.floor((col + 1) * cellSize) - x, h = Math.floor((row + 1) * cellSize) - y;
+            ctx.fillStyle = value === 1 ? 'black' : 'white';
+            ctx.fillRect(x, y, value === 1 ? w + 1 : w, value === 1 ? h + 1 : h);
         }
 
-        function drawLine(r0, c0, r1, c1, value) {
-            let x0 = c0, y0 = r0;
-            let x1 = c1, y1 = r1;
-
-            const dx = Math.abs(x1 - x0);
-            const dy = Math.abs(y1 - y0);
-            const sx = x0 < x1 ? 1 : -1;
-            const sy = y0 < y1 ? 1 : -1;
-            let err = dx - dy;
-
-            while (true) {
-                if (y0 >= 0 && y0 < gridSize && x0 >= 0 && x0 < gridSize) {
-                    if (grid[y0][x0] !== value) {
-                        grid[y0][x0] = value;
-                        drawPixel(y0, x0, value);
-                    }
-                }
-                if (x0 === x1 && y0 === y1) break;
-                const e2 = 2 * err;
-                if (e2 > -dy) { err -= dy; x0 += sx; }
-                if (e2 < dx) { err += dx; y0 += sy; }
-            }
-        }
-
-        function handleDraw(event) {
-            event.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const x = (event.clientX || (event.touches && event.touches[0].clientX)) - rect.left;
-            const y = (event.clientY || (event.touches && event.touches[0].clientY)) - rect.top;
-
-            const col = Math.floor(x / cellSize);
-            const row = Math.floor(y / cellSize);
-
-            if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
-                const newValue = currentStrokeValue;
-
-                if (lastDrawnRow !== -1 && lastDrawnCol !== -1) {
-                    drawLine(lastDrawnRow, lastDrawnCol, row, col, newValue);
-                } else {
-                    if (grid[row][col] !== newValue) {
-                        grid[row][col] = newValue;
-                        drawPixel(row, col, newValue);
-                    }
-                }
-                lastDrawnRow = row;
-                lastDrawnCol = col;
+        function floodFill(r, c, target, replacement) {
+            if (target === replacement) return;
+            const stack = [[r, c]];
+            while (stack.length > 0) {
+                const [currR, currC] = stack.pop();
+                if (currR < 0 || currR >= gridSize || currC < 0 || currC >= gridSize || grid[currR][currC] !== target) continue;
+                grid[currR][currC] = replacement;
+                drawPixel(currR, currC, replacement);
+                stack.push([currR - 1, currC], [currR + 1, currC], [currR, currC - 1], [currR, currC + 1]);
             }
         }
 
         function startDrawing(e) {
-            saveUndoState();
-            isDrawing = true;
-            lastDrawnRow = -1;
-            lastDrawnCol = -1;
-            
-            if (currentTool === 'eraser') {
-                currentStrokeValue = 0;
-            } else {
-                currentStrokeValue = 1; 
-                const rect = canvas.getBoundingClientRect();
-                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                if (clientX !== undefined && clientY !== undefined) {
-                    const x = clientX - rect.left;
-                    const y = clientY - rect.top;
-                    const col = Math.floor(x / cellSize);
-                    const row = Math.floor(y / cellSize);
-                    if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
-                        currentStrokeValue = grid[row][col] === 0 ? 1 : 0;
-                    }
-                }
-            }
-            
-            handleDraw(e);
-        }
+            const rect = canvas.getBoundingClientRect();
+            const col = Math.floor((e.clientX - rect.left) / cellSize), row = Math.floor((e.clientY - rect.top) / cellSize);
+            if (col < 0 || col >= gridSize || row < 0 || row >= gridSize) return;
 
-        function moveDrawing(e) {
-            if (isDrawing) handleDraw(e);
-        }
-
-        function stopDrawing() {
-            if (isDrawing) {
-                isDrawing = false;
-                lastDrawnRow = -1;
-                lastDrawnCol = -1;
+            if (currentTool === 'bucket') {
+                saveUndoState();
+                floodFill(row, col, grid[row][col], grid[row][col] === 0 ? 1 : 0);
                 triggerAutoSave();
+            } else {
+                saveUndoState(); isDrawing = true; lastDrawnRow = -1; lastDrawnCol = -1;
+                currentStrokeValue = currentTool === 'eraser' ? 0 : (grid[row][col] === 1 ? 0 : 1);
+                handlePointer(e);
             }
         }
 
-        function saveUndoState() {
-            const snapshot = grid.map(row => [...row]);
-            undoHistory.push(snapshot);
-            if (undoHistory.length > MAX_UNDO) {
-                undoHistory.shift();
-            }
-            redoHistory = [];
-            updateUndoButton();
-            updateRedoButton();
-        }
+        function moveDrawing(e) { if (isDrawing) handlePointer(e); }
+        function stopDrawing() { if (isDrawing) { isDrawing = false; triggerAutoSave(); } }
 
-        function undo() {
-            if (undoHistory.length === 0) return;
-            redoHistory.push(grid.map(row => [...row]));
-            grid = undoHistory.pop();
-            redrawAllPixels();
-            triggerAutoSave();
-            updateUndoButton();
-            updateRedoButton();
-        }
-
-        function redo() {
-            if (redoHistory.length === 0) return;
-            undoHistory.push(grid.map(row => [...row]));
-            if (undoHistory.length > MAX_UNDO) {
-                undoHistory.shift();
-            }
-            grid = redoHistory.pop();
-            redrawAllPixels();
-            triggerAutoSave();
-            updateUndoButton();
-            updateRedoButton();
-        }
-
-        function updateUndoButton() {
-            const btn = document.getElementById('tool-undo');
-            if (btn) {
-                btn.disabled = undoHistory.length === 0;
+        function handlePointer(e) {
+            const rect = canvas.getBoundingClientRect();
+            const col = Math.floor((e.clientX - rect.left) / cellSize), row = Math.floor((e.clientY - rect.top) / cellSize);
+            if (row >= 0 && row < gridSize && col >= 0 && col < gridSize && grid[row][col] !== currentStrokeValue) {
+                grid[row][col] = currentStrokeValue; drawPixel(row, col, currentStrokeValue);
             }
         }
 
-        function updateRedoButton() {
-            const btn = document.getElementById('tool-redo');
-            if (btn) {
-                btn.disabled = redoHistory.length === 0;
-            }
-        }
-
-        function triggerAutoSave() {
-            if (autoSaveTimer) clearTimeout(autoSaveTimer);
-            autoSaveTimer = setTimeout(performSave, 500);
-        }
-
+        function triggerAutoSave() { if (autoSaveTimer) clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(performSave, 500); }
         function performSave() {
-            if (!currentDrawingId) {
-                const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-                currentDrawingId = id;
-
-                manifest.unshift({
-                    id: id,
-                    title: "Untitled",
-                    created: Date.now(),
-                    modified: Date.now(),
-                    size: gridSize,
-                    thumbnail: null 
-                });
-            }
-
-            saveDrawingData(currentDrawingId, grid);
-
+            if (!currentDrawingId) { currentDrawingId = Date.now().toString(36); manifest.unshift({ id: currentDrawingId, title: "Untitled", created: Date.now(), modified: Date.now(), size: gridSize, thumbnail: null }); }
+            localStorage.setItem(`pixel_drawing_${currentDrawingId}`, JSON.stringify(grid));
             const item = manifest.find(m => m.id === currentDrawingId);
-            if (item) {
-                item.modified = Date.now();
-                item.thumbnail = canvas.toDataURL('image/png'); 
-                saveManifest();
-            }
-        }
-
-        function clearGrid() {
-            openModal('clear-modal');
-        }
-
-        function confirmClear() {
-            saveUndoState();
-            grid = createGrid(gridSize);
-            redrawAllPixels();
-            triggerAutoSave(); 
-            closeModal('clear-modal');
+            if (item) { item.modified = Date.now(); item.thumbnail = canvas.toDataURL('image/png'); saveManifest(); }
         }
 
         function handleCloseAction() {
-            const isEditorActive = document.getElementById('screen-editor').classList.contains('active');
-            if (isEditorActive) {
-                if (autoSaveTimer) clearTimeout(autoSaveTimer);
-                performSave();
-                showGallery();
-            } else {
-                window.location.href = 'https://alexroddie.github.io/';
-            }
+            if (document.getElementById('screen-editor').classList.contains('active')) { performSave(); showGallery(); }
+            else { window.location.href = 'https://alexroddie.github.io/'; }
         }
 
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
+        function showEditor() {
+            document.getElementById('screen-gallery').classList.remove('active'); document.getElementById('screen-editor').classList.add('active');
+            document.getElementById('tool-palette').style.display = 'flex'; document.getElementById('window-title').style.cursor = 'pointer';
+            document.getElementById('window-title').onclick = () => promptRename(currentDrawingId);
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+        function showGallery() {
+            document.getElementById('screen-editor').classList.remove('active'); document.getElementById('screen-gallery').classList.add('active');
+            document.getElementById('tool-palette').style.display = 'none'; document.getElementById('window-title').textContent = "Pixel";
+            document.getElementById('window-title').onclick = null; renderGallery();
         }
 
+        function promptRename(id) {
+            const item = manifest.find(m => m.id === id); document.getElementById('rename-input').value = item ? item.title : "Untitled";
+            openModal('rename-modal'); document.getElementById('confirm-rename-btn').onclick = () => {
+                const newTitle = document.getElementById('rename-input').value.trim() || "Untitled";
+                if (item) { item.title = newTitle; saveManifest(); }
+                if (currentDrawingId === id) document.getElementById('window-title').textContent = newTitle;
+                closeModal('rename-modal'); renderGallery(); redrawAllPixels();
+            };
+        }
+
+        function deleteDrawing(id) {
+            openModal('delete-modal'); document.getElementById('confirm-delete-btn').onclick = () => {
+                manifest = manifest.filter(m => m.id !== id); localStorage.removeItem(`pixel_drawing_${id}`);
+                saveManifest(); closeModal('delete-modal'); renderGallery();
+            };
+        }
+
+        function createGrid(size) { return new Array(size).fill(0).map(() => new Array(size).fill(0)); }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
         function setTool(tool) {
-            currentTool = tool;
-            document.querySelectorAll('.floating-palette .sys-btn').forEach(btn => btn.classList.remove('active'));
-            if (tool === 'pen') document.getElementById('tool-pen').classList.add('active');
-            if (tool === 'eraser') document.getElementById('tool-eraser').classList.add('active');
+            currentTool = tool; document.querySelectorAll('.floating-palette .sys-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tool-${tool}`).classList.add('active');
         }
 
+        function undo() {
+            if (undoHistory.length === 0) return; redoHistory.push(grid.map(row => [...row]));
+            grid = undoHistory.pop(); redrawAllPixels(); triggerAutoSave(); updateUndoButton(); updateRedoButton();
+        }
+
+        function redo() {
+            if (redoHistory.length === 0) return; undoHistory.push(grid.map(row => [...row]));
+            grid = redoHistory.pop(); redrawAllPixels(); triggerAutoSave(); updateUndoButton(); updateRedoButton();
+        }
+
+        function saveUndoState() {
+            undoHistory.push(grid.map(row => [...row])); if (undoHistory.length > MAX_UNDO) undoHistory.shift();
+            redoHistory = []; updateUndoButton(); updateRedoButton();
+        }
+
+        function updateUndoButton() { document.getElementById('tool-undo').disabled = undoHistory.length === 0; }
+        function updateRedoButton() { document.getElementById('tool-redo').disabled = redoHistory.length === 0; }
+        function clearGrid() { openModal('clear-modal'); }
+        function confirmClear() { saveUndoState(); grid = createGrid(gridSize); redrawAllPixels(); triggerAutoSave(); closeModal('clear-modal'); }
+        
         function downloadImage() {
-            const link = document.createElement('a');
-            link.download = 'pixel-art.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            const title = document.getElementById('window-title').textContent || 'pixel-art';
+            const link = document.createElement('a'); link.download = title + '.png';
+            link.href = canvas.toDataURL('image/png'); link.click();
         }
     </script>
 </body>
-
 </html>
