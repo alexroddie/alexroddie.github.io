@@ -472,11 +472,9 @@
         <div class="title-bar">
             <div class="title-stripes"></div>
             <div class="left-controls">
-                <div class="close-box fixed-w" onclick="handleClose()">X</div>
-                <div id="editor-back-btn" class="close-box" style="display:none;" onclick="showGallery()">Back</div>
-                <div id="editor-download-btn" class="close-box" style="display:none;" onclick="downloadImage()">Download</div>
+                <div class="close-box fixed-w" onclick="handleCloseAction()">X</div>
             </div>
-            <span class="title-text">Pixel</span>
+            <span id="window-title" class="title-text">Pixel</span>
         </div>
 
         <div id="screen-gallery" class="screen active">
@@ -529,6 +527,13 @@
             <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M21 7v6h-6"></path>
                 <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path>
+            </svg>
+        </button>
+        <button id="tool-download" class="sys-btn" onclick="downloadImage()" title="Download">
+            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
         </button>
     </div>
@@ -751,6 +756,8 @@
             updateRedoButton();
 
             closeModal('new-drawing-modal');
+            
+            document.getElementById('window-title').textContent = "Untitled";
             showEditor();
 
             setupCanvas(false);
@@ -771,6 +778,7 @@
                 grid = createGrid(gridSize);
             }
 
+            document.getElementById('window-title').textContent = item.title || "Untitled";
             showEditor();
             setupCanvas(false);
             redrawAllPixels();
@@ -785,17 +793,14 @@
             
             document.getElementById('screen-editor').classList.remove('active');
             document.getElementById('screen-gallery').classList.add('active');
-            document.getElementById('editor-back-btn').style.display = 'none';
-            document.getElementById('editor-download-btn').style.display = 'none';
             document.getElementById('tool-palette').style.display = 'none';
+            document.getElementById('window-title').textContent = "Pixel";
             renderGallery(); 
         }
 
         function showEditor() {
             document.getElementById('screen-gallery').classList.remove('active');
             document.getElementById('screen-editor').classList.add('active');
-            document.getElementById('editor-back-btn').style.display = 'flex';
-            document.getElementById('editor-download-btn').style.display = 'flex';
             document.getElementById('tool-palette').style.display = 'flex';
         }
 
@@ -1083,13 +1088,15 @@
             closeModal('clear-modal');
         }
 
-        function handleClose() {
+        function handleCloseAction() {
             const isEditorActive = document.getElementById('screen-editor').classList.contains('active');
             if (isEditorActive) {
                 if (autoSaveTimer) clearTimeout(autoSaveTimer);
                 performSave();
+                showGallery();
+            } else {
+                window.location.href = 'https://alexroddie.github.io/';
             }
-            window.location.href = 'https://alexroddie.github.io/';
         }
 
         function openModal(modalId) {
