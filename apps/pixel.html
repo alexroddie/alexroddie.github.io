@@ -18,16 +18,7 @@
         }
 
         body {
-            image-rendering: -webkit-crisp-edges;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -o-crisp-edges;
-            image-rendering: -webkit-optimize-contrast;
             image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            -ms-interpolation-mode: nearest-neighbor;
-            background-repeat: repeat;
-            background-position: top left;
-            
             background-color: #ffffff;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='1' height='1' fill='black'/%3E%3Crect x='1' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
             background-size: 4px 4px;
@@ -288,7 +279,7 @@
             margin-top: 10px;
         }
         
-        /* New Drawing Dialogue Button Alignment */
+        /* New Drawing Modal Fix */
         .btn-row {
             display: flex;
             justify-content: center;
@@ -297,7 +288,14 @@
         }
         .btn-row .sys-btn {
             flex: 1;
+            min-width: 0; /* Ensures they fit on one line */
             white-space: nowrap;
+        }
+        .cancel-btn {
+            display: inline-block;
+            width: auto;
+            margin-top: 20px;
+            padding: 8px 20px !important;
         }
 
         .modal-btn {
@@ -330,7 +328,7 @@
                 <button class="sys-btn" onclick="createNew(64)">64x64</button>
                 <button class="sys-btn" onclick="createNew(128)">128x128</button>
             </div>
-            <button class="sys-btn" style="margin-top:20px; width: 100%;" onclick="closeModal('new-drawing-modal')">Cancel</button>
+            <button class="sys-btn cancel-btn" onclick="closeModal('new-drawing-modal')">Cancel</button>
         </div>
     </div>
 
@@ -407,9 +405,9 @@
         </button>
         <button id="tool-bucket" class="sys-btn" onclick="setTool('bucket')" title="Flood Fill">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 10 L17 6 L21 14 L11 18 Z"></path>
-                <path d="M11 8 C9 8 6 10 6 14"></path>
-                <path d="M20 13 L22 19" stroke-width="3"></path>
+                <path d="M6 10 L16 6 L20 14 L10 18 Z"></path>
+                <path d="M10 8 C8 8 5 10 5 14"></path>
+                <path d="M19 13 L22 20" stroke-width="3"></path>
             </svg>
         </button>
         <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
@@ -548,8 +546,7 @@
             const x = Math.floor(col * cellSize), y = Math.floor(row * cellSize);
             const w = Math.floor((col + 1) * cellSize) - x, h = Math.floor((row + 1) * cellSize) - y;
             ctx.fillStyle = value === 1 ? 'black' : 'white';
-            // FIXED GHOST LINES: Always fill the expanded area (w+1, h+1) to ensure old black pixels are cleared 
-            // from under the dashed grid lines when painting white/erasing.
+            // FIXED GHOST LINES: Erasing now clears the +1px expanded area to perfectly restore the grid.
             ctx.fillRect(x, y, w + 1, h + 1);
         }
 
