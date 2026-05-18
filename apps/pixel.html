@@ -162,7 +162,6 @@
             pointer-events: none;
         }
 
-        /* Fixed New Drawing Icon */
         .gallery-item.new-btn { 
             justify-content: center; 
             background: #fafafa; 
@@ -404,6 +403,15 @@
         <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
             <svg viewBox="4 4 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M18 6L6 18M6 6l12 12"></path></svg>
         </button>
+        
+        <button id="tool-grid" class="sys-btn" onclick="toggleGrid()" title="Toggle Grid">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="5" y="5" width="14" height="14" />
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+        </button>
+
         <button id="tool-undo" class="sys-btn" onclick="undo()" title="Undo" disabled>
             <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
         </button>
@@ -430,6 +438,7 @@
         let isDrawing = false;
         let lastDrawnRow = -1, lastDrawnCol = -1;
         let currentStrokeValue = 1; 
+        let gridVisible = true;
 
         let undoHistory = [], redoHistory = [];
         const MAX_UNDO = 20;
@@ -538,6 +547,11 @@
             const w = Math.floor((col + 1) * cellSize) - x, h = Math.floor((row + 1) * cellSize) - y;
             ctx.fillStyle = value === 1 ? 'black' : 'white';
             ctx.fillRect(x, y, w + 1, h + 1);
+        }
+
+        function toggleGrid() {
+            gridVisible = !gridVisible;
+            gridCanvas.style.display = gridVisible ? 'block' : 'none';
         }
 
         function floodFill(r, c, target, replacement) {
