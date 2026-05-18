@@ -228,42 +228,31 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 5px 10px;
+            padding: 15px 10px;
             flex-grow: 1;
             background: white;
         }
 
-        #canvas-container {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
+        #canvas-wrapper {
             position: relative;
-            flex-grow: 1;
-            min-height: 200px;
-        }
-
-        #pixel-canvas,
-        #grid-canvas {
-            position: absolute;
-            image-rendering: pixelated;
-            top: 0;
-            left: 0;
+            border: 3px solid black;
+            margin-bottom: 10px;
+            box-sizing: content-box;
+            background: white;
         }
 
         #pixel-canvas {
-            z-index: 1;
-            background: white;
-            /* Slightly bolder border as requested */
-            border: 3px solid black; 
+            display: block;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
         }
 
         #grid-canvas {
-            z-index: 2;
+            position: absolute;
+            top: 0;
+            left: 0;
             pointer-events: none;
+            image-rendering: pixelated;
         }
 
         .controls-container {
@@ -272,7 +261,6 @@
             justify-content: center;
             padding: 10px;
             width: 100%;
-            /* Changed to white, removed border */
             background: white; 
             box-sizing: border-box;
             flex-wrap: nowrap;
@@ -433,7 +421,6 @@
         .menu-bar {
             display: flex;
             width: 100%;
-            /* Changed to white, removed border, moved content to left */
             background: white; 
             padding: 10px;
             box-sizing: border-box;
@@ -527,7 +514,7 @@
             </div>
 
             <div class="game-content">
-                <div id="canvas-container">
+                <div id="canvas-wrapper">
                     <canvas id="pixel-canvas"></canvas>
                     <canvas id="grid-canvas"></canvas>
                 </div>
@@ -577,7 +564,7 @@
         const gridCanvas = document.getElementById('grid-canvas');
         const ctx = canvas.getContext('2d', { alpha: false });
         const gridCtx = gridCanvas.getContext('2d');
-        const container = document.getElementById('canvas-container');
+        const wrapper = document.getElementById('canvas-wrapper');
 
         let currentDrawingId = null;
         let gridSize = 32;
@@ -837,16 +824,18 @@
         }
 
         function setupCanvas(reset = true) {
-            if (container.offsetParent === null) return;
+            // Need the parent container to calculate available screen width
+            const gameContent = document.querySelector('.game-content');
+            if (!gameContent || gameContent.offsetParent === null) return;
 
             const scaleStr = localStorage.getItem('rekindle_scale') || '1.0';
             const scale = parseFloat(scaleStr);
 
-            container.style.width = '';
-            container.style.height = '';
-            container.style.zoom = '';
+            wrapper.style.width = '';
+            wrapper.style.height = '';
+            wrapper.style.zoom = '';
 
-            const containerWidth = container.clientWidth;
+            const containerWidth = gameContent.clientWidth;
             const logicalWindowH = window.innerHeight / scale;
             const maxWindowHeight = Math.min(logicalWindowH * 0.9, logicalWindowH - (40 / scale));
 
@@ -862,18 +851,17 @@
                 }
             });
 
-            const uiHeight = titleBarH + menuBarH + controlsH + 30;
+            const uiHeight = titleBarH + menuBarH + controlsH + 40;
             const availableHeight = maxWindowHeight - uiHeight;
-            const containerHeight = availableHeight;
 
             const maxDimension = Math.min(containerWidth, availableHeight) * scale;
             const validSize = Math.max(200, maxDimension);
             const canvasSize = Math.floor(validSize / gridSize) * gridSize;
 
             if (scale !== 1.0 && scale > 0) {
-                container.style.zoom = (1.0 / scale);
+                wrapper.style.zoom = (1.0 / scale);
             } else {
-                container.style.zoom = '';
+                wrapper.style.zoom = '';
             }
 
             canvas.width = canvasSize;
@@ -881,9 +869,8 @@
             gridCanvas.width = canvasSize;
             gridCanvas.height = canvasSize;
 
-            container.style.width = canvasSize + 'px';
-            container.style.height = canvasSize + 'px';
-            container.style.flexGrow = '0'; 
+            wrapper.style.width = canvasSize + 'px';
+            wrapper.style.height = canvasSize + 'px';
 
             cellSize = canvas.width / gridSize;
 
@@ -903,18 +890,22 @@
 
             gridCtx.strokeStyle = 'black'; 
             gridCtx.lineWidth = (scale < 1.0) ? 2 : 1;
-            gridCtx.setLineDash([2, 2]); // Added dotted line style
+            gridCtx.setLineDash([2, 2]); 
             gridCtx.beginPath();
 
-            for (let i = 0; i <= gridSize; i++) {
-                const pos = Math.floor(i * cellSize) + (gridCtx.lineWidth % 2 === 0 ? 0 : 0.5);
+            // Offset line by 0.5 for crisp canvas rendering, strictly internal
+            const offset = (gridCtx.lineWidth % 2 === 0) ? 0 : 0.5;
+
+            // Loop strictly inside the bounds to eliminate gaps
+            for (let i = 1; i < gridSize; i++) {
+                const pos = (i * cellSize) + offset;
                 gridCtx.moveTo(pos, 0);
                 gridCtx.lineTo(pos, gridCanvas.height);
                 gridCtx.moveTo(0, pos);
                 gridCtx.lineTo(canvas.width, pos);
             }
             gridCtx.stroke();
-            gridCtx.setLineDash([]); // Reset to solid for any future strokes
+            gridCtx.setLineDash([]); 
         }
 
         function redrawAllPixels() {
