@@ -273,14 +273,14 @@
             box-shadow: 8px 8px 0 black;
             padding: 20px;
             width: 90%;
-            max-width: 340px;
+            max-width: 360px;
             text-align: center;
         }
 
         .sys-btn {
             background: white;
             border: 2px solid black;
-            padding: 8px 20px;
+            padding: 8px 10px;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 3px 3px 0 black;
@@ -288,6 +288,18 @@
             margin-top: 10px;
         }
         
+        /* New Drawing Dialogue Button Alignment */
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+        .btn-row .sys-btn {
+            flex: 1;
+            white-space: nowrap;
+        }
+
         .modal-btn {
             background: white;
             border: 2px solid black;
@@ -312,13 +324,13 @@
         <div class="modal-box">
             <h3 style="margin-top:0;">New Drawing</h3>
             <p style="margin-bottom:20px; font-weight: bold;">Select grid size:</p>
-            <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+            <div class="btn-row">
                 <button class="sys-btn" onclick="createNew(16)">16x16</button>
                 <button class="sys-btn" onclick="createNew(32)">32x32</button>
                 <button class="sys-btn" onclick="createNew(64)">64x64</button>
                 <button class="sys-btn" onclick="createNew(128)">128x128</button>
             </div>
-            <button class="sys-btn" style="margin-top:20px;" onclick="closeModal('new-drawing-modal')">Cancel</button>
+            <button class="sys-btn" style="margin-top:20px; width: 100%;" onclick="closeModal('new-drawing-modal')">Cancel</button>
         </div>
     </div>
 
@@ -394,11 +406,10 @@
             <svg viewBox="1 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"></path></svg>
         </button>
         <button id="tool-bucket" class="sys-btn" onclick="setTool('bucket')" title="Flood Fill">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square">
-                <path d="M8 7l8-4 5 10-8 4-5-10z" fill="white" />
-                <path d="M8 7l8-4 5 10-8 4-5-10z" stroke="currentColor" />
-                <path d="M12 5l4 8" stroke="currentColor" />
-                <path d="M7 16l-2 3" stroke="currentColor" stroke-width="2.5" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 10 L17 6 L21 14 L11 18 Z"></path>
+                <path d="M11 8 C9 8 6 10 6 14"></path>
+                <path d="M20 13 L22 19" stroke-width="3"></path>
             </svg>
         </button>
         <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
@@ -537,7 +548,9 @@
             const x = Math.floor(col * cellSize), y = Math.floor(row * cellSize);
             const w = Math.floor((col + 1) * cellSize) - x, h = Math.floor((row + 1) * cellSize) - y;
             ctx.fillStyle = value === 1 ? 'black' : 'white';
-            ctx.fillRect(x, y, value === 1 ? w + 1 : w, value === 1 ? h + 1 : h);
+            // FIXED GHOST LINES: Always fill the expanded area (w+1, h+1) to ensure old black pixels are cleared 
+            // from under the dashed grid lines when painting white/erasing.
+            ctx.fillRect(x, y, w + 1, h + 1);
         }
 
         function floodFill(r, c, target, replacement) {
