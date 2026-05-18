@@ -294,15 +294,6 @@
             margin-top: 20px !important;
             padding: 8px 20px !important;
         }
-
-        .modal-btn {
-            background: white;
-            border: 2px solid black;
-            padding: 6px 20px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 2px 2px 0 black;
-        }
     </style>
 </head>
 
@@ -438,7 +429,9 @@
         let isDrawing = false;
         let lastDrawnRow = -1, lastDrawnCol = -1;
         let currentStrokeValue = 1; 
-        let gridVisible = true;
+        
+        // Hide by default
+        let gridVisible = false;
 
         let undoHistory = [], redoHistory = [];
         const MAX_UNDO = 20;
@@ -494,6 +487,11 @@
             const data = localStorage.getItem(`pixel_drawing_${id}`);
             grid = data ? JSON.parse(data) : createGrid(gridSize);
             document.getElementById('window-title').textContent = item.title || "Untitled";
+            
+            // RESET EDITOR STATE
+            gridVisible = false;
+            setTool('pen'); 
+            
             showEditor(); setupCanvas(false); redrawAllPixels();
             undoHistory = []; redoHistory = []; updateUndoButton(); updateRedoButton();
         }
@@ -502,6 +500,11 @@
             gridSize = size; currentDrawingId = null; grid = createGrid(size);
             undoHistory = []; redoHistory = []; closeModal('new-drawing-modal');
             document.getElementById('window-title').textContent = "Untitled";
+            
+            // RESET EDITOR STATE
+            gridVisible = false;
+            setTool('pen');
+
             showEditor(); setupCanvas(false); redrawAllPixels();
         }
 
@@ -516,7 +519,12 @@
             canvas.width = size; canvas.height = size; gridCanvas.width = size; gridCanvas.height = size;
             wrapper.style.width = size + 'px'; wrapper.style.height = size + 'px'; windowEl.style.width = size + 'px';
             cellSize = size / gridSize;
+            
             drawGridLines();
+            
+            // ENFORCE VISIBILITY
+            gridCanvas.style.display = gridVisible ? 'block' : 'none';
+            
             if (reset) grid = createGrid(gridSize);
             redrawAllPixels(); 
         }
