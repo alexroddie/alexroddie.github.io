@@ -14,23 +14,14 @@
         }
 
         body {
+            /* Rendering logic condensed and de-duplicated */
             image-rendering: -webkit-crisp-edges;
             image-rendering: -moz-crisp-edges;
             image-rendering: -o-crisp-edges;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            -ms-interpolation-mode: nearest-neighbor;
-            background-repeat: repeat;
-            background-position: top left;
-
             image-rendering: -webkit-optimize-contrast;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
-            background-repeat: repeat;
-            background-position: top left;
-
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
+            -ms-interpolation-mode: nearest-neighbor;
             background-repeat: repeat;
             background-position: top left;
 
@@ -40,16 +31,15 @@
             height: 100vh;
             overflow: hidden;
             
-            /* Background managed by SVG */
+            /* Native Standalone Background */
             background-color: #ffffff;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='1' height='1' fill='black'/%3E%3Crect x='1' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
-            background-size: 4px 4px; /* Scaled up for chunky, retro pixels */
+            background-size: 4px 4px;
 
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            /* FIX: Centers Vertically */
             user-select: none;
             box-sizing: border-box;
         }
@@ -63,10 +53,8 @@
             flex-direction: column;
             width: 100%;
             max-width: 450px;
-            /* Restrict width so it doesn't look huge on desktop */
             min-height: fit-content;
-            /* Wrap content snugly */
-            max-min-height: 95vh;
+            max-height: 95vh; /* Fixed invalid property */
             position: relative;
         }
 
@@ -135,7 +123,6 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            /* Scroll if screen is too small */
         }
         .window-content > * + * {
             margin-top: 15px;
@@ -164,7 +151,6 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-auto-rows: 75px;
-            /* Fixed height rows to prevent massive buttons */
             gap: 12px;
         }
 
@@ -210,9 +196,6 @@
             grid-column: span 2;
         }
     </style>
-    
-    <script src="js/i18n.js"></script>
-    <script src="theme.js?v=17"></script>
 </head>
 
 <body>
@@ -221,7 +204,7 @@
         <div class="title-bar">
             <div class="title-stripes"></div>
             <div class="close-box" onclick="window.location.href='index'">X</div>
-            <span class="title-text" data-i18n="calculator.title">Calculator</span>
+            <span class="title-text">Calculator</span>
         </div>
 
         <div class="window-content">
@@ -261,12 +244,6 @@
         let newNumber = false;
 
         const display = document.getElementById('display');
-
-        window.onload = function () {
-            if (window.rekindleApplyWallpaper) window.rekindleApplyWallpaper();
-        };
-
-        // --- WALLPAPER LOADER ---
 
         function updateDisplay() {
             let text = currentInput;
@@ -326,7 +303,7 @@
                 case '*': result = prev * current; break;
                 case '/':
                     if (current === 0) {
-                        currentInput = window.t('calculator.error', "Error");
+                        currentInput = "Error"; // Removed i18n dependency
                         updateDisplay();
                         newNumber = true;
                         return;
@@ -345,14 +322,4 @@
             updateDisplay();
         }
     </script>
-
-    <script>
-
-
-
-
-    </script>
-    <script src="https://cdn.counter.dev/script.js" data-id="4e551911-0e5d-4c48-91a6-b828c3301675" data-utcoffset="11"></script>
-
-
 </body></html>
