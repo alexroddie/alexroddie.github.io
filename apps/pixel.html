@@ -267,62 +267,49 @@
         }
 
         .floating-palette {
-            background: white;
+            background: black;
             border: 2px solid black;
             box-shadow: 4px 4px 0 black;
-            padding: 6px;
+            padding: 0;
             margin-top: 15px;
             display: none; 
             z-index: 10;
+            gap: 1px;
         }
 
-        .control-group {
-            display: flex;
-            border: 1px solid black;
-            background: black;
-            padding: 0;
-        }
-
-        .control-group>*+* {
-            margin-left: 1px;
-        }
-
-        .control-group .sys-btn {
+        .floating-palette .sys-btn {
             border-radius: 0;
             margin: 0;
             border: none;
-            width: auto;
-            min-width: 44px;
-            padding: 0 12px;
-            height: 38px;
+            width: 44px;
+            height: 44px;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             background: white;
             box-shadow: none;
             cursor: pointer;
+            color: black;
         }
 
-        .control-group .sys-btn>*+* {
-            margin-left: 8px;
-        }
-
-        .btn-label {
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        .control-group .sys-btn:active,
-        .control-group .sys-btn.active {
+        .floating-palette .sys-btn:active,
+        .floating-palette .sys-btn.active {
             background: black;
             color: white;
-            transform: none;
-            box-shadow: none;
         }
 
-        .control-group .sys-btn svg {
-            width: 22px;
-            height: 22px;
+        .floating-palette .sys-btn:disabled {
+            background: white;
+            color: #ccc;
+            cursor: default;
+            opacity: 1; /* Force opacity to 1 to override any browser defaults */
+        }
+
+        .floating-palette .sys-btn svg {
+            width: 30px; /* Increased size */
+            height: 30px;
+            display: block; /* Removes inline baselines that throw off vertical centering */
         }
 
         .sys-btn.caution:hover {
@@ -517,40 +504,33 @@
     </div>
 
     <div id="tool-palette" class="floating-palette">
-        <div class="control-group">
-            <button id="tool-pen" class="sys-btn active" onclick="setTool('pen')" title="Pen">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 2l4 4-10 10H8v-4L18 2z"></path>
-                </svg>
-                <span class="btn-label">Pen</span>
-            </button>
-            <button id="tool-eraser" class="sys-btn" onclick="setTool('eraser')" title="Eraser">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"></path>
-                </svg>
-                <span class="btn-label">Eraser</span>
-            </button>
-            <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"></path>
-                </svg>
-                <span class="btn-label">Clear</span>
-            </button>
-            <button id="tool-undo" class="sys-btn" onclick="undo()" title="Undo" disabled>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 7v6h6"></path>
-                    <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
-                </svg>
-                <span class="btn-label">Undo</span>
-            </button>
-            <button id="tool-redo" class="sys-btn" onclick="redo()" title="Redo" disabled>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 7v6h-6"></path>
-                    <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path>
-                </svg>
-                <span class="btn-label">Redo</span>
-            </button>
-        </div>
+        <button id="tool-pen" class="sys-btn active" onclick="setTool('pen')" title="Pen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 2l4 4-10 10H8v-4L18 2z"></path>
+            </svg>
+        </button>
+        <button id="tool-eraser" class="sys-btn" onclick="setTool('eraser')" title="Eraser">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"></path>
+            </svg>
+        </button>
+        <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"></path>
+            </svg>
+        </button>
+        <button id="tool-undo" class="sys-btn" onclick="undo()" title="Undo" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 7v6h6"></path>
+                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+            </svg>
+        </button>
+        <button id="tool-redo" class="sys-btn" onclick="redo()" title="Redo" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 7v6h-6"></path>
+                <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path>
+            </svg>
+        </button>
     </div>
 
     <script>
@@ -570,7 +550,6 @@
         let lastDrawnRow = -1;
         let lastDrawnCol = -1;
         
-        // This tracks the current color of the stroke so you don't get a messy XOR effect
         let currentStrokeValue = 1; 
 
         let undoHistory = [];
@@ -980,11 +959,10 @@
             lastDrawnRow = -1;
             lastDrawnCol = -1;
             
-            // At the start of the stroke, determine the ink color based on the targeted pixel
             if (currentTool === 'eraser') {
                 currentStrokeValue = 0;
             } else {
-                currentStrokeValue = 1; // Default fallback
+                currentStrokeValue = 1; 
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.clientX || (e.touches && e.touches[0].clientX);
                 const clientY = e.clientY || (e.touches && e.touches[0].clientY);
@@ -994,7 +972,6 @@
                     const col = Math.floor(x / cellSize);
                     const row = Math.floor(y / cellSize);
                     if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
-                        // Invert whatever pixel we just landed on
                         currentStrokeValue = grid[row][col] === 0 ? 1 : 0;
                     }
                 }
@@ -1054,7 +1031,6 @@
             const btn = document.getElementById('tool-undo');
             if (btn) {
                 btn.disabled = undoHistory.length === 0;
-                btn.style.opacity = undoHistory.length === 0 ? '0.4' : '1';
             }
         }
 
@@ -1062,7 +1038,6 @@
             const btn = document.getElementById('tool-redo');
             if (btn) {
                 btn.disabled = redoHistory.length === 0;
-                btn.style.opacity = redoHistory.length === 0 ? '0.4' : '1';
             }
         }
 
