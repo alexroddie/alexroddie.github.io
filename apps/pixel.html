@@ -90,7 +90,7 @@
             z-index: 2;
         }
 
-        .close-box {
+        .close-box, .delete-btn {
             position: relative;
             height: 18px;
             border: 2px solid black;
@@ -108,9 +108,9 @@
             text-transform: none;
         }
         
-        .close-box.fixed-w { width: 18px; padding: 0; }
+        .close-box.fixed-w, .delete-btn.fixed-w { width: 18px; padding: 0; }
 
-        .close-box:active {
+        .close-box:active, .delete-btn:active {
             background: black;
             color: white;
             transform: translate(1px, 1px);
@@ -127,17 +127,7 @@
 
         .screen.active { display: flex; }
 
-        #screen-gallery { background: #eee; }
-
-        .gallery-header {
-            padding: 10px;
-            border-bottom: 2px solid black;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: white;
-            flex-shrink: 0;
-        }
+        #screen-gallery { background: white; }
 
         .gallery-grid {
             padding: 20px;
@@ -156,10 +146,11 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            box-shadow: 4px 4px 0 #ccc;
+            box-shadow: 4px 4px 0 black;
             aspect-ratio: 1 / 1.2;
             justify-content: space-between;
             position: relative;
+            box-sizing: border-box;
         }
 
         .gallery-preview {
@@ -171,23 +162,28 @@
             pointer-events: none;
         }
 
-        .gallery-item.new-btn { justify-content: center; border-style: dashed; background: #fafafa; }
-        .gallery-item.new-btn span { font-size: 3rem; font-weight: bold; color: #ccc; }
+        /* Fixed New Drawing Icon */
+        .gallery-item.new-btn { 
+            justify-content: center; 
+            background: #fafafa; 
+            border-top: 2px dashed black;
+            border-left: 2px dashed black;
+            border-right: 2px solid black;
+            border-bottom: 2px solid black;
+        }
+        
+        .gallery-item.new-btn span { 
+            font-size: 3rem; 
+            font-weight: bold; 
+            color: black; 
+        }
+
         .item-info { font-size: 0.8rem; margin-top: 5px; text-align: center; font-weight: bold; }
 
         .delete-btn {
             position: absolute;
             top: 5px;
             right: 5px;
-            background: white;
-            border: 2px solid black;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            cursor: pointer;
             z-index: 10;
         }
 
@@ -281,7 +277,6 @@
             margin-top: 10px;
         }
         
-        /* Fixed Button Row for New Drawing Dialogue */
         .btn-row {
             display: flex;
             justify-content: center;
@@ -294,7 +289,6 @@
             white-space: nowrap;
         }
 
-        /* Fixed Cancel Button Sizing */
         .cancel-btn {
             display: inline-block !important;
             width: auto !important;
@@ -372,9 +366,6 @@
         </div>
 
         <div id="screen-gallery" class="screen active">
-            <div class="gallery-header">
-                <div style="padding:10px; background:white; font-weight:bold; border-bottom:2px solid black;">My Drawings</div>
-            </div>
             <div id="gallery-grid" class="gallery-grid">
                 <div class="gallery-item new-btn" onclick="openModal('new-drawing-modal')">
                     <span>+</span>
@@ -482,7 +473,7 @@
                 el.className = 'gallery-item';
                 el.onclick = (e) => { if (!e.target.closest('.delete-btn')) openDrawing(item.id); };
                 const thumb = item.thumbnail ? `<img src="${item.thumbnail}" class="gallery-preview">` : `<div class="gallery-preview" style="background:#f0f0f0;"></div>`;
-                el.innerHTML = `<div class="delete-btn" onclick="deleteDrawing('${item.id}')">X</div>${thumb}<div class="item-info"><div style="text-decoration:underline;">${item.title || "Untitled"}</div><span>${item.size}x${item.size}</span></div>`;
+                el.innerHTML = `<div class="delete-btn fixed-w" onclick="deleteDrawing('${item.id}')">X</div>${thumb}<div class="item-info"><div style="text-decoration:underline;">${item.title || "Untitled"}</div><span>${item.size}x${item.size}</span></div>`;
                 gridEl.appendChild(el);
             });
         }
@@ -546,7 +537,6 @@
             const x = Math.floor(col * cellSize), y = Math.floor(row * cellSize);
             const w = Math.floor((col + 1) * cellSize) - x, h = Math.floor((row + 1) * cellSize) - y;
             ctx.fillStyle = value === 1 ? 'black' : 'white';
-            // FIXED GHOST LINES: Fill expansion (+1) for BOTH black and white to ensure the grid overlap is cleared.
             ctx.fillRect(x, y, w + 1, h + 1);
         }
 
