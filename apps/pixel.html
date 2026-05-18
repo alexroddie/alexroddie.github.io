@@ -211,12 +211,18 @@
             image-rendering: pixelated;
         }
 
+        /* Combined Palettes Container */
+        .toolbar-wrapper {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
         .floating-palette {
             background: black;
             border: 2px solid black;
             box-shadow: 4px 4px 0 black;
             padding: 0;
-            margin-top: 15px;
             display: none; 
             z-index: 10;
         }
@@ -374,45 +380,64 @@
         </div>
     </div>
 
-    <div id="tool-palette" class="floating-palette">
-        <button id="tool-pen" class="sys-btn active" onclick="setTool('pen')" title="Pencil">
-            <svg viewBox="0 0 512.001 512.001" xmlns="http://www.w3.org/2000/svg">
-                <path fill="currentColor" d="M496.063,62.299l-46.396-46.4c-21.199-21.199-55.689-21.198-76.888,0C352.82,35.86,47.964,340.739,27.591,361.113 c-2.17,2.17-3.624,5.054-4.142,7.875L0.251,494.268c-0.899,4.857,0.649,9.846,4.142,13.339c3.497,3.497,8.487,5.042,13.338,4.143 L143,488.549c2.895-0.54,5.741-2.008,7.875-4.143l345.188-345.214C517.311,117.944,517.314,83.55,496.063,62.299z M33.721,478.276 l14.033-75.784l61.746,61.75L33.721,478.276z M140.269,452.585L59.41,371.721L354.62,76.488l80.859,80.865L140.269,452.585z M474.85,117.979l-18.159,18.161l-80.859-80.865l18.159-18.161c9.501-9.502,24.96-9.503,34.463,0l46.396,46.4 C484.375,93.039,484.375,108.453,474.85,117.979z"/>
-            </svg>
-        </button>
-        <button id="tool-eraser" class="sys-btn" onclick="setTool('eraser')" title="Eraser">
-            <svg viewBox="0 0 511.958 511.958" xmlns="http://www.w3.org/2000/svg">
-                <path fill="currentColor" d="m498.798 140.438-127.279-127.279c-17.545-17.545-46.094-17.545-63.639 0l-294.721 294.721c-17.546 17.546-17.546 46.094 0 63.64l127.279 127.28c8.772 8.772 20.296 13.158 31.819 13.158s23.047-4.386 31.819-13.159l294.721-294.721c17.547-17.546 17.547-46.094.001-63.64zm-315.933 337.147c-5.849 5.849-15.364 5.848-21.213 0l-127.28-127.279c-5.849-5.848-5.849-15.365 0-21.213l73.114-73.114 148.492 148.492zm294.72-294.72-200.393 200.393-148.492-148.492 200.393-200.394c5.847-5.848 15.365-5.849 21.213 0l127.279 127.279c5.849 5.849 5.849 15.365 0 21.214z"/>
-            </svg>
-        </button>
-        <button id="tool-bucket" class="sys-btn" onclick="setTool('bucket')" title="Flood Fill">
-            <svg viewBox="0 0 18.713 18.713" xmlns="http://www.w3.org/2000/svg">
-                <path fill="currentColor" d="M13.367,6.434L8.872,1.895l-0.65-0.672L6.687,2.731c-2.624-0.375-4.51,0.59-5.178,1.777 C0.698,5.949,1.527,7.522,1.553,7.57c0.693,1.385,1.689,2.216,2.961,2.473c0.279,0.055,0.56,0.08,0.84,0.08 c1.322,0,2.644-0.561,3.649-1.135c0.271,0.188,0.601,0.299,0.954,0.299c0.93,0,1.686-0.759,1.686-1.691s-0.756-1.69-1.686-1.69 s-1.686,0.758-1.686,1.69c0,0.093,0.013,0.184,0.027,0.274C7.286,8.445,5.951,8.986,4.77,8.748C3.905,8.573,3.237,7.995,2.719,6.96 C2.714,6.95,2.203,5.957,2.654,5.157c0.38-0.676,1.371-1.111,2.883-1.275L5.302,4.119L3.13,6.299 c0.023,0.053,0.04,0.085,0.041,0.087c0.209,0.418,0.444,0.758,0.706,1.03l3.932-3.943c0.187-0.187,0.435-0.29,0.698-0.29 s0.513,0.103,0.698,0.29l4.771,4.787c0.385,0.385,0.385,1.014,0,1.399L7.774,15.88c-0.372,0.373-1.023,0.373-1.396,0l-4.772-4.787 c-0.187-0.186-0.289-0.434-0.289-0.699c0-0.264,0.102-0.514,0.289-0.7l0.515-0.518C1.828,8.874,1.568,8.512,1.335,8.098 l-0.66,0.663C0.24,9.197,0,9.777,0,10.394c0,0.617,0.24,1.197,0.675,1.633l4.772,4.787c0.435,0.436,1.012,0.676,1.628,0.676 c0.614,0,1.193-0.24,1.628-0.676l6.201-6.221L16.205,9.3l-0.361-0.365c0.683-0.373,0.987,2.744,0.987,2.744s0.954,7.439,1.802,0 C19.443,4.56,13.854,6.272,13.367,6.434z"/>
-            </svg>
-        </button>
-        <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
-            <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                <path fill="currentColor" d="m424 64h-88v-16c0-26.467-21.533-48-48-48h-64c-26.467 0-48 21.533-48 48v16h-88c-22.056 0-40 17.944-40 40v56c0 8.836 7.164 16 16 16h8.744l13.823 290.283c1.221 25.636 22.281 45.717 47.945 45.717h242.976c25.665 0 46.725-20.081 47.945-45.717l13.823-290.283h8.744c8.836 0 16-7.164 16-16v-56c0-22.056-17.944-40-40-40zm-216-16c0-8.822 7.178-16 16-16h64c8.822 0 16 7.178 16 16v16h-96zm-128 56c0-4.411 3.589-8 8-8h336c4.411 0 8 3.589 8 8v40c-4.931 0-331.567 0-352 0zm313.469 360.761c-.407 8.545-7.427 15.239-15.981 15.239h-242.976c-8.555 0-15.575-6.694-15.981-15.239l-13.751-288.761h302.44z"/>
-                <path fill="currentColor" d="m256 448c8.836 0 16-7.164 16-16v-208c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16z"/>
-                <path fill="currentColor" d="m336 448c8.836 0 16-7.164 16-16v-208c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16z"/>
-                <path fill="currentColor" d="m176 448c8.836 0 16-7.164 16-16v-208c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16z"/>
-            </svg>
-        </button>
-        <button id="tool-grid" class="sys-btn" onclick="toggleGrid()" title="Toggle Grid">
-            <svg viewBox="0 0 512.001 512.001" xmlns="http://www.w3.org/2000/svg">
-                <path fill="currentColor" d="M511.78,171.836V56.973c0-31.354-25.508-56.863-56.863-56.863H56.863C25.508,0.11,0,25.619,0,56.973v398.055 c0,31.354,25.508,56.863,56.863,56.863h398.055c31.354,0,56.863-25.508,56.863-56.863V176.985 c0.145-0.837,0.221-1.697,0.221-2.575S511.925,172.673,511.78,171.836z M348.436,30.094h106.482 c14.821,0,26.879,12.058,26.879,26.879v102.446H348.436V30.094z M155.336,481.907H56.863c-14.822,0-26.879-12.058-26.879-26.879 V352.519h125.352V481.907z M155.336,322.535H29.984V189.403h125.352V322.535z M155.337,159.419H29.984V56.973 c0-14.821,12.057-26.879,26.879-26.879h98.474V159.419z M318.452,481.907H185.319V352.519h133.133V481.907z M318.452,322.535 H185.319V189.403h133.133V322.535z M318.452,159.419H185.319V30.094h133.133V159.419z M481.797,455.028 c0,14.821-12.058,26.879-26.879,26.879H348.436V352.519h133.361V455.028z M481.797,322.535H348.436V189.403h133.361V322.535z"/>
-            </svg>
-        </button>
+    <div class="toolbar-wrapper">
+        <div id="tool-palette" class="floating-palette">
+            <button id="tool-pen" class="sys-btn active" onclick="setTool('pen')" title="Pencil">
+                <svg viewBox="0 0 512.001 512.001" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="M496.063,62.299l-46.396-46.4c-21.199-21.199-55.689-21.198-76.888,0C352.82,35.86,47.964,340.739,27.591,361.113 c-2.17,2.17-3.624,5.054-4.142,7.875L0.251,494.268c-0.899,4.857,0.649,9.846,4.142,13.339c3.497,3.497,8.487,5.042,13.338,4.143 L143,488.549c2.895-0.54,5.741-2.008,7.875-4.143l345.188-345.214C517.311,117.944,517.314,83.55,496.063,62.299z M33.721,478.276 l14.033-75.784l61.746,61.75L33.721,478.276z M140.269,452.585L59.41,371.721L354.62,76.488l80.859,80.865L140.269,452.585z M474.85,117.979l-18.159,18.161l-80.859-80.865l18.159-18.161c9.501-9.502,24.96-9.503,34.463,0l46.396,46.4 C484.375,93.039,484.375,108.453,474.85,117.979z"/>
+                </svg>
+            </button>
+            <button id="tool-eraser" class="sys-btn" onclick="setTool('eraser')" title="Eraser">
+                <svg viewBox="0 0 511.958 511.958" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="m498.798 140.438-127.279-127.279c-17.545-17.545-46.094-17.545-63.639 0l-294.721 294.721c-17.546 17.546-17.546 46.094 0 63.64l127.279 127.28c8.772 8.772 20.296 13.158 31.819 13.158s23.047-4.386 31.819-13.159l294.721-294.721c17.547-17.546 17.547-46.094.001-63.64zm-315.933 337.147c-5.849 5.849-15.364 5.848-21.213 0l-127.28-127.279c-5.849-5.848-5.849-15.365 0-21.213l73.114-73.114 148.492 148.492zm294.72-294.72-200.393 200.393-148.492-148.492 200.393-200.394c5.847-5.848 15.365-5.849 21.213 0l127.279 127.279c5.849 5.849 5.849 15.365 0 21.214z"/>
+                </svg>
+            </button>
+            <button id="tool-bucket" class="sys-btn" onclick="setTool('bucket')" title="Flood Fill">
+                <svg viewBox="0 0 18.713 18.713" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="M13.367,6.434L8.872,1.895l-0.65-0.672L6.687,2.731c-2.624-0.375-4.51,0.59-5.178,1.777 C0.698,5.949,1.527,7.522,1.553,7.57c0.693,1.385,1.689,2.216,2.961,2.473c0.279,0.055,0.56,0.08,0.84,0.08 c1.322,0,2.644-0.561,3.649-1.135c0.271,0.188,0.601,0.299,0.954,0.299c0.93,0,1.686-0.759,1.686-1.691s-0.756-1.69-1.686-1.69 s-1.686,0.758-1.686,1.69c0,0.093,0.013,0.184,0.027,0.274C7.286,8.445,5.951,8.986,4.77,8.748C3.905,8.573,3.237,7.995,2.719,6.96 C2.714,6.95,2.203,5.957,2.654,5.157c0.38-0.676,1.371-1.111,2.883-1.275L5.302,4.119L3.13,6.299 c0.023,0.053,0.04,0.085,0.041,0.087c0.209,0.418,0.444,0.758,0.706,1.03l3.932-3.943c0.187-0.187,0.435-0.29,0.698-0.29 s0.513,0.103,0.698,0.29l4.771,4.787c0.385,0.385,0.385,1.014,0,1.399L7.774,15.88c-0.372,0.373-1.023,0.373-1.396,0l-4.772-4.787 c-0.187-0.186-0.289-0.434-0.289-0.699c0-0.264,0.102-0.514,0.289-0.7l0.515-0.518C1.828,8.874,1.568,8.512,1.335,8.098 l-0.66,0.663C0.24,9.197,0,9.777,0,10.394c0,0.617,0.24,1.197,0.675,1.633l4.772,4.787c0.435,0.436,1.012,0.676,1.628,0.676 c0.614,0,1.193-0.24,1.628-0.676l6.201-6.221L16.205,9.3l-0.361-0.365c0.683-0.373,0.987,2.744,0.987,2.744s0.954,7.439,1.802,0 C19.443,4.56,13.854,6.272,13.367,6.434z"/>
+                </svg>
+            </button>
+            <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
+                <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="m424 64h-88v-16c0-26.467-21.533-48-48-48h-64c-26.467 0-48 21.533-48 48v16h-88c-22.056 0-40 17.944-40 40v56c0 8.836 7.164 16 16 16h8.744l13.823 290.283c1.221 25.636 22.281 45.717 47.945 45.717h242.976c25.665 0 46.725-20.081 47.945-45.717l13.823-290.283h8.744c8.836 0 16-7.164 16-16v-56c0-22.056-17.944-40-40-40zm-216-16c0-8.822 7.178-16 16-16h64c8.822 0 16 7.178 16 16v16h-96zm-128 56c0-4.411 3.589-8 8-8h336c4.411 0 8 3.589 8 8v40c-4.931 0-331.567 0-352 0zm313.469 360.761c-.407 8.545-7.427 15.239-15.981 15.239h-242.976c-8.555 0-15.575-6.694-15.981-15.239l-13.751-288.761h302.44z"/>
+                    <path fill="currentColor" d="m256 448c8.836 0 16-7.164 16-16v-208c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16z"/>
+                    <path fill="currentColor" d="m336 448c8.836 0 16-7.164 16-16v-208c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16z"/>
+                    <path fill="currentColor" d="m176 448c8.836 0 16-7.164 16-16v-208c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16z"/>
+                </svg>
+            </button>
+            <button id="tool-grid" class="sys-btn" onclick="toggleGrid()" title="Toggle Grid">
+                <svg viewBox="0 0 512.001 512.001" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="M511.78,171.836V56.973c0-31.354-25.508-56.863-56.863-56.863H56.863C25.508,0.11,0,25.619,0,56.973v398.055 c0,31.354,25.508,56.863,56.863,56.863h398.055c31.354,0,56.863-25.508,56.863-56.863V176.985 c0.145-0.837,0.221-1.697,0.221-2.575S511.925,172.673,511.78,171.836z M348.436,30.094h106.482 c14.821,0,26.879,12.058,26.879,26.879v102.446H348.436V30.094z M155.336,481.907H56.863c-14.822,0-26.879-12.058-26.879-26.879 V352.519h125.352V481.907z M155.336,322.535H29.984V189.403h125.352V322.535z M155.337,159.419H29.984V56.973 c0-14.821,12.057-26.879,26.879-26.879h98.474V159.419z M318.452,481.907H185.319V352.519h133.133V481.907z M318.452,322.535 H185.319V189.403h133.133V322.535z M318.452,159.419H185.319V30.094h133.133V159.419z M481.797,455.028 c0,14.821-12.058,26.879-26.879,26.879H348.436V352.519h133.361V455.028z M481.797,322.535H348.436V189.403h133.361V322.535z"/>
+                </svg>
+            </button>
+            <button id="tool-undo" class="sys-btn" onclick="undo()" title="Undo" disabled>
+                <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+            </button>
+            <button id="tool-redo" class="sys-btn" onclick="redo()" title="Redo" disabled>
+                <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg>
+            </button>
+            <button id="tool-download" class="sys-btn" onclick="downloadImage()" title="Download">
+                <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+        </div>
 
-        <button id="tool-undo" class="sys-btn" onclick="undo()" title="Undo" disabled>
-            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
-        </button>
-        <button id="tool-redo" class="sys-btn" onclick="redo()" title="Redo" disabled>
-            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg>
-        </button>
-        <button id="tool-download" class="sys-btn" onclick="downloadImage()" title="Download">
-            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        </button>
+        <div id="thickness-palette" class="floating-palette">
+            <button id="thick-1" class="sys-btn active" onclick="setThickness(1)" title="1px Line">
+                <svg viewBox="0 0 24 24"><rect x="11.5" y="4" width="1" height="16" fill="currentColor"/></svg>
+            </button>
+            <button id="thick-2" class="sys-btn" onclick="setThickness(2)" title="2px Line">
+                <svg viewBox="0 0 24 24"><rect x="11" y="4" width="2" height="16" fill="currentColor"/></svg>
+            </button>
+            <button id="thick-3" class="sys-btn" onclick="setThickness(3)" title="3px Line">
+                <svg viewBox="0 0 24 24"><rect x="10.5" y="4" width="3" height="16" fill="currentColor"/></svg>
+            </button>
+            <button id="thick-4" class="sys-btn" onclick="setThickness(4)" title="4px Line">
+                <svg viewBox="0 0 24 24"><rect x="10" y="4" width="4" height="16" fill="currentColor"/></svg>
+            </button>
+            <button id="thick-5" class="sys-btn" onclick="setThickness(5)" title="5px Line">
+                <svg viewBox="0 0 24 24"><rect x="9.5" y="4" width="5" height="16" fill="currentColor"/></svg>
+            </button>
+        </div>
     </div>
 
     <script>
@@ -427,8 +452,8 @@
         let cellSize;
         let grid;
         let currentTool = 'pen';
+        let currentThickness = 1;
         let isDrawing = false;
-        let lastDrawnRow = -1, lastDrawnCol = -1;
         let currentStrokeValue = 1; 
         let gridVisible = false;
 
@@ -488,6 +513,7 @@
             document.getElementById('window-title').textContent = item.title || "Untitled";
             gridVisible = false;
             setTool('pen'); 
+            setThickness(1);
             showEditor(); setupCanvas(false); redrawAllPixels();
             undoHistory = []; redoHistory = []; updateUndoButton(); updateRedoButton();
         }
@@ -498,6 +524,7 @@
             document.getElementById('window-title').textContent = "Untitled";
             gridVisible = false;
             setTool('pen');
+            setThickness(1);
             showEditor(); setupCanvas(false); redrawAllPixels();
         }
 
@@ -573,7 +600,7 @@
                 floodFill(row, col, grid[row][col], grid[row][col] === 0 ? 1 : 0);
                 triggerAutoSave();
             } else {
-                saveUndoState(); isDrawing = true; lastDrawnRow = -1; lastDrawnCol = -1;
+                saveUndoState(); isDrawing = true;
                 currentStrokeValue = currentTool === 'eraser' ? 0 : (grid[row][col] === 1 ? 0 : 1);
                 handlePointer(e);
             }
@@ -585,8 +612,17 @@
         function handlePointer(e) {
             const rect = canvas.getBoundingClientRect();
             const col = Math.floor((e.clientX - rect.left) / cellSize), row = Math.floor((e.clientY - rect.top) / cellSize);
-            if (row >= 0 && row < gridSize && col >= 0 && col < gridSize && grid[row][col] !== currentStrokeValue) {
-                grid[row][col] = currentStrokeValue; drawPixel(row, col, currentStrokeValue);
+            
+            // MacPaint-style Square Brush Logic
+            const offset = Math.floor((currentThickness - 1) / 2);
+            
+            for (let r = row - offset; r < row - offset + currentThickness; r++) {
+                for (let c = col - offset; c < col - offset + currentThickness; c++) {
+                    if (r >= 0 && r < gridSize && c >= 0 && c < gridSize && grid[r][c] !== currentStrokeValue) {
+                        grid[r][c] = currentStrokeValue; 
+                        drawPixel(r, c, currentStrokeValue);
+                    }
+                }
             }
         }
 
@@ -605,13 +641,15 @@
 
         function showEditor() {
             document.getElementById('screen-gallery').classList.remove('active'); document.getElementById('screen-editor').classList.add('active');
-            document.getElementById('tool-palette').style.display = 'flex'; document.getElementById('window-title').style.cursor = 'pointer';
+            document.querySelectorAll('.floating-palette').forEach(p => p.style.display = 'flex'); 
+            document.getElementById('window-title').style.cursor = 'pointer';
             document.getElementById('window-title').onclick = () => promptRename(currentDrawingId);
         }
 
         function showGallery() {
             document.getElementById('screen-editor').classList.remove('active'); document.getElementById('screen-gallery').classList.add('active');
-            document.getElementById('tool-palette').style.display = 'none'; document.getElementById('window-title').textContent = "Pixel";
+            document.querySelectorAll('.floating-palette').forEach(p => p.style.display = 'none');
+            document.getElementById('window-title').textContent = "Pixel";
             document.getElementById('window-title').onclick = null; renderGallery();
         }
 
@@ -637,8 +675,13 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
         function setTool(tool) {
-            currentTool = tool; document.querySelectorAll('.floating-palette .sys-btn').forEach(b => b.classList.remove('active'));
+            currentTool = tool; document.querySelectorAll('#tool-palette .sys-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`tool-${tool}`).classList.add('active');
+        }
+
+        function setThickness(px) {
+            currentThickness = px; document.querySelectorAll('#thickness-palette .sys-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`thick-${px}`).classList.add('active');
         }
 
         function undo() {
