@@ -300,16 +300,16 @@
         }
 
         .floating-palette .sys-btn:disabled {
-            background: white;
-            color: #ccc;
+            background: white !important;
+            color: #ccc !important;
             cursor: default;
-            opacity: 1; /* Force opacity to 1 to override any browser defaults */
+            opacity: 1 !important; 
         }
 
         .floating-palette .sys-btn svg {
-            width: 30px; /* Increased size */
+            width: 30px; 
             height: 30px;
-            display: block; /* Removes inline baselines that throw off vertical centering */
+            display: block; 
         }
 
         .sys-btn.caution:hover {
@@ -472,7 +472,7 @@
         <div class="title-bar">
             <div class="title-stripes"></div>
             <div class="left-controls">
-                <div class="close-box fixed-w" onclick="window.location.href='index'">X</div>
+                <div class="close-box fixed-w" onclick="handleClose()">X</div>
                 <div id="editor-back-btn" class="close-box" style="display:none;" onclick="showGallery()">Back</div>
                 <div id="editor-download-btn" class="close-box" style="display:none;" onclick="downloadImage()">Download</div>
             </div>
@@ -505,28 +505,28 @@
 
     <div id="tool-palette" class="floating-palette">
         <button id="tool-pen" class="sys-btn active" onclick="setTool('pen')" title="Pen">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="6 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M18 2l4 4-10 10H8v-4L18 2z"></path>
             </svg>
         </button>
         <button id="tool-eraser" class="sys-btn" onclick="setTool('eraser')" title="Eraser">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="1 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"></path>
             </svg>
         </button>
         <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="4 4 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
                 <path d="M18 6L6 18M6 6l12 12"></path>
             </svg>
         </button>
         <button id="tool-undo" class="sys-btn" onclick="undo()" title="Undo" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M3 7v6h6"></path>
                 <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
             </svg>
         </button>
         <button id="tool-redo" class="sys-btn" onclick="redo()" title="Redo" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M21 7v6h-6"></path>
                 <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path>
             </svg>
@@ -1081,6 +1081,15 @@
             redrawAllPixels();
             triggerAutoSave(); 
             closeModal('clear-modal');
+        }
+
+        function handleClose() {
+            const isEditorActive = document.getElementById('screen-editor').classList.contains('active');
+            if (isEditorActive) {
+                if (autoSaveTimer) clearTimeout(autoSaveTimer);
+                performSave();
+            }
+            window.location.href = 'https://alexroddie.github.io/';
         }
 
         function openModal(modalId) {
