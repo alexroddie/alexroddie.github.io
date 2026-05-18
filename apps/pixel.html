@@ -726,6 +726,8 @@
                 }
             }
             closeModal('rename-modal');
+            // Force redraw for Kindle browser
+            if (currentDrawingId) redrawAllPixels();
         }
 
         let drawingToDeleteId = null;
@@ -870,8 +872,9 @@
             drawGridLines();
             if (reset) {
                 grid = createGrid(gridSize);
-                redrawAllPixels();
             }
+            // Always redraw pixels on setup to prevent blackout/cleared buffer on Kindle resize
+            redrawAllPixels();
         }
 
         function drawGridLines() {
