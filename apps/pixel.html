@@ -240,14 +240,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 0; /* Padding removed to allow flush edges */
+            padding: 0; 
             flex-grow: 1;
             background: white;
         }
 
         #canvas-wrapper {
             position: relative;
-            /* Border removed to let the window chrome be the border */
             box-sizing: content-box;
             background: white;
             display: block;
@@ -570,6 +569,9 @@
 
         let lastDrawnRow = -1;
         let lastDrawnCol = -1;
+        
+        // This tracks the current color of the stroke so you don't get a messy XOR effect
+        let currentStrokeValue = 1; 
 
         let undoHistory = [];
         let redoHistory = [];
@@ -800,7 +802,6 @@
         }
 
         function showGallery() {
-            // Restore window width for the gallery grid layout
             document.querySelector('.window').style.width = '100%';
             
             document.getElementById('screen-editor').classList.remove('active');
@@ -828,7 +829,6 @@
             if (!gameContent || gameContent.offsetParent === null) return;
 
             const windowEl = document.querySelector('.window');
-            // Reset window width momentarily to measure true available space
             windowEl.style.width = '100%';
 
             const scaleStr = localStorage.getItem('rekindle_scale') || '1.0';
@@ -869,7 +869,6 @@
             wrapper.style.width = canvasSize + 'px';
             wrapper.style.height = canvasSize + 'px';
 
-            // Snap window width to precisely hug the canvas
             windowEl.style.width = canvasSize + 'px';
 
             cellSize = canvas.width / gridSize;
@@ -953,14 +952,14 @@
         function handleDraw(event) {
             event.preventDefault();
             const rect = canvas.getBoundingClientRect();
-            const x = (event.clientX || event.touches[0].clientX) - rect.left;
-            const y = (event.clientY || event.touches[0].clientY) - rect.top;
+            const x = (event.clientX || (event.touches && event.touches[0].clientX)) - rect.left;
+            const y = (event.clientY || (event.touches && event.touches[0].clientY)) - rect.top;
 
             const col = Math.floor(x / cellSize);
             const row = Math.floor(y / cellSize);
 
             if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
-                const newValue = (currentTool === 'eraser') ? 0 : 1;
+                const newValue = currentStrokeValue;
 
                 if (lastDrawnRow !== -1 && lastDrawnCol !== -1) {
                     drawLine(lastDrawnRow, lastDrawnCol, row, col, newValue);
@@ -980,6 +979,27 @@
             isDrawing = true;
             lastDrawnRow = -1;
             lastDrawnCol = -1;
+            
+            // At the start of the stroke, determine the ink color based on the targeted pixel
+            if (currentTool === 'eraser') {
+                currentStrokeValue = 0;
+            } else {
+                currentStrokeValue = 1; // Default fallback
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                if (clientX !== undefined && clientY !== undefined) {
+                    const x = clientX - rect.left;
+                    const y = clientY - rect.top;
+                    const col = Math.floor(x / cellSize);
+                    const row = Math.floor(y / cellSize);
+                    if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
+                        // Invert whatever pixel we just landed on
+                        currentStrokeValue = grid[row][col] === 0 ? 1 : 0;
+                    }
+                }
+            }
+            
             handleDraw(e);
         }
 
