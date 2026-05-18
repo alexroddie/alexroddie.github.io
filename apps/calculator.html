@@ -1,7 +1,11 @@
-<!DOCTYPE html><html lang="en"><head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <meta charset="UTF-8">
-    
+
     <title>Calculator</title>
     <style>
         /* SYSTEM 7 AESTHETICS */
@@ -10,31 +14,23 @@
             --text-color: #000000;
             --border: 2px solid #000000;
             --shadow: 4px 4px 0px #000000;
-            --stripe-pattern: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px, #000 4px);
+            /* Refined pattern logic for sharper rendering */
+            --stripe-pattern: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px);
         }
 
         body {
-            /* Rendering logic condensed and de-duplicated */
-            image-rendering: -webkit-crisp-edges;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -o-crisp-edges;
-            image-rendering: -webkit-optimize-contrast;
             image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            -ms-interpolation-mode: nearest-neighbor;
             background-repeat: repeat;
             background-position: top left;
+            background-color: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='1' height='1' fill='black'/%3E%3Crect x='1' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
+            background-size: 4px 4px;
 
             font-family: "Geneva", "Verdana", sans-serif;
             margin: 0;
             padding: 20px;
             height: 100vh;
             overflow: hidden;
-            
-            /* Native Standalone Background */
-            background-color: #ffffff;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='1' height='1' fill='black'/%3E%3Crect x='1' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
-            background-size: 4px 4px;
 
             display: flex;
             flex-direction: column;
@@ -42,6 +38,7 @@
             justify-content: center;
             user-select: none;
             box-sizing: border-box;
+            touch-action: none;
         }
 
         /* WINDOW FRAME */
@@ -54,7 +51,7 @@
             width: 100%;
             max-width: 450px;
             min-height: fit-content;
-            max-height: 95vh; /* Fixed invalid property */
+            max-height: 95vh;
             position: relative;
         }
 
@@ -73,8 +70,9 @@
 
         .title-stripes {
             position: absolute;
-            top: 4px;
-            bottom: 4px;
+            /* Adjusted to ensure a 24px height (multiple of 4) to fix ghost lines */
+            top: 6px;
+            bottom: 5px;
             left: 4px;
             right: 4px;
             background-image: var(--stripe-pattern);
@@ -124,7 +122,8 @@
             flex-direction: column;
             overflow-y: auto;
         }
-        .window-content > * + * {
+
+        .window-content>*+* {
             margin-top: 15px;
         }
 
@@ -303,7 +302,7 @@
                 case '*': result = prev * current; break;
                 case '/':
                     if (current === 0) {
-                        currentInput = "Error"; // Removed i18n dependency
+                        currentInput = "Error";
                         updateDisplay();
                         newNumber = true;
                         return;
@@ -322,4 +321,6 @@
             updateDisplay();
         }
     </script>
-</body></html>
+</body>
+
+</html>
