@@ -240,14 +240,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            padding: 0; /* Padding removed to allow flush edges */
             flex-grow: 1;
             background: white;
         }
 
         #canvas-wrapper {
             position: relative;
-            border: 3px solid black;
+            /* Border removed to let the window chrome be the border */
             box-sizing: content-box;
             background: white;
             display: block;
@@ -800,6 +800,9 @@
         }
 
         function showGallery() {
+            // Restore window width for the gallery grid layout
+            document.querySelector('.window').style.width = '100%';
+            
             document.getElementById('screen-editor').classList.remove('active');
             document.getElementById('screen-gallery').classList.add('active');
             document.getElementById('editor-back-btn').style.display = 'none';
@@ -824,6 +827,10 @@
             const gameContent = document.querySelector('.game-content');
             if (!gameContent || gameContent.offsetParent === null) return;
 
+            const windowEl = document.querySelector('.window');
+            // Reset window width momentarily to measure true available space
+            windowEl.style.width = '100%';
+
             const scaleStr = localStorage.getItem('rekindle_scale') || '1.0';
             const scale = parseFloat(scaleStr);
 
@@ -831,25 +838,21 @@
             wrapper.style.height = '';
             wrapper.style.zoom = '';
 
-            // Calculate width accounting for the 10px game-content padding on each side (20px total)
-            const containerWidth = gameContent.clientWidth - 20; 
+            const containerWidth = gameContent.clientWidth; 
             const logicalWindowH = window.innerHeight / scale;
             const maxWindowHeight = Math.min(logicalWindowH * 0.95, logicalWindowH - (20 / scale));
 
             const titleBarH = document.querySelector('.title-bar').offsetHeight;
             
-            // Measure the external palette dynamically to ensure it never overlaps
             const palette = document.getElementById('tool-palette');
             const paletteH = (palette && palette.offsetParent !== null) ? palette.offsetHeight + 20 : 0; 
 
-            // Combine height to find remaining available vertical space for the canvas
-            const uiHeight = titleBarH + paletteH + 40; 
+            const uiHeight = titleBarH + paletteH; 
             const availableHeight = maxWindowHeight - uiHeight;
 
             const maxDimension = Math.min(containerWidth, availableHeight) * scale;
             const validSize = Math.max(200, maxDimension);
             
-            // Snap canvas size to a multiple of 64 for perfect consistency across modes
             const canvasSize = Math.floor(validSize / 64) * 64;
 
             if (scale !== 1.0 && scale > 0) {
@@ -865,6 +868,9 @@
 
             wrapper.style.width = canvasSize + 'px';
             wrapper.style.height = canvasSize + 'px';
+
+            // Snap window width to precisely hug the canvas
+            windowEl.style.width = canvasSize + 'px';
 
             cellSize = canvas.width / gridSize;
 
