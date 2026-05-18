@@ -88,14 +88,20 @@
             font-size: 1.1rem;
         }
 
-        .close-box {
+        .left-controls {
             position: absolute;
             left: 10px;
-            width: 18px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 2;
+        }
+
+        .close-box {
+            position: relative;
             height: 18px;
             border: 2px solid black;
             background: white;
-            z-index: 2;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -105,6 +111,12 @@
             font-size: 0.9rem;
             line-height: 1;
             box-shadow: 2px 2px 0 black;
+            padding: 0 5px;
+        }
+        
+        .close-box.fixed-w {
+            width: 18px;
+            padding: 0;
         }
 
         .close-box:active {
@@ -228,7 +240,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 15px 10px;
+            padding: 10px;
             flex-grow: 1;
             background: white;
         }
@@ -236,9 +248,9 @@
         #canvas-wrapper {
             position: relative;
             border: 3px solid black;
-            margin-bottom: 10px;
             box-sizing: content-box;
             background: white;
+            display: block;
         }
 
         #pixel-canvas {
@@ -255,19 +267,14 @@
             image-rendering: pixelated;
         }
 
-        .controls-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            width: 100%;
-            background: white; 
-            box-sizing: border-box;
-            flex-wrap: nowrap;
-        }
-
-        .controls-container>*+* {
-            margin-left: 15px;
+        .floating-palette {
+            background: white;
+            border: 2px solid black;
+            box-shadow: 4px 4px 0 black;
+            padding: 6px;
+            margin-top: 15px;
+            display: none; 
+            z-index: 10;
         }
 
         .control-group {
@@ -417,17 +424,6 @@
             transform: translate(1px, 1px);
             box-shadow: none;
         }
-
-        .menu-bar {
-            display: flex;
-            width: 100%;
-            background: white; 
-            padding: 10px;
-            box-sizing: border-box;
-            flex-shrink: 0;
-            align-items: center;
-            justify-content: flex-start; 
-        }
     </style>
 </head>
 
@@ -489,8 +485,11 @@
     <div class="window">
         <div class="title-bar">
             <div class="title-stripes"></div>
-            <div class="close-box" onclick="window.location.href='index'">X</div>
-            <div id="editor-back-btn" class="close-box" style="left:38px; width:auto; padding:0 5px; display:none;" onclick="showGallery()">Back</div>
+            <div class="left-controls">
+                <div class="close-box fixed-w" onclick="window.location.href='index'">X</div>
+                <div id="editor-back-btn" class="close-box" style="display:none;" onclick="showGallery()">Back</div>
+                <div id="editor-download-btn" class="close-box" style="display:none;" onclick="downloadImage()">Download</div>
+            </div>
             <span class="title-text">Pixel</span>
         </div>
 
@@ -509,53 +508,49 @@
         </div>
 
         <div id="screen-editor" class="screen">
-            <div class="menu-bar">
-                <button class="sys-btn" style="margin: 0;" onclick="downloadImage()">Download</button>
-            </div>
-
             <div class="game-content">
                 <div id="canvas-wrapper">
                     <canvas id="pixel-canvas"></canvas>
                     <canvas id="grid-canvas"></canvas>
                 </div>
-
-                <div class="controls-container">
-                    <div class="control-group">
-                        <button id="tool-pen" class="sys-btn active" onclick="setTool('pen')" title="Pen">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 2l4 4-10 10H8v-4L18 2z"></path>
-                            </svg>
-                            <span class="btn-label">Pen</span>
-                        </button>
-                        <button id="tool-eraser" class="sys-btn" onclick="setTool('eraser')" title="Eraser">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"></path>
-                            </svg>
-                            <span class="btn-label">Eraser</span>
-                        </button>
-                        <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 6L6 18M6 6l12 12"></path>
-                            </svg>
-                            <span class="btn-label">Clear</span>
-                        </button>
-                        <button id="tool-undo" class="sys-btn" onclick="undo()" title="Undo" disabled>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 7v6h6"></path>
-                                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
-                            </svg>
-                            <span class="btn-label">Undo</span>
-                        </button>
-                        <button id="tool-redo" class="sys-btn" onclick="redo()" title="Redo" disabled>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 7v6h-6"></path>
-                                <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path>
-                            </svg>
-                            <span class="btn-label">Redo</span>
-                        </button>
-                    </div>
-                </div>
             </div>
+        </div>
+    </div>
+
+    <div id="tool-palette" class="floating-palette">
+        <div class="control-group">
+            <button id="tool-pen" class="sys-btn active" onclick="setTool('pen')" title="Pen">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 2l4 4-10 10H8v-4L18 2z"></path>
+                </svg>
+                <span class="btn-label">Pen</span>
+            </button>
+            <button id="tool-eraser" class="sys-btn" onclick="setTool('eraser')" title="Eraser">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"></path>
+                </svg>
+                <span class="btn-label">Eraser</span>
+            </button>
+            <button class="sys-btn" onclick="clearGrid()" title="Clear Canvas">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+                <span class="btn-label">Clear</span>
+            </button>
+            <button id="tool-undo" class="sys-btn" onclick="undo()" title="Undo" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7v6h6"></path>
+                    <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+                </svg>
+                <span class="btn-label">Undo</span>
+            </button>
+            <button id="tool-redo" class="sys-btn" onclick="redo()" title="Redo" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 7v6h-6"></path>
+                    <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path>
+                </svg>
+                <span class="btn-label">Redo</span>
+            </button>
         </div>
     </div>
 
@@ -807,16 +802,18 @@
         function showGallery() {
             document.getElementById('screen-editor').classList.remove('active');
             document.getElementById('screen-gallery').classList.add('active');
-            const backBtn = document.getElementById('editor-back-btn');
-            if (backBtn) backBtn.style.display = 'none';
+            document.getElementById('editor-back-btn').style.display = 'none';
+            document.getElementById('editor-download-btn').style.display = 'none';
+            document.getElementById('tool-palette').style.display = 'none';
             renderGallery(); 
         }
 
         function showEditor() {
             document.getElementById('screen-gallery').classList.remove('active');
             document.getElementById('screen-editor').classList.add('active');
-            const backBtn = document.getElementById('editor-back-btn');
-            if (backBtn) backBtn.style.display = 'flex';
+            document.getElementById('editor-back-btn').style.display = 'flex';
+            document.getElementById('editor-download-btn').style.display = 'flex';
+            document.getElementById('tool-palette').style.display = 'flex';
         }
 
         function createGrid(size) {
@@ -824,7 +821,6 @@
         }
 
         function setupCanvas(reset = true) {
-            // Need the parent container to calculate available screen width
             const gameContent = document.querySelector('.game-content');
             if (!gameContent || gameContent.offsetParent === null) return;
 
@@ -835,28 +831,26 @@
             wrapper.style.height = '';
             wrapper.style.zoom = '';
 
-            const containerWidth = gameContent.clientWidth;
+            // Calculate width accounting for the 10px game-content padding on each side (20px total)
+            const containerWidth = gameContent.clientWidth - 20; 
             const logicalWindowH = window.innerHeight / scale;
-            const maxWindowHeight = Math.min(logicalWindowH * 0.9, logicalWindowH - (40 / scale));
+            const maxWindowHeight = Math.min(logicalWindowH * 0.95, logicalWindowH - (20 / scale));
 
             const titleBarH = document.querySelector('.title-bar').offsetHeight;
-            const menuBar = document.querySelector('.menu-bar');
-            const menuBarH = (menuBar && menuBar.offsetParent !== null) ? menuBar.offsetHeight : 0;
+            
+            // Measure the external palette dynamically to ensure it never overlaps
+            const palette = document.getElementById('tool-palette');
+            const paletteH = (palette && palette.offsetParent !== null) ? palette.offsetHeight + 20 : 0; 
 
-            const controlsList = document.querySelectorAll('.controls');
-            let controlsH = 0;
-            controlsList.forEach(el => {
-                if (el.offsetParent !== null) {
-                    controlsH += el.offsetHeight + 10;
-                }
-            });
-
-            const uiHeight = titleBarH + menuBarH + controlsH + 40;
+            // Combine height to find remaining available vertical space for the canvas
+            const uiHeight = titleBarH + paletteH + 40; 
             const availableHeight = maxWindowHeight - uiHeight;
 
             const maxDimension = Math.min(containerWidth, availableHeight) * scale;
             const validSize = Math.max(200, maxDimension);
-            const canvasSize = Math.floor(validSize / gridSize) * gridSize;
+            
+            // Snap canvas size to a multiple of 64 for perfect consistency across modes
+            const canvasSize = Math.floor(validSize / 64) * 64;
 
             if (scale !== 1.0 && scale > 0) {
                 wrapper.style.zoom = (1.0 / scale);
@@ -890,15 +884,14 @@
 
             gridCtx.strokeStyle = 'black'; 
             gridCtx.lineWidth = (scale < 1.0) ? 2 : 1;
-            gridCtx.setLineDash([2, 2]); 
+            
+            gridCtx.setLineDash([gridCtx.lineWidth, gridCtx.lineWidth]); 
             gridCtx.beginPath();
 
-            // Offset line by 0.5 for crisp canvas rendering, strictly internal
             const offset = (gridCtx.lineWidth % 2 === 0) ? 0 : 0.5;
 
-            // Loop strictly inside the bounds to eliminate gaps
             for (let i = 1; i < gridSize; i++) {
-                const pos = (i * cellSize) + offset;
+                const pos = Math.floor(i * cellSize) + offset;
                 gridCtx.moveTo(pos, 0);
                 gridCtx.lineTo(pos, gridCanvas.height);
                 gridCtx.moveTo(0, pos);
@@ -1099,7 +1092,7 @@
 
         function setTool(tool) {
             currentTool = tool;
-            document.querySelectorAll('.controls-container .sys-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.floating-palette .sys-btn').forEach(btn => btn.classList.remove('active'));
             if (tool === 'pen') document.getElementById('tool-pen').classList.add('active');
             if (tool === 'eraser') document.getElementById('tool-eraser').classList.add('active');
         }
