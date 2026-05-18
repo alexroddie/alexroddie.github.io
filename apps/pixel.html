@@ -255,7 +255,8 @@
         #pixel-canvas {
             z-index: 1;
             background: white;
-            border: 2px solid black;
+            /* Slightly bolder border as requested */
+            border: 3px solid black; 
             image-rendering: pixelated;
             image-rendering: crisp-edges;
         }
@@ -271,8 +272,8 @@
             justify-content: center;
             padding: 10px;
             width: 100%;
-            background: #d6d6d6;
-            border-top: 1px solid black;
+            /* Changed to white, removed border */
+            background: white; 
             box-sizing: border-box;
             flex-wrap: nowrap;
         }
@@ -432,13 +433,13 @@
         .menu-bar {
             display: flex;
             width: 100%;
-            border-bottom: 2px solid black;
-            background: #d6d6d6;
+            /* Changed to white, removed border, moved content to left */
+            background: white; 
             padding: 10px;
             box-sizing: border-box;
             flex-shrink: 0;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: flex-start; 
         }
     </style>
 </head>
@@ -861,7 +862,6 @@
                 }
             });
 
-            // Removed sliderH from calculation
             const uiHeight = titleBarH + menuBarH + controlsH + 30;
             const availableHeight = maxWindowHeight - uiHeight;
             const containerHeight = availableHeight;
@@ -901,8 +901,9 @@
             const scaleStr = localStorage.getItem('rekindle_scale') || '1.0';
             const scale = parseFloat(scaleStr);
 
-            gridCtx.strokeStyle = '#bbb'; 
+            gridCtx.strokeStyle = 'black'; 
             gridCtx.lineWidth = (scale < 1.0) ? 2 : 1;
+            gridCtx.setLineDash([2, 2]); // Added dotted line style
             gridCtx.beginPath();
 
             for (let i = 0; i <= gridSize; i++) {
@@ -913,6 +914,7 @@
                 gridCtx.lineTo(canvas.width, pos);
             }
             gridCtx.stroke();
+            gridCtx.setLineDash([]); // Reset to solid for any future strokes
         }
 
         function redrawAllPixels() {
