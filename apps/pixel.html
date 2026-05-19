@@ -64,7 +64,8 @@
 
         .title-stripes {
             position: absolute;
-            top: 6px; /* Corrected to fix ghost lines */
+            /* Corrected 24px height fix (35 - 6 - 5) */
+            top: 6px; 
             bottom: 5px;
             left: 4px;
             right: 4px;
@@ -117,8 +118,6 @@
             transform: translate(1px, 1px);
             box-shadow: none;
         }
-
-        .close-box svg { width: 14px; height: 14px; display: block; }
 
         .screen {
             display: none;
@@ -293,10 +292,6 @@
 
     <div id="new-drawing-modal" class="modal-overlay">
         <div class="modal-box">
-            <div class="title-bar" style="margin-bottom: 20px; border: 2px solid black;">
-                <div class="title-stripes"></div>
-                <span class="title-text">New Drawing</span>
-            </div>
             <p style="margin-bottom:20px; font-weight: bold;">Select grid size:</p>
             <div class="btn-row">
                 <button class="sys-btn" onclick="createNew(16)">16x16</button>
@@ -521,7 +516,7 @@
         function drawPixel(row, col, value) {
             const x = Math.floor(col * cellSize);
             const y = Math.floor(row * cellSize);
-            // Snap width and height to the next integer boundary to prevent fractional cracks
+            // Snap to the next integer boundary to prevent fractional ghost artifacts
             const w = Math.floor((col + 1) * cellSize) - x; 
             const h = Math.floor((row + 1) * cellSize) - y;
             ctx.fillStyle = value === 1 ? 'black' : 'white';
