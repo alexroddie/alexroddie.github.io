@@ -18,6 +18,12 @@
             --stripe-pattern: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px);
         }
 
+               /* iPad Fix: Force text to black while preserving button active states */
+        body, p, h1, h2, h3, span, div, .item-info, #window-title {
+            color: #000 !important;
+            -webkit-text-fill-color: #000 !important;
+        }
+
         body {
             image-rendering: pixelated;
             background-repeat: repeat;
