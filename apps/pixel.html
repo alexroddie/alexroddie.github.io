@@ -19,12 +19,12 @@
         }
 
         /* iPad Fix: Force text to black while preserving button active states */
-        body, p, h1, h2, h3, .item-info, #window-title {
+        body, p, h1, h2, h3, span, div, .item-info, #window-title {
             color: #000 !important;
-            -webkit-text-fill-color: #000;
+            -webkit-text-fill-color: #000 !important;
         }
 
-        .sys-btn.active, .sys-btn:active, .close-box:active, .delete-btn:active {
+        .sys-btn.active, .sys-btn:active, .close-box:active, .delete-btn:active, .floating-palette .sys-btn.active {
             color: #fff !important;
             -webkit-text-fill-color: #fff !important;
         }
@@ -76,13 +76,12 @@
 
         .title-stripes {
             position: absolute;
-            /* SNAP FIX: Fixed 24px height kills the rounding ghost line */
-            top: 5px; 
-            height: 24px;
+            /* Identical 1:1 match with Calculator fix */
+            top: 6px; 
+            bottom: 5px;
             left: 4px;
             right: 4px;
             background-image: var(--stripe-pattern);
-            background-size: 100% 4px;
             z-index: 0;
         }
 
@@ -125,18 +124,18 @@
         
         .close-box.fixed-w, .delete-btn.fixed-w { width: 18px; padding: 0; }
 
-        /* Icon Fix: Ensures download icon is properly sized and visible */
-        .close-box svg {
-            width: 14px;
-            height: 14px;
-            display: block;
-        }
-
         .close-box:active, .delete-btn:active {
             background: black;
             color: white;
             transform: translate(1px, 1px);
             box-shadow: none;
+        }
+
+        /* Icon Fix: Explicitly size and display the SVG */
+        .close-box svg {
+            width: 14px;
+            height: 14px;
+            display: block;
         }
 
         .screen {
@@ -365,7 +364,7 @@
             <span id="window-title" class="title-text">Pixel</span>
             <div id="header-right-controls" class="right-controls" style="display: none;">
                 <div class="close-box fixed-w" onclick="downloadImage()" title="Download">
-                    <svg viewBox="1 1 22 22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <svg viewBox="1 1 22 22" fill="none" stroke="black" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 </div>
             </div>
         </div>
@@ -693,8 +692,10 @@
         
         function downloadImage() {
             const title = document.getElementById('window-title').textContent || 'pixel-art';
-            const link = document.createElement('a'); link.download = title + '.png';
-            link.href = canvas.toDataURL('image/png'); link.click();
+            const link = document.createElement('a'); 
+            link.download = title + '.png';
+            link.href = canvas.toDataURL('image/png'); 
+            link.click();
         }
     </script>
 </body>
