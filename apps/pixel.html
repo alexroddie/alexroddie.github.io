@@ -5,6 +5,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <meta charset="UTF-8">
+    <meta name="format-detection" content="telephone=no">
 
     <title>Pixel</title>
 
@@ -15,6 +16,17 @@
             --border: 2px solid #000000;
             --shadow: 4px 4px 0px #000000;
             --stripe-pattern: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px);
+        }
+
+        /* iPad Fix: Force text to black while preserving button active states */
+        body, p, h1, h2, h3, .item-info, #window-title {
+            color: #000 !important;
+            -webkit-text-fill-color: #000;
+        }
+
+        .sys-btn.active, .sys-btn:active, .close-box:active, .delete-btn:active {
+            color: #fff !important;
+            -webkit-text-fill-color: #fff !important;
         }
 
         body {
@@ -64,12 +76,13 @@
 
         .title-stripes {
             position: absolute;
-            /* Corrected 24px height fix (35 - 6 - 5) */
-            top: 6px; 
-            bottom: 5px;
+            /* SNAP FIX: Fixed 24px height kills the rounding ghost line */
+            top: 5px; 
+            height: 24px;
             left: 4px;
             right: 4px;
             background-image: var(--stripe-pattern);
+            background-size: 100% 4px;
             z-index: 0;
         }
 
@@ -111,6 +124,13 @@
         }
         
         .close-box.fixed-w, .delete-btn.fixed-w { width: 18px; padding: 0; }
+
+        /* Icon Fix: Ensures download icon is properly sized and visible */
+        .close-box svg {
+            width: 14px;
+            height: 14px;
+            display: block;
+        }
 
         .close-box:active, .delete-btn:active {
             background: black;
@@ -516,7 +536,6 @@
         function drawPixel(row, col, value) {
             const x = Math.floor(col * cellSize);
             const y = Math.floor(row * cellSize);
-            // Snap to the next integer boundary to prevent fractional ghost artifacts
             const w = Math.floor((col + 1) * cellSize) - x; 
             const h = Math.floor((row + 1) * cellSize) - y;
             ctx.fillStyle = value === 1 ? 'black' : 'white';
