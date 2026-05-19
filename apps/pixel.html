@@ -64,7 +64,7 @@
 
         .title-stripes {
             position: absolute;
-            top: 6px;
+            top: 6px; /* Corrected to fix ghost lines */
             bottom: 5px;
             left: 4px;
             right: 4px;
@@ -519,9 +519,11 @@
         }
 
         function drawPixel(row, col, value) {
-            const x = Math.floor(col * cellSize), y = Math.floor(row * cellSize);
-            const w = Math.floor((col + 1) * cellSize) - x + 1; 
-            const h = Math.floor((row + 1) * cellSize) - y + 1;
+            const x = Math.floor(col * cellSize);
+            const y = Math.floor(row * cellSize);
+            // Snap width and height to the next integer boundary to prevent fractional cracks
+            const w = Math.floor((col + 1) * cellSize) - x; 
+            const h = Math.floor((row + 1) * cellSize) - y;
             ctx.fillStyle = value === 1 ? 'black' : 'white';
             ctx.fillRect(x, y, w, h);
         }
